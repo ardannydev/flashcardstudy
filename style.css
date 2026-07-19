@@ -543,5 +543,34 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .confirm-card{ padding:20px; }
 }
 
-/* ---- prevent horizontal scroll from long words/long titles anywhere ---- */
-h1,h2,h3,p,.iset-card h3,.iset-card p,.set-card h3,.set-card p{ overflow-wrap:anywhere; word-break:break-word; }
+/* ---- perbaikan mendasar: elemen teks di dalam flex/grid HARUS bisa menyusut
+   secara normal (per kata, bukan per huruf). Tanpa min-width:0 pada flex child,
+   sebagian browser malah memaksa lebar minimum sesuai kata terpanjang dan bisa
+   memicu teks terpecah vertikal saat ruang sangat sempit. ---- */
+.header-brand,.header-actions,.main-header,
+.set-card-head,.iset-card-head,.iset-card-meta,
+.hero-copy,.hero-actions,
+.crow-top,.crow-tools,.crow-inputs,.cinput-group,
+.question-eyebrow,.question-box,.question-card,
+.iset-card,.set-card,.dash-card,
+.qtoggle-wrap,.qnav-center,.qright-tools,
+.choice,.choice-text,
+.iset-card-actions,.set-card-actions{ min-width:0; }
+.iset-card h3,.set-card h3,.iset-card p,.set-card p,
+.choice-text,.hero-copy h1,.hero-text{ min-width:0; overflow-wrap:break-word; }
+
+/* ---- ukuran teks dasar dinaikkan sedikit di layar sempit agar tetap nyaman dibaca ---- */
+@media(max-width:480px){
+  body{ font-size:15px; }
+  .set-card p,.iset-card p{ font-size:13.5px; line-height:1.55; }
+  .term-chip,.iterm-chip{ font-size:12.5px; }
+  .iset-count,.iset-badge{ font-size:11.5px; }
+}
+@media(max-width:340px){
+  .hero-copy h1{ font-size:1.55rem; }
+  .header-actions .ibtn,.header-actions .btn{ font-size:11.5px; padding:9px 10px; }
+}
+
+/* ---- teks pada chip/badge kecil: boleh wrap normal, JANGAN dipaksa satu baris
+   di layar sangat sempit supaya tidak overflow ke luar kartu ---- */
+.iterm-chip,.term-chip{ white-space:normal; }
