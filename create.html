@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buat Set — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body.dark-theme{background:#0e0b2e;color:#d6d9ee;}
+  body.dark-theme .topbar, body.dark-theme .main-header{background:transparent;border:none;}
+  body.dark-theme{font-family:'Segoe UI',Tahoma,Verdana,sans-serif;}
+  .main-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 28px 18px;max-width:1080px;margin:0 auto;}
+  .header-brand{display:flex;flex-direction:column;gap:8px;}
+  .main-header .logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+  .main-header .logo .dot{width:9px;height:9px;border-radius:50%;background:#506cff;display:inline-block;margin-right:8px;vertical-align:middle;}
+  .main-header .tagline{margin:0;color:#98a6d1;font-size:13px;max-width:520px;line-height:1.7;}
+  .header-actions{display:flex;gap:12px;flex-wrap:wrap;}
+  .ibtn{border:none;border-radius:999px;padding:12px 18px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s ease,background .15s ease,color .15s ease;}
+  .ibtn:active{transform:scale(.97);}
+  .ibtn-primary{background:#506cff;color:#fff;}
+  .ibtn-primary:hover{background:#6b7cff;}
+  .ibtn-outline{background:transparent;color:#94b8ff;border:1.5px solid rgba(74,79,224,.35);}
+  .ibtn-outline:hover{background:rgba(74,79,224,.08);}
+  .cwrap{max-width:1080px;margin:0 auto;padding:0 28px 40px;}
+  .cwrap .cbtn{border:none;border-radius:999px;padding:12px 18px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s ease,background .15s ease;color:inherit;}
+  .cbtn:active{transform:scale(.97);}
+  .cbtn-muted{background:rgba(255,255,255,.08);color:#fff;}
+  .cbtn-primary{background:#506cff;color:#fff;}
+  .cbtn-primary:hover{background:#6b7cff;}
+  .cpublic{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#fff;margin-bottom:20px;}
+  .cfield-box{width:100%;border:none;border-radius:18px;background:rgba(255,255,255,.06);color:#fff;padding:16px 18px;margin-bottom:16px;outline:none;}
+  .cfield-box::placeholder{color:rgba(255,255,255,.6);}
+  .ctoolbar{display:flex;gap:10px;margin-bottom:20px;}
+  .cimport-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:18px 20px;margin-bottom:20px;display:none;}
+  .cimport-box.open{display:block;}
+  .cimport-box p{margin:0 0 16px;color:#c3cae6;font-size:14px;line-height:1.7;}
+  .cimport-grid{display:grid;grid-template-columns:1fr 220px;gap:16px;align-items:end;}
+  .cimport-grid label{display:block;margin-bottom:8px;color:#b3bee8;font-size:13px;}
+  .cimport-grid textarea, .cimport-grid select{width:100%;border:none;border-radius:16px;background:rgba(255,255,255,.06);color:#fff;padding:14px 16px;outline:none;}
+  .cimport-grid select{appearance:none;}
+  .caddcard-wrap{text-align:right;margin-bottom:24px;}
+  .caddcard-btn{border:none;border-radius:999px;padding:14px 20px;font-weight:700;font-size:14px;cursor:pointer;background:#506cff;color:#fff;}
+  .caddcard-btn:hover{background:#6b7cff;}
+  .crow{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:16px;margin-bottom:16px;}
+  .crow-top{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .crow-num{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;}
+  .crow-tools{display:flex;gap:10px;}
+  .crow-tools button{border:none;border-radius:999px;width:36px;height:36px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;}
+  .crow-body{display:grid;gap:16px;}
+  .crow-inputs{display:grid;gap:14px;}
+  .cinput-group{position:relative;}
+  .cinput-group input{width:100%;border:none;border-radius:16px;background:rgba(255,255,255,.06);color:#fff;padding:16px 16px 14px;outline:none;}
+  .cinput-group label{position:absolute;top:12px;left:16px;color:rgba(255,255,255,.65);font-size:12px;pointer-events:none;}
+  .cimg-box{display:none;}
+  @media(max-width:740px){.main-header{flex-direction:column;align-items:flex-start;padding:22px 20px 18px;} .cimport-grid{grid-template-columns:1fr;}}</style>
+</head>
+<body class="dark-theme">
+
+  <header class="main-header">
+    <div class="header-brand">
+      <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
+      <p class="tagline">Buat set flashcard dengan tampilan utama yang lebih rapi.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
+      <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Buat</button>
+      <button type="button" class="ibtn ibtn-outline" onclick="logout()">Keluar</button>
+    </div>
+  </header>
+
+  <div class="cwrap">
+    <button type="button" class="cpublic" title="Visibilitas set" aria-pressed="false" aria-label="Togg le visibilitas set">🌐 Publik</button>
+
+    <input aria-label="Judul set" class="cfield-box" id="title" placeholder="Judul">
+    <textarea aria-label="Deskripsi set" class="cfield-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
+
+    <div class="ctoolbar">
+      <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">+ Masukkan</button>
+    </div>
+
+    <div class="cimport-box" id="importBox">
+      <p>
+        Tempel daftar kotoba dan artinya, satu pasang per baris. Biarkan pemisah di "Deteksi otomatis" agar
+        mendukung →, -, :, tab, koma, dsb sekaligus.
+      </p>
+      <div class="cimport-grid">
+        <div>
+          <label for="bulkText">Daftar kotoba</label>
+          <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
+        </div>
+        <div>
+          <label for="delim">Pemisah</label>
+          <select id="delim">
+            <option value="auto">Deteksi otomatis</option>
+            <option value="→">Panah ( → )</option>
+            <option value="-">Strip ( - )</option>
+            <option value="	">Tab</option>
+            <option value=",">Koma ( , )</option>
+            <option value=":">Titik dua ( : )</option>
+            <option value="=">Sama dengan ( = )</option>
+          </select>
+          <button class="cbtn cbtn-primary" style="width:100%;margin-top:10px" onclick="parseBulk()">Proses & urutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="rows"></div>
+
+    <div class="caddcard-wrap">
+      <button type="button" class="caddcard-btn" onclick="addRow()" aria-label="Tambahkan kartu">Tambahkan kartu</button>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+<script>
+let rows = []; // {id, term, def}
+let editingId = qs('id');
+
+function addRow(term='', def=''){
+  rows.push({id: uid('row'), term, def});
+  renderRows();
+}
+function removeRow(rid){
+  rows = rows.filter(r => r.id !== rid);
+  renderRows();
+}
+function renderRows(){
+  const wrap = document.getElementById('rows');
+  if(rows.length === 0){
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = rows.map((r,i) => `
+    <div class="crow">
+      <div class="crow-top">
+        <div class="crow-num">${i+1}</div>
+        <div class="crow-tools">
+          <button type="button" title="Geser urutan" aria-label="Geser urutan">≡</button>
+          <button type="button" title="Hapus kartu" onclick="removeRow('${r.id}')" aria-label="Hapus kartu ${i+1}">🗑</button>
+        </div>
+      </div>
+      <div class="crow-body">
+        <div class="crow-inputs">
+          <div class="cinput-group">
+            <input aria-label="Istilah ${i+1}" placeholder="" value="${escapeHtml(r.term)}"
+              oninput="rows.find(x=>x.id==='${r.id}').term=this.value">
+            <label>Istilah</label>
+          </div>
+          <div class="cinput-group">
+            <input aria-label="Definisi ${i+1}" placeholder="" value="${escapeHtml(r.def)}"
+              oninput="rows.find(x=>x.id==='${r.id}').def=this.value">
+            <label>Definisi</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+const importToggle = document.getElementById('importToggle');
+if (importToggle) {
+  importToggle.addEventListener('click', () => {
+    const box = document.getElementById('importBox');
+    if (!box) return;
+    const open = box.classList.toggle('open');
+    importToggle.setAttribute('aria-expanded', String(open));
+  });
+}
+
+// urutan pemisah yang dicoba saat mode "Deteksi otomatis"
+const AUTO_DELIMS = ['→', '->', '—', ':', '-', '\t', '=', ','];
+
+// pisah satu baris jadi [kotoba, arti] pakai pemisah tertentu, atau null kalau gagal
+function splitLine(line, delim){
+  const idx = line.indexOf(delim);
+  if(idx === -1) return null;
+  const term = line.slice(0, idx).trim();
+  const def = line.slice(idx + delim.length).trim();
+  if(!term || !def) return null;
+  return [term, def];
+}
+
+function parseBulk(){
+  const raw = document.getElementById('bulkText').value;
+  const delimChoice = document.getElementById('delim').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const parsed = [];
+  const failedLines = [];
+
+  lines.forEach(line => {
+    let result = null;
+    if(delimChoice === 'auto'){
+      for(const d of AUTO_DELIMS){
+        result = splitLine(line, d);
+        if(result) break;
+      }
+      if(!result){
+        const m = line.split(/\s{2,}|\t+/).filter(Boolean);
+        if(m.length >= 2) result = [m[0].trim(), m.slice(1).join(' ').trim()];
+      }
+    } else {
+      result = splitLine(line, delimChoice);
+    }
+    if(result) parsed.push({id: uid('row'), term: result[0], def: result[1]});
+    else failedLines.push(line);
+  });
+
+  if(parsed.length === 0){
+    createNotification('Tidak ada baris yang berhasil dibaca. Pastikan tiap baris berformat "kotoba [pemisah] arti", contoh: こうきょう → publik', 'error');
+    return;
+  }
+  rows = rows.filter(r => r.term.trim() || r.def.trim());
+  rows = rows.concat(parsed);
+  document.getElementById('bulkText').value = '';
+  renderRows();
+
+  if(failedLines.length > 0){
+    createNotification(`${parsed.length} kotoba berhasil ditambahkan. ${failedLines.length} baris dilewati karena tidak sesuai format.`, 'info');
+  } else {
+    createNotification(`${parsed.length} kotoba berhasil ditambahkan.`, 'success');
+  }
+}
+
+function handleSave(andPractice){
+  const title = document.getElementById('title').value.trim();
+  const desc = document.getElementById('desc').value.trim();
+  const cleanTerms = rows
+    .map(r => ({id: r.id, term: r.term.trim(), def: r.def.trim()}))
+    .filter(r => r.term && r.def);
+
+  if(!title){ createNotification('Judul set wajib diisi.', 'error'); return; }
+  if(cleanTerms.length === 0){ createNotification('Tambahkan minimal 1 kotoba beserta artinya.', 'error'); return; }
+
+  const setId = editingId || uid('set');
+
+  // initialize review metadata for each term (SM-2)
+  const now = Date.now();
+  const termsWithMeta = cleanTerms.map(t => ({
+    id: t.id,
+    term: t.term,
+    def: t.def,
+    _review: t._review || {
+      reps: 0,
+      ease: 2.5,
+      interval: 0,
+      last: null,
+      due: now
+    }
+  }));
+
+  const set = {
+    id: setId,
+    title, desc,
+    terms: termsWithMeta,
+    updatedAt: Date.now()
+  };
+  upsertSet(set);
+  location.href = andPractice ? `learn.html?id=${set.id}` : 'index.html';
+}
+
+// muat data jika mode edit
+(async function init(){
+  if(!requireLogin()) return;
+  await syncSetsFromServer();
+  if(editingId){
+    const set = getSet(editingId);
+    if(set){
+      document.getElementById('pageTitle').textContent = 'Edit set';
+      document.getElementById('title').value = set.title;
+      document.getElementById('desc').value = set.desc || '';
+      rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
+    }
+  }
+  renderRows();
+  if(rows.length === 0) addRow();
+})();
+</script>
+</body>
+</html>

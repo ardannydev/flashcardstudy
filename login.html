@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masuk — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body.dark-theme{
+    background:#0e0b2e;
+    background-image:
+      radial-gradient(circle at top left, rgba(106,92,255,.2) 0%, transparent 35%),
+      radial-gradient(circle at bottom right, rgba(63,211,255,.14) 0%, transparent 30%),
+      linear-gradient(180deg,#0e0b2e 0%,#0b0823 100%);
+    color:#fff;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+    min-height:100vh;margin:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  *{box-sizing:border-box;}
+  .auth-wrap{width:100%;max-width:420px;padding:24px;}
+  .auth-brand{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:22px;}
+  .auth-brand .logo{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+  .auth-brand .dot{width:9px;height:9px;border-radius:50%;background:#506cff;display:inline-block;}
+  .auth-card{
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:28px;
+    padding:32px 28px;box-shadow:0 40px 120px rgba(0,0,0,.25);backdrop-filter:blur(16px);
+  }
+  .auth-tabs{display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:999px;padding:6px;margin-bottom:24px;}
+  .auth-tab{flex:1;text-align:center;padding:10px 12px;border-radius:999px;border:none;background:transparent;color:#98a6d1;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s ease,color .15s ease;}
+  .auth-tab.active{background:#506cff;color:#fff;}
+  .auth-title{margin:0 0 6px;font-size:22px;color:#fff;}
+  .auth-sub{margin:0 0 22px;color:#98a6d1;font-size:13px;line-height:1.6;}
+  .auth-field{margin-bottom:16px;}
+  .auth-field label{display:block;margin-bottom:8px;color:#b3bee8;font-size:13px;}
+  .auth-field input{width:100%;border:none;border-radius:16px;background:rgba(255,255,255,.06);color:#fff;padding:14px 16px;outline:none;font-size:14px;}
+  .auth-field input::placeholder{color:rgba(255,255,255,.4);}
+  .auth-submit{width:100%;border:none;border-radius:999px;padding:14px 18px;font-weight:700;font-size:14px;cursor:pointer;background:#506cff;color:#fff;transition:background .15s ease,transform .12s ease;margin-top:6px;}
+  .auth-submit:hover{background:#6b7cff;}
+  .auth-submit:active{transform:scale(.98);}
+  .auth-submit:disabled{opacity:.6;cursor:not-allowed;}
+  .auth-error{background:rgba(255,111,57,.12);border:1px solid rgba(255,111,57,.35);color:#ffb78f;font-size:13px;padding:12px 14px;border-radius:14px;margin-bottom:16px;display:none;line-height:1.5;}
+  .auth-error.show{display:block;}
+  .auth-note{margin-top:18px;text-align:center;color:#7e8bbf;font-size:12px;line-height:1.6;}
+</style>
+</head>
+<body class="dark-theme">
+
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <span class="dot"></span>
+      <span class="logo">FlashCardStudy</span>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tabLogin">Masuk</button>
+        <button type="button" class="auth-tab" id="tabRegister">Daftar</button>
+      </div>
+
+      <div id="authError" class="auth-error"></div>
+
+      <!-- Form Masuk -->
+      <form id="loginForm">
+        <h1 class="auth-title">Masuk ke akun kamu</h1>
+        <p class="auth-sub">Semua set flashcard kamu tersimpan aman di akunmu.</p>
+        <div class="auth-field">
+          <label for="loginUsername">Username</label>
+          <input id="loginUsername" autocomplete="username" placeholder="Masukkan username" required>
+        </div>
+        <div class="auth-field">
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+        </div>
+        <button type="submit" class="auth-submit" id="loginBtn">Masuk</button>
+      </form>
+
+      <!-- Form Daftar -->
+      <form id="registerForm" style="display:none">
+        <h1 class="auth-title">Buat akun baru</h1>
+        <p class="auth-sub">Data akan otomatis tersimpan ke akunmu di server.</p>
+        <div class="auth-field">
+          <label for="regUsername">Username</label>
+          <input id="regUsername" autocomplete="username" placeholder="Minimal 3 karakter" required>
+        </div>
+        <div class="auth-field">
+          <label for="regPassword">Password</label>
+          <input id="regPassword" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter" required>
+        </div>
+        <div class="auth-field">
+          <label for="regPassword2">Ulangi Password</label>
+          <input id="regPassword2" type="password" autocomplete="new-password" placeholder="Ulangi password" required>
+        </div>
+        <button type="submit" class="auth-submit" id="registerBtn">Daftar</button>
+      </form>
+
+      <p class="auth-note">Data disimpan di server (Vercel KV) dan hanya bisa diakses lewat akunmu sendiri.</p>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+<script>
+// kalau sudah login, langsung ke beranda
+if(getToken()){
+  location.href = 'index.html';
+}
+
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const authError = document.getElementById('authError');
+
+function showTab(which){
+  authError.classList.remove('show');
+  authError.textContent = '';
+  const isLogin = which === 'login';
+  tabLogin.classList.toggle('active', isLogin);
+  tabRegister.classList.toggle('active', !isLogin);
+  loginForm.style.display = isLogin ? 'block' : 'none';
+  registerForm.style.display = isLogin ? 'none' : 'block';
+}
+tabLogin.addEventListener('click', () => showTab('login'));
+tabRegister.addEventListener('click', () => showTab('register'));
+
+function showError(msg){
+  authError.textContent = msg;
+  authError.classList.add('show');
+}
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if(!username || !password){ showError('Username dan password wajib diisi.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Memproses...';
+  try{
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if(!res.ok){ showError(data.error || 'Gagal masuk.'); return; }
+    setAuth(data.token, data.username);
+    await syncSetsFromServer();
+    location.href = 'index.html';
+  }catch(err){
+    showError('Tidak bisa terhubung ke server. Coba lagi.');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Masuk';
+  }
+});
+
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('registerBtn');
+  const username = document.getElementById('regUsername').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const password2 = document.getElementById('regPassword2').value;
+
+  if(!username || !password || !password2){ showError('Semua kolom wajib diisi.'); return; }
+  if(password !== password2){ showError('Password dan ulangi password tidak sama.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Memproses...';
+  try{
+    const res = await fetch('/api/register', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if(!res.ok){ showError(data.error || 'Gagal mendaftar.'); return; }
+    setAuth(data.token, data.username);
+    location.href = 'index.html';
+  }catch(err){
+    showError('Tidak bisa terhubung ke server. Coba lagi.');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Daftar';
+  }
+});
+</script>
+</body>
+</html>

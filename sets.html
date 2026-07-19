@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Kamu — FlashCardStudy</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body{
+      background:#0e0b2e;
+      background-image:
+        radial-gradient(circle at top left, rgba(106,92,255,.18) 0%, transparent 35%),
+        radial-gradient(circle at bottom right, rgba(63,211,255,.12) 0%, transparent 30%),
+        linear-gradient(180deg,#0e0b2e 0%,#0b0823 100%);
+      color:#fff;
+      font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+      min-height:100vh;
+      margin:0;
+    }
+    *{box-sizing:border-box;}
+    a,button{outline:none;text-decoration:none;font-family:inherit;}
+
+    .main-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 28px 18px;max-width:1080px;margin:0 auto;}
+    .header-brand{display:flex;flex-direction:column;gap:8px;}
+    .main-header .logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+    .main-header .tagline{margin:0;color:#98a6d1;font-size:13px;max-width:520px;line-height:1.7;}
+    .header-actions{display:flex;gap:12px;flex-wrap:wrap;}
+
+    .page-header{max-width:1080px;margin:0 auto;padding:0 28px 24px;}
+    .page-header h1{margin:0;color:#fff;font-size:32px;line-height:1.1;}
+    .page-header p{margin:10px 0 0;color:#b3bee8;font-size:15px;line-height:1.7;max-width:680px;}
+
+    .icontainer{max-width:1080px;margin:0 auto;padding:0 24px 60px;}
+    .section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 auto 18px;max-width:1080px;}
+    .section-header h2{margin:0;color:#fff;font-size:24px;}
+    .section-sub{margin:6px 0 0;color:#8f9ad7;font-size:14px;line-height:1.6;}
+
+    .iset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
+    .iset-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px 24px;box-shadow:0 18px 60px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:18px;min-height:180px;}
+    .iset-card:hover{border-color:#4a4590;}
+    .iset-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+    .set-number{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(80,108,255,.14);color:#d7dcff;font-size:13px;font-weight:700;flex-shrink:0;}
+    .iset-card h3{margin:0;font-size:19px;color:#fff;}
+    .iset-card p{margin:8px 0 0;color:#b3bee8;font-size:14px;min-height:42px;}
+    .iset-card-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .iterm-preview{display:flex;flex-wrap:wrap;gap:10px;line-height:1.5;}
+    .iterm-chip{background:rgba(255,255,255,.06);color:#d7dcff;font-size:13px;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.08);}
+    .iterm-chip b{color:#fff;}
+    .iset-count{background:rgba(74,79,224,.14);color:#a7b5ff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;}
+    .iset-badge{background:rgba(255,111,57,.14);color:#ffb78f;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;}
+    .iset-card-actions{display:flex;flex-wrap:wrap;gap:10px;}
+
+    .ibtn{border:none;border-radius:999px;padding:12px 18px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s ease,background .15s ease,color .15s ease;}
+    .ibtn:active{transform:scale(.97);}
+    .ibtn-primary{background:#506cff;color:#fff;}
+    .ibtn-primary:hover{background:#6b7cff;}
+    .ibtn-outline{background:transparent;color:#94b8ff;border:1.5px solid rgba(74,79,224,.35);}
+    .ibtn-outline:hover{background:rgba(74,79,224,.08);}
+    .ibtn-danger{background:transparent;color:#ff8a73;border:1.5px solid rgba(255,111,57,.35);}
+    .ibtn-danger:hover{background:rgba(255,111,57,.1);}
+
+    .iempty{text-align:center;padding:80px 20px;color:#9aa0c7;}
+    .iempty h2{color:#fff;margin-bottom:8px;}
+
+    @media(max-width:740px){.main-header{flex-direction:column;align-items:flex-start;padding:22px 20px 18px;} .page-header h1{font-size:28px;} }
+    @media(max-width:560px){.page-header h1{font-size:24px;} .page-header p{font-size:14px;} .iset-card{padding:20px;}}
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-brand">
+      <a href="index.html" class="logo">FlashCardStudy</a>
+      <p class="tagline">Semua set flashcard kamu ditampilkan di sini.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
+      <a class="ibtn ibtn-primary" href="create.html">Buat set baru</a>
+      <button type="button" class="ibtn ibtn-outline" onclick="logout()">Keluar</button>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <h1>Set kamu</h1>
+    <p>Kelola semua flashcard kamu di satu halaman. Mulai belajar atau hapus set yang tidak dibutuhkan.</p>
+  </div>
+
+  <main class="icontainer">
+    <div id="setGrid" class="iset-grid"></div>
+    <div id="emptyState" class="iempty" style="display:none;max-width:1080px;margin:0 auto;padding:0 28px 60px;">
+      <h2>Belum ada set flashcard</h2>
+      <p>Mulai dengan membuat set baru, lalu kembali ke halaman ini untuk melihat semua setmu.</p>
+      <a href="create.html" class="ibtn ibtn-primary" style="display:inline-block;margin-top:14px;">+ Buat set baru</a>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+  <script>
+  (async function(){
+    if(!requireLogin()) return;
+    await syncSetsFromServer();
+
+    function getDueCount(set){
+      const now = Date.now();
+      return set.terms.filter(t => {
+        if(!t._review) return true;
+        return t._review.due <= now;
+      }).length;
+    }
+
+    function renderSets(){
+      const sets = getSets();
+      const grid = document.getElementById('setGrid');
+      const empty = document.getElementById('emptyState');
+      grid.innerHTML = '';
+
+      if(sets.length === 0){
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      grid.innerHTML = sets.map((set,index) => {
+        const dueCount = getDueCount(set);
+        return `
+          <div class="iset-card">
+            <div class="iset-card-head">
+              <span class="set-number">${index + 1}</span>
+              <div style="flex:1;min-width:0;">
+                <h3>${escapeHtml(set.title)}</h3>
+                ${set.desc ? `<p>${escapeHtml(set.desc)}</p>` : ''}
+              </div>
+              <div class="iset-card-meta">
+                <span class="iset-count">${set.terms.length} kotoba</span>
+                ${dueCount > 0 ? `<span class="iset-badge">${dueCount} jatuh tempo</span>` : ''}
+              </div>
+            </div>
+            <div class="iterm-preview">
+              ${set.terms.slice(0, 3).map(term =>
+                `<span class="iterm-chip"><b>${escapeHtml(term.term)}</b> — ${escapeHtml(term.def)}</span>`
+              ).join('')}
+            </div>
+            <div class="iset-card-actions">
+              <a class="ibtn ibtn-primary" href="learn.html?id=${set.id}">Mulai</a>
+              <button class="ibtn ibtn-danger" onclick="handleDelete('${set.id}')">Hapus</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function handleDelete(id){
+      const set = getSet(id);
+      if(!set) return;
+      showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
+        .then(confirmed => {
+          if(!confirmed) return;
+          deleteSet(id);
+          renderSets();
+          createNotification('Set berhasil dihapus.', 'success');
+        });
+    }
+
+    renderSets();
+  })();
+  </script>
+</body>
+</html>

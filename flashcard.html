@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcard — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
+<!-- flashcard page dark-theme CSS moved to style.css -->
+</head>
+<body class="dark-theme flashcard-page">
+
+  <div class="qtopbar">
+    <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
+    <div class="qhead">
+      <div class="qnum" id="counter">1 / 1</div>
+      <div class="qtitle" id="setTitle"></div>
+    </div>
+    <div class="qtopright">
+      <button type="button" class="qshuffle" onclick="logout()" title="Keluar" aria-label="Keluar">⎋</button>
+      <div class="qprogress-mini"><div class="qprogress-mini-fill" id="progressFill"></div></div>
+    </div>
+  </div>
+
+  <main class="qwrap" id="app">
+    <div class="qtrackbar" id="trackBar" style="display:none">
+      <div class="qbadge qbadge-learning" id="learningBadge"><span id="learningCount">0</span> Masih dipelajari</div>
+      <div class="qbadge qbadge-know" id="knowBadge">Tahu <span id="knowCount">0</span></div>
+    </div>
+    <div class="qslide" id="slideWrap">
+    <div class="qscene">
+      <div class="qflip3d" id="flipInner" role="button" tabindex="0" aria-label="Kartu. Tekan spasi untuk membalik.">
+
+        <!-- sisi depan: kotoba -->
+        <div class="qcard-shell qshell-front">
+          <div class="qcard-top">
+            <div class="qicons">
+              <button class="qstar" id="starBtnFront" title="Tandai">★</button>
+            </div>
+          </div>
+          <div class="qcard-body"><div class="qtext" id="cardTextFront"></div></div>
+          <div class="qflipbar">Klik kartu untuk membalik</div>
+        </div>
+
+        <!-- sisi belakang: arti -->
+        <div class="qcard-shell qshell-back">
+          <div class="qcard-top">
+            <div class="qicons">
+              <button class="qstar" id="starBtnBack" title="Tandai">★</button>
+            </div>
+          </div>
+          <div class="qcard-body"><div class="qtext" id="cardTextBack"></div></div>
+          <div class="qflipbar">Klik kartu untuk membalik</div>
+        </div>
+
+      </div>
+    </div>
+    </div>
+
+    <div class="qbottom">
+      <div class="qtoggle-wrap">
+        <span>Pantau kemajuan</span>
+        <button class="qtoggle" id="progressToggle"></button>
+      </div>
+
+      <div class="qnav-center" id="navArrows">
+        <button class="qarrow" id="prevBtn">←</button>
+        <button class="qarrow" id="nextBtn">→</button>
+      </div>
+      <div class="qnav-center" id="navTrack" style="display:none">
+        <button class="qarrow qx" id="xBtn" title="Masih dipelajari">✕</button>
+        <button class="qarrow qcheck" id="checkBtn" title="Tahu">✓</button>
+      </div>
+
+      <div class="qright-tools">
+        <button class="qplay" id="restartBtn" title="Ulangi dari awal">▶</button>
+        <button class="qplay" id="undoBtn" title="Batalkan" style="display:none">↺</button>
+        <button class="qshuffle" id="shuffleBtn" title="Acak">⤨</button>
+      </div>
+    </div>
+  </main>
+
+<script src="app.js"></script>
+<script>
+(async function(){
+if(!requireLogin()) return;
+await syncSetsFromServer();
+
+const setId = qs('id');
+const set = getSet(setId);
+
+if(!set || !set.terms.length){
+  document.getElementById('app').innerHTML =
+    '<div class="empty" style="color:#cfd3ec"><h2 style="color:#fff">Set tidak ditemukan</h2><p>Set ini kosong atau sudah dihapus.</p><a class="btn btn-primary" href="index.html" style="display:inline-block;margin-top:12px">Kembali ke beranda</a></div>';
+  throw new Error('no set');
+}
+
+document.getElementById('setTitle').textContent = set.title.toUpperCase();
+
+let order = set.terms.map(t => t.id);
+let starred = new Set();
+let idx = 0;
+let flipped = false;
+let trackProgress = false;
+let flipStep = 0; // selalu bertambah, arah putaran selalu sama (ke atas), tidak pernah mundur
+
+let learningCount = 0;
+let knowCount = 0;
+let history = []; // {idx, action:'learning'|'know'}
+let dragging = false;
+let dragStartX = 0;
+let dragX = 0;
+let suppressClick = false;
+const DRAG_THRESHOLD = 100;
+
+function currentTerm(){
+  const id = order[idx];
+  return set.terms.find(t => t.id === id);
+}
+
+function render(){
+  const t = currentTerm();
+  document.getElementById('cardTextFront').textContent = t.term;
+  document.getElementById('cardTextBack').textContent = t.def;
+  document.getElementById('counter').textContent = `${idx+1} / ${order.length}`;
+  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = idx === order.length - 1;
+  const isStarred = starred.has(t.id);
+  document.getElementById('starBtnFront').classList.toggle('active', isStarred);
+  document.getElementById('starBtnBack').classList.toggle('active', isStarred);
+}
+
+function applyTransform(){
+  document.getElementById('flipInner').style.transform =
+    `translateX(${dragX}px) rotateZ(${dragX/18}deg) rotateX(${flipStep * 180}deg)`;
+}
+function setShellGlow(color, intensity){
+  document.querySelectorAll('.qcard-shell').forEach(el => {
+    el.style.borderColor = color ? color : 'transparent';
+    el.style.boxShadow = color
+      ? `0 20px 50px rgba(0,0,0,.35), 0 0 ${18*intensity}px ${color}`
+      : '0 20px 50px rgba(0,0,0,.35)';
+  });
+}
+function flip(){
+  flipped = !flipped;
+  flipStep++; // arah rotasi selalu sama, tidak pernah balik ke arah sebaliknya
+  applyTransform();
+  // announce new side for screen readers
+  announce(flipped ? 'Menampilkan arti' : 'Menampilkan istilah');
+}
+function resetToFront(){
+  // kalau kartu sedang menampilkan arti, terus putar ke arah yang sama
+  // supaya balik ke sisi kotoba (bukan mundur ke arah sebaliknya)
+  if(flipped){
+    flipStep++;
+    flipped = false;
+  }
+  applyTransform();
+}
+
+function updateBadges(){
+  document.getElementById('learningCount').textContent = learningCount;
+  document.getElementById('knowCount').textContent = knowCount;
+}
+function bumpBadge(type){
+  const badge = document.getElementById(type === 'learning' ? 'learningBadge' : 'knowBadge');
+  const countSpan = document.getElementById(type === 'learning' ? 'learningCount' : 'knowCount');
+  badge.classList.add('qbump');
+  countSpan.textContent = '+1';
+  setTimeout(() => {
+    updateBadges();
+    badge.classList.remove('qbump');
+  }, 500);
+}
+
+function animateSwipeTransition(dir, onMidpoint){
+  const flipInner = document.getElementById('flipInner');
+  flipInner.style.transition = 'transform .35s ease, opacity .35s ease';
+  flipInner.style.opacity = '0.15';
+  flipInner.style.transform = `translateX(${dir*760}px) rotateZ(${dir*24}deg) rotateX(${flipStep*180}deg)`;
+
+  setTimeout(() => {
+    onMidpoint();
+    if(flipStep % 2 !== 0) flipStep++; // pastikan menetap di sisi depan
+    flipped = false;
+    dragX = 0;
+
+    // tempatkan kartu baru instan di sisi berlawanan tanpa transisi
+    flipInner.style.transition = 'none';
+    flipInner.style.transform = `translateX(${-dir*760}px) rotateZ(${-dir*24}deg) rotateX(${flipStep*180}deg)`;
+    setShellGlow(null, 0);
+    render();
+    void flipInner.offsetWidth;
+
+    // geser masuk ke tengah
+    flipInner.style.transition = 'transform .35s ease, opacity .35s ease';
+    flipInner.style.opacity = '1';
+    flipInner.style.transform = `translateX(0px) rotateZ(0deg) rotateX(${flipStep*180}deg)`;
+    setTimeout(() => { flipInner.style.transition = ''; }, 360);
+  }, 350);
+}
+
+function commitSwipe(action){
+  const dir = action === 'know' ? 1 : -1;
+  const color = action === 'know' ? '#4de6ac' : '#ff9a4d';
+  setShellGlow(color, 1);
+  animateSwipeTransition(dir, () => {
+    history.push({idx, action});
+    if(action === 'know'){ knowCount++; bumpBadge('know'); }
+    else { learningCount++; bumpBadge('learning'); }
+    // announce result for assistive tech
+    announce(action === 'know' ? 'Ditandai: Tahu' : 'Ditandai: Masih dipelajari');
+    idx = (idx + 1) % order.length;
+  });
+}
+
+function snapBack(){
+  const flipInner = document.getElementById('flipInner');
+  flipInner.style.transition = 'transform .3s ease';
+  dragX = 0;
+  applyTransform();
+  setShellGlow(null, 0);
+  setTimeout(() => { flipInner.style.transition = ''; }, 310);
+}
+function goTo(newIdx){
+  if(newIdx < 0 || newIdx >= order.length) return;
+  const goingNext = newIdx > idx;
+  const wrap = document.getElementById('slideWrap');
+
+  // 1) kartu (kotoba + arti) lama geser keluar ke arah tujuan
+  wrap.classList.remove('qslide-hidden-left','qslide-hidden-right');
+  wrap.classList.add(goingNext ? 'qslide-hidden-left' : 'qslide-hidden-right');
+
+  setTimeout(() => {
+    idx = newIdx;
+    resetToFront();
+    render();
+
+    // 2) tempatkan kartu baru di sisi berlawanan tanpa transisi (instan)
+    wrap.style.transition = 'none';
+    wrap.classList.remove('qslide-hidden-left','qslide-hidden-right');
+    wrap.classList.add(goingNext ? 'qslide-hidden-right' : 'qslide-hidden-left');
+    void wrap.offsetWidth; // paksa reflow
+
+    // 3) lalu geser masuk ke tengah dengan transisi normal
+    wrap.style.transition = '';
+    wrap.classList.remove('qslide-hidden-left','qslide-hidden-right');
+  }, 220);
+}
+function toggleStar(e){
+  e.stopPropagation();
+  const id = currentTerm().id;
+  starred.has(id) ? starred.delete(id) : starred.add(id);
+  render();
+}
+
+document.getElementById('flipInner').addEventListener('pointerdown', (e) => {
+  if(!trackProgress) return;
+  dragging = true;
+  dragStartX = e.clientX;
+  const el = document.getElementById('flipInner');
+  el.setPointerCapture(e.pointerId);
+  el.style.transition = 'none';
+});
+document.getElementById('flipInner').addEventListener('pointermove', (e) => {
+  if(!dragging) return;
+  dragX = e.clientX - dragStartX;
+  if(Math.abs(dragX) > 5) suppressClick = true;
+  applyTransform();
+  const intensity = Math.min(Math.abs(dragX)/DRAG_THRESHOLD, 1);
+  if(dragX < -10) setShellGlow('#ff9a4d', intensity);
+  else if(dragX > 10) setShellGlow('#4de6ac', intensity);
+  else setShellGlow(null, 0);
+});
+document.getElementById('flipInner').addEventListener('pointerup', () => {
+  if(!dragging) return;
+  dragging = false;
+  const el = document.getElementById('flipInner');
+  el.style.transition = 'transform .3s ease';
+  if(dragX <= -DRAG_THRESHOLD) commitSwipe('learning');
+  else if(dragX >= DRAG_THRESHOLD) commitSwipe('know');
+  else snapBack();
+});
+document.getElementById('flipInner').addEventListener('click', () => {
+  if(suppressClick){ suppressClick = false; return; }
+  flip();
+});
+// keyboard support for the flip area (Enter / Space)
+const flipEl = document.getElementById('flipInner');
+if(flipEl){
+  flipEl.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(idx-1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(idx+1));
+document.getElementById('xBtn').addEventListener('click', () => commitSwipe('learning'));
+document.getElementById('checkBtn').addEventListener('click', () => commitSwipe('know'));
+document.getElementById('undoBtn').addEventListener('click', () => {
+  const last = history.pop();
+  if(!last) return;
+  if(last.action === 'know') knowCount = Math.max(0, knowCount-1);
+  else learningCount = Math.max(0, learningCount-1);
+  updateBadges();
+  idx = last.idx;
+  flipped = false;
+  dragX = 0;
+  applyTransform();
+  render();
+});
+document.getElementById('starBtnFront').addEventListener('click', toggleStar);
+document.getElementById('starBtnBack').addEventListener('click', toggleStar);
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  order = shuffle(order);
+  idx = 0;
+  resetToFront();
+  render();
+});
+document.getElementById('restartBtn').addEventListener('click', () => {
+  order = set.terms.map(t => t.id);
+  idx = 0;
+  resetToFront();
+  render();
+});
+document.getElementById('progressToggle').addEventListener('click', function(){
+  trackProgress = !trackProgress;
+  this.classList.toggle('on', trackProgress);
+  document.getElementById('trackBar').style.display = trackProgress ? 'flex' : 'none';
+  document.getElementById('navArrows').style.display = trackProgress ? 'none' : 'flex';
+  document.getElementById('navTrack').style.display = trackProgress ? 'flex' : 'none';
+  document.getElementById('restartBtn').style.display = trackProgress ? 'none' : 'flex';
+  document.getElementById('undoBtn').style.display = trackProgress ? 'flex' : 'none';
+  if(trackProgress){
+    learningCount = 0; knowCount = 0; history = [];
+    updateBadges();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if(e.code === 'Space'){ e.preventDefault(); flip(); }
+  else if(e.code === 'ArrowRight'){ goTo(idx+1); }
+  else if(e.code === 'ArrowLeft'){ goTo(idx-1); }
+});
+
+render();
+})();
+</script>
+</body>
+</html>
