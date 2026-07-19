@@ -322,7 +322,7 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qhead{ position:absolute;left:50%;top:16px;transform:translateX(-50%);text-align:center;color:#fff }
 .dark-theme .qhead .qnum{ font-size:13px;font-weight:700;opacity:.85 }
 .dark-theme .qhead .qtitle{ font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;margin-top:2px }
-.dark-theme .qtopright{ position:absolute;right:28px;top:24px;width:320px }
+.dark-theme .qtopright{ display:flex;align-items:center;gap:10px;width:auto }
 .dark-theme .qprogress-mini{ height:3px;background:#2b2657;border-radius:999px;overflow:hidden }
 .dark-theme .qprogress-mini-fill{ height:100%;background:#5b8def;transition:width .25s ease }
 .dark-theme .qtrackbar{ display:flex;justify-content:space-between;align-items:center;margin-bottom:16px }
@@ -365,8 +365,7 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qplay,.dark-theme .qshuffle{ width:50px;height:50px;border-radius:50%;border:none;background:#232752;color:#cfd3ec;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,background .15s ease,color .15s ease }
 .dark-theme .qplay:hover,.dark-theme .qshuffle:hover{ background:#2f356b;color:#fff;transform:translateY(-2px) scale(1.05) }
 .dark-theme .qplay:active,.dark-theme .qshuffle:active{ transform:translateY(0) scale(.96) }
-.dark-theme .qtopright{ display:block }
-@media(max-width:720px){ .dark-theme .qtopright{ display:none } .dark-theme .qhead{ position:static;transform:none;margin-bottom:14px } .dark-theme .qtopbar{ flex-direction:column;align-items:flex-start;gap:14px } .dark-theme .qflip3d{ height:400px } .dark-theme .qcard-body{ padding:24px } .dark-theme .qcard-body .qtext{ font-size:26px } .dark-theme .qbottom{ flex-wrap:wrap;gap:14px;padding:14px } }
+@media(max-width:720px){ .dark-theme .qhead{ position:static;transform:none;margin-bottom:14px } .dark-theme .qtopbar{ flex-direction:column;align-items:flex-start;gap:14px } .dark-theme .qflip3d{ height:400px } .dark-theme .qcard-body{ padding:24px } .dark-theme .qcard-body .qtext{ font-size:26px } .dark-theme .qbottom{ flex-wrap:wrap;gap:14px;padding:14px } }
 
 /* Dark-theme: create page overrides */
 .dark-theme .cwrap{ max-width:1450px;margin:0 auto;padding:28px 32px 60px }
@@ -563,7 +562,6 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qflip3d{ height:clamp(320px, 62vh, 610px); }
 @media(max-width:900px){
   .dark-theme .qwrap{ margin-top:16px; }
-  .dark-theme .qtopright{ display:none; }
   .dark-theme .qhead{ position:static; transform:none; margin:0 0 12px; }
   .dark-theme .qtopbar{ flex-direction:column; align-items:flex-start; gap:10px; padding:16px 18px 0; }
 }
@@ -573,8 +571,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qhead{ margin:0 0 6px; }
   .dark-theme .qhead .qnum{ font-size:10px; }
   .dark-theme .qhead .qtitle{ font-size:10px; }
-  .dark-theme .qflip3d{ height:min(50vh, 300px); }
-  .dark-theme .qcard-body{ padding:12px; }
+  .dark-theme .qflip3d{ height:min(48vh, 280px); }
+  .dark-theme .qcard-body{ padding:12px; min-height:120px; }
   .dark-theme .qcard-body .qtext{ font-size:clamp(15px,4.5vw,20px); }
   .dark-theme .qcard-shell{ border-radius:12px; }
   .dark-theme .qcard-top{ padding:8px 12px; }
@@ -590,6 +588,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qtoggle::after{ width:14px; height:14px; top:2px; left:2px; }
   .dark-theme .qtoggle.on::after{ left:16px; }
   .dark-theme .qbadge{ font-size:10px; padding:3px 8px; gap:4px; }
+  .dark-theme .qwrap{ margin-top:20px; padding:0 12px 20px; }
+  .dark-theme .qtrackbar{ gap:6px; margin-bottom:10px; }
 }
 @media(max-height:640px) and (orientation:landscape){
   .dark-theme .qflip3d{ height:min(70vh, 300px); }
@@ -729,8 +729,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qhead{ margin:0 0 4px; }
   .dark-theme .qhead .qnum{ font-size:9px; }
   .dark-theme .qhead .qtitle{ font-size:9px; }
-  .dark-theme .qflip3d{ height:200px; }
-  .dark-theme .qcard-body{ padding:8px; }
+  .dark-theme .qflip3d{ height:min(45vh, 220px); }
+  .dark-theme .qcard-body{ padding:8px; min-height:100px; }
   .dark-theme .qcard-body .qtext{ font-size:14px; line-height:1.25; }
   .dark-theme .qcard-shell{ border-radius:10px; }
   .dark-theme .qcard-top{ padding:6px 10px; }
@@ -744,6 +744,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qtoggle::after{ width:12px; height:12px; top:2px; left:2px; }
   .dark-theme .qtoggle.on::after{ left:14px; }
   .dark-theme .qbadge{ font-size:9px; padding:2px 6px; }
+  .dark-theme .qwrap{ margin-top:12px; padding:0 10px 16px; }
+  .dark-theme .qtrackbar{ gap:4px; margin-bottom:8px; }
 
   /* learn.html: kuis */
   .dark-theme .container{ padding:8px 8px 30px; margin-top:8px; }
@@ -841,14 +843,15 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   /* flashcard */
   .dark-theme .qtopbar{ padding:6px 8px 0; }
   .dark-theme .qtopbar .logo{ font-size:11px; }
-  .dark-theme .qflip3d{ height:170px; }
-  .dark-theme .qcard-body{ padding:6px; }
+  .dark-theme .qflip3d{ height:min(42vh, 180px); }
+  .dark-theme .qcard-body{ padding:6px; min-height:80px; }
   .dark-theme .qcard-body .qtext{ font-size:13px; }
   .dark-theme .qflipbar{ font-size:9px; padding:5px; }
   .dark-theme .qbottom{ padding:5px 6px; gap:4px; border-radius:8px; }
   .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:26px; height:26px; font-size:10px; }
   .dark-theme .qcard-top{ padding:5px 8px; }
   .dark-theme .qicons button{ font-size:12px; }
+  .dark-theme .qwrap{ margin-top:8px; padding:0 8px 12px; }
 
   /* learn */
   .dark-theme .question-card{ padding:8px 6px !important; border-radius:8px !important; }
