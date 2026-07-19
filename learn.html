@@ -26,7 +26,7 @@
 
     <div class="learn-head">
       <div class="study-title" id="setTitle"></div>
-      <div id="sessionBadge" style="background: #232752; color: #9db4ff; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 99px; border: 1px solid #34306e; white-space: nowrap;">
+      <div id="sessionBadge">
         Sesi 1 dari 5 — Istilah → Definisi
       </div>
       <div class="progressbar" style="display:none;"><div class="progressbar-fill" id="progressFill"></div></div>
@@ -221,24 +221,24 @@ function renderQuestion(){
       <div class="question-box">
         <div class="question-eyebrow">
           <span>${isTermToDef ? 'Istilah' : 'Definisi'}</span>
-          <button class="speaker-btn" id="speakBtn" title="Dengarkan pelafalan" aria-label="Dengarkan pelafalan" style="background: none; border: none; color: #cfd3ec; cursor: pointer; padding: 0; display: inline-flex; align-items: center; font-size: 15px; vertical-align: middle;">
+          <button class="speaker-btn" id="speakBtn" title="Dengarkan pelafalan" aria-label="Dengarkan pelafalan">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
           </button>
         </div>
-        <div class="question-term" style="font-size: 28px; font-weight: 700; color: #fff; margin: 16px 0 24px;">
+        <div class="question-term">
           ${escapeHtml(isTermToDef ? current.term : current.def)}
         </div>
-        <div class="question-prompt" style="color: #9aa0c7; font-weight: 700; margin: 14px 0 10px;">Pilih jawaban yang tepat</div>
+        <div class="question-prompt">Pilih jawaban yang tepat</div>
       </div>
 
       <div class="choices" id="choicesWrap"></div>
 
       <div class="question-footer">
-        <span class="flag" style="font-size: 16px; margin-right: 2px;">⚐</span>
+        <span class="flag">⚐</span>
         <a class="dont-know" href="#">Tidak tahu jawabannya?</a>
       </div>
 
-      <div style="display:flex;justify-content:center;margin-top:20px">
+      <div class="question-next-wrap">
         <button class="btn btn-primary" id="nextQBtn" style="display:none">Lanjut →</button>
       </div>
     </div>
@@ -364,10 +364,10 @@ function renderSummary(){
   const isFinalSession = (currentSession === TOTAL_SESSIONS);
 
   area.innerHTML = `
-    <div class="learn-summary" style="text-align: center; padding: 40px 20px;">
-      <div class="score-circle" style="width: 130px; height: 130px; border-radius: 50%; border: 8px solid #6a5cff; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; font-weight: 800; color: #ffffff;">${pct}%</div>
+      <div class="learn-summary">
+      <div class="score-circle">${pct}%</div>
       <h2>Sesi ${currentSession} Selesai!</h2>
-      <p class="page-sub" style="color: #9aa0c7; margin-bottom: 24px;">
+      <p class="page-sub">
         ${correctCount} dari ${total} jawaban benar. 
         ${missed.length === 0 
           ? 'Sempurna! Semua jawaban benar di sesi ini.' 
@@ -378,12 +378,12 @@ function renderSummary(){
         <h3 style="color: #0fb07a; margin-bottom: 20px;">🎉 Selamat! Anda telah menyelesaikan seluruh ${TOTAL_SESSIONS} Sesi latihan!</h3>
       ` : ''}
 
-      <div class="learn-actions" style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+      <div class="learn-actions">
         ${missed.length > 0 ? '<button class="btn btn-primary" id="retryMissedBtn">Ulangi yang salah</button>' : ''}
         
         ${isFinalSession 
           ? '<button class="btn btn-outline" id="restartSessionsBtn">Mulai Ulang Sesi 1</button>'
-          : `<button class="btn btn-outline" id="nextSessionBtn" style="background: #6a5cff; color: #fff; border-color: #6a5cff;">Lanjut ke Sesi ${currentSession + 1} →</button>`
+          : `<button class="btn btn-primary" id="nextSessionBtn">Lanjut ke Sesi ${currentSession + 1} →</button>`
         }
         
         <a class="btn btn-ghost" href="index.html">Ke Beranda</a>

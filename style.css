@@ -283,6 +283,12 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .question-term{ font-size:32px; font-weight:700; color:#fff; margin:16px 0 28px; line-height:1.3 }
 .dark-theme .question-prompt{ color:#9aa0c7; margin:14px 0 10px; font-weight:700; font-size:14px }
 
+.dark-theme #sessionBadge{ background:#232752; color:#9db4ff; font-weight:700; font-size:13px; padding:6px 14px; border-radius:99px; border:1px solid #34306e; white-space:nowrap }
+
+.dark-theme .learn-summary{text-align:center;padding:40px 20px}
+.dark-theme .score-circle{width:130px;height:130px;border-radius:50%;border:8px solid #6a5cff;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;font-weight:800;color:#fff}
+.dark-theme .page-sub{color:#9aa0c7;margin-bottom:24px}
+
 .dark-theme .choices{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:10px }
 .dark-theme .choice{ background:#2f3750; border:1px solid #34306e; padding:20px 24px; border-radius:12px; display:flex; align-items:center; cursor:pointer; color:#ffffff; font-size:16px; font-weight:600 }
 .dark-theme .choice:hover{ border-color:#4a4590; background:#353d5a }
@@ -291,7 +297,11 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .choice.wrong{ background:#3b1620; border-color:#8f3a3a; color:#ffd6d6 }
 
 .dark-theme .question-footer{ display:flex; align-items:center; justify-content:flex-end; margin-top:28px; gap:8px; color:#9aa0c7 }
-.dark-theme .dont-know{ color:#9aa0c7; font-weight:700 }
+.dark-theme .question-footer .dont-know{ color:#9aa0c7; font-weight:700 }
+.dark-theme .question-next-wrap{ display:flex; justify-content:center; margin-top:20px }
+.dark-theme .speaker-btn{ background:none; border:none; color:#cfd3ec; cursor:pointer; padding:0; display:inline-flex; align-items:center; font-size:15px; vertical-align:middle }
+.dark-theme .speaker-btn:hover{ color:#fff }
+.dark-theme .flag{ font-size:16px; margin-right:2px }
 
 @media(max-width:900px){
   .dark-theme .question-card{ padding:32px }
@@ -574,3 +584,174 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 /* ---- teks pada chip/badge kecil: boleh wrap normal, JANGAN dipaksa satu baris
    di layar sangat sempit supaya tidak overflow ke luar kartu ---- */
 .iterm-chip,.term-chip{ white-space:normal; }
+
+/* =========================================================
+   PERBAIKAN MOBILE LANJUTAN (≤400px & ≤360px)
+   ========================================================= */
+
+/* ---- Ukuran dasar untuk layar ≤400px ---- */
+@media(max-width:400px){
+  body{ font-size:14px; }
+  .main-header .logo{ font-size:18px; }
+  .ibtn,.btn,.cbtn{ font-size:12px; padding:10px 14px; min-height:38px; }
+  .ibtn:active,.btn:active,.cbtn:active{ transform:scale(.97); }
+
+  /* index.html: hero & dashboard */
+  .hero-copy h1{ font-size:1.5rem !important; }
+  .hero-text{ font-size:13px !important; line-height:1.6 !important; }
+  .hero-panel{ padding:0 16px 14px; gap:14px; }
+  .hero-card{ padding:16px; border-radius:18px; }
+  .hero-card h2{ font-size:17px; }
+  .feature-chip{ padding:12px; }
+  .feature-chip strong{ font-size:13px; }
+  .feature-chip span{ font-size:12px; }
+  .dash-card{ padding:14px 16px; }
+  .dash-card strong{ font-size:1.4rem; }
+  .dash-card .label{ font-size:10px; }
+  .dash-card span{ font-size:12px; }
+  .icontainer{ padding:0 16px 50px; }
+  .overview-row{ gap:10px; }
+
+  /* sets.html: kartu set */
+  .iset-card{ padding:14px; min-height:unset; }
+  .iset-card h3{ font-size:16px; }
+  .iset-card p{ font-size:12.5px; min-height:unset; }
+  .iset-card-meta{ gap:6px; }
+  .iset-count,.iset-badge{ font-size:10.5px; padding:3px 8px; }
+  .iterm-chip{ font-size:12px; padding:8px 10px; gap:6px; }
+  .set-number{ width:28px; height:28px; font-size:11px; }
+
+  /* create.html: form & card rows */
+  .cfield-box{ font-size:14px !important; padding:12px 14px !important; }
+  textarea.cfield-box{ min-height:44px; }
+  .crow{ padding:14px; gap:10px; }
+  .crow-num{ width:26px; height:26px; font-size:12px; }
+  .crow-tools button{ width:30px; height:30px; font-size:14px; }
+  .cinput-group input{ font-size:13px; padding:10px 12px; }
+  .cinput-group label{ font-size:10px; }
+  .caddcard-btn{ font-size:12px; padding:10px 22px; }
+  .cimport-box{ padding:14px; }
+  .cimport-box p{ font-size:12px; }
+  .header-actions .ibtn{ font-size:11px; padding:8px 12px; }
+
+  /* flashcard.html: kartu 3D */
+  .dark-theme .qtopbar{ padding:12px 14px 0; }
+  .dark-theme .qtopbar .logo{ font-size:14px; }
+  .dark-theme .qhead{ margin:0 0 8px; }
+  .dark-theme .qhead .qnum{ font-size:11px; }
+  .dark-theme .qhead .qtitle{ font-size:11px; }
+  .dark-theme .qflip3d{ height:240px; }
+  .dark-theme .qcard-body{ padding:10px; }
+  .dark-theme .qcard-body .qtext{ font-size:17px; line-height:1.3; }
+  .dark-theme .qcard-shell{ border-radius:12px; }
+  .dark-theme .qflipbar{ font-size:12px; padding:10px; }
+  .dark-theme .qbottom{ padding:8px 10px; gap:6px; border-radius:14px; }
+  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:36px; height:36px; font-size:13px; }
+  .dark-theme .qnav-center{ gap:8px; }
+  .dark-theme .qright-tools{ gap:6px; }
+  .dark-theme .qtoggle{ width:34px; height:20px; }
+  .dark-theme .qtoggle::after{ width:16px; height:16px; top:2px; left:2px; }
+  .dark-theme .qtoggle.on::after{ left:16px; }
+  .dark-theme .qtoggle-wrap span{ font-size:12px; }
+  .dark-theme .qbadge{ font-size:11px; padding:4px 10px; }
+  .dark-theme .qcard-top{ padding:10px 14px; }
+  .dark-theme .qicons button{ font-size:16px; }
+
+  /* learn.html: kuis */
+  .dark-theme .container{ padding:14px 10px 40px; margin-top:14px; }
+  .dark-theme .seg-left,.dark-theme .seg-right{ width:32px; height:32px; font-size:12px; }
+  .dark-theme .seg-line{ height:8px; }
+  .study-title{ font-size:16px; }
+  .dark-theme .question-card{ padding:14px 10px !important; border-radius:14px !important; }
+  .dark-theme .question-box{ margin-bottom:16px; }
+  .dark-theme .question-eyebrow{ font-size:11px; }
+  .dark-theme .question-term{ font-size:20px !important; margin:10px 0 16px !important; line-height:1.3; }
+  .dark-theme .question-prompt{ font-size:12px; margin:10px 0 8px; }
+  .dark-theme .choice{ padding:12px 14px; font-size:13px; border-radius:10px; }
+  .choice-num{ width:28px; font-size:13px; margin-right:10px; }
+  .dark-theme .question-footer{ margin-top:20px; font-size:12px; }
+  .dark-theme .question-footer .dont-know{ font-size:12px; }
+  .score-circle{ width:90px; height:90px; font-size:20px; border-width:6px; }
+  .learn-actions{ flex-direction:column; align-items:stretch; gap:8px; }
+  .learn-actions .btn,.learn-actions a{ width:100%; text-align:center; }
+  .learn-actions .btn{ font-size:13px; padding:10px 16px; }
+  .question-card{ font-size:14px; }
+  .learn-summary h2{ font-size:18px; margin-bottom:8px; }
+  .learn-summary p{ font-size:13px; }
+  #sessionBadge{ font-size:10px !important; padding:4px 8px !important; }
+
+  /* login.html */
+  .auth-card{ padding:18px 14px; }
+  .auth-title{ font-size:18px; }
+  .auth-sub{ font-size:12px; }
+  .auth-field label{ font-size:12px; }
+  .auth-field input{ font-size:13px; padding:11px 12px; }
+  .auth-submit{ font-size:13px; padding:12px 14px; }
+  .auth-tab{ font-size:12px; padding:9px 10px; }
+  .auth-brand .logo{ font-size:18px; }
+
+  /* notification & confirm */
+  .notification-host{ left:10px; right:10px; top:10px; }
+  .notification{ font-size:12.5px; padding:10px 12px; border-radius:12px; }
+  .confirm-card{ padding:16px; border-radius:16px; }
+  .confirm-message{ font-size:13px; margin-bottom:14px; }
+  .confirm-actions{ gap:8px; }
+}
+
+/* ---- Layar ekstra kecil ≤360px ---- */
+@media(max-width:360px){
+  body{ font-size:13px; }
+  .main-header{ padding:14px 12px 10px; }
+  .main-header .logo{ font-size:16px; }
+  .ibtn,.btn,.cbtn{ font-size:11px; padding:8px 10px; min-height:36px; }
+  .header-actions{ gap:8px; }
+  .header-actions .ibtn,.header-actions .btn{ flex:1; min-width:0; }
+
+  /* index.html */
+  .hero-copy h1{ font-size:1.35rem !important; }
+  .hero-text{ font-size:12px !important; }
+  .hero-card{ padding:14px; }
+  .hero-card h2{ font-size:15px; }
+  .feature-chip{ padding:10px; }
+  .dash-card{ padding:12px 14px; }
+  .dash-card strong{ font-size:1.2rem; }
+
+  /* sets */
+  .iset-card{ padding:12px; gap:12px; }
+  .iset-card h3{ font-size:15px; }
+  .iset-card p{ font-size:12px; }
+  .iset-card-actions{ flex-direction:column; align-items:stretch; }
+  .iset-card-actions a,.iset-card-actions button{ width:100%; text-align:center; padding:10px; }
+  .iterm-chip{ font-size:11px; padding:6px 8px; }
+
+  /* create */
+  .cfield-box{ font-size:13px !important; padding:10px 12px !important; }
+  .crow{ padding:12px; }
+  .cinput-group input{ font-size:12px; }
+  .cinput-group label{ font-size:9px; }
+
+  /* flashcard */
+  .dark-theme .qflip3d{ height:200px; }
+  .dark-theme .qcard-body .qtext{ font-size:15px; }
+  .dark-theme .qbottom{ padding:6px 8px; border-radius:10px; }
+  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:32px; height:32px; font-size:12px; }
+  .dark-theme .qflipbar{ font-size:11px; padding:8px; }
+  .dark-theme .qcard-top{ padding:8px 10px; }
+  .dark-theme .qicons button{ font-size:14px; }
+
+  /* learn */
+  .dark-theme .question-card{ padding:12px 8px !important; }
+  .dark-theme .question-term{ font-size:18px !important; margin:8px 0 12px !important; }
+  .dark-theme .choice{ padding:10px 12px; font-size:12px; }
+  .choice-num{ width:24px; font-size:12px; margin-right:8px; }
+  .score-circle{ width:80px; height:80px; font-size:18px; }
+  .learn-summary h2{ font-size:16px; }
+  .learn-summary p{ font-size:12px; }
+  .dark-theme .seg-left,.dark-theme .seg-right{ width:28px; height:28px; font-size:11px; }
+
+  /* login */
+  .auth-card{ padding:14px 10px; border-radius:16px; }
+  .auth-title{ font-size:16px; }
+  .auth-brand .logo{ font-size:16px; }
+  .auth-brand{ margin-bottom:16px; }
+}
