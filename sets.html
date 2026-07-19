@@ -22,7 +22,8 @@
 
     .main-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 28px 18px;max-width:1080px;margin:0 auto;}
     .header-brand{display:flex;flex-direction:column;gap:8px;}
-    .main-header .logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;}
+    .main-header .logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;display:flex;align-items:center;gap:6px;}
+    .main-header .logo .dot{width:9px;height:9px;border-radius:50%;background:#6a5cff;}
     .main-header .tagline{margin:0;color:#98a6d1;font-size:13px;max-width:520px;line-height:1.7;}
     .header-actions{display:flex;gap:12px;flex-wrap:wrap;}
 
@@ -101,13 +102,12 @@
 <body>
   <header class="main-header">
     <div class="header-brand">
-      <a href="index.html" class="logo">FlashCardStudy</a>
+      <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
       <p class="tagline">Semua set flashcard kamu ditampilkan di sini.</p>
     </div>
     <div class="header-actions">
       <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
       <a class="ibtn ibtn-primary" href="create.html">Buat set baru</a>
-      <button type="button" class="ibtn ibtn-outline" onclick="logout()">Keluar</button>
     </div>
   </header>
 
@@ -171,7 +171,8 @@
               ).join('')}
             </div>
             <div class="iset-card-actions">
-              <a class="ibtn ibtn-primary" href="learn.html?id=${set.id}">Mulai</a>
+              <a class="ibtn ibtn-outline" href="flashcard.html?id=${set.id}">Flashcard</a>
+              <a class="ibtn ibtn-primary" href="learn.html?id=${set.id}">Pelajari</a>
               <button class="ibtn ibtn-danger" onclick="handleDelete('${set.id}')">Hapus</button>
             </div>
           </div>`;
