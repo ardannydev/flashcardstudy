@@ -313,9 +313,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 }
 
 /* Dark-theme: flashcard page overrides */
-/* Hide scrollbars for the dedicated flashcard page (restores previous behavior) */
-.dark-theme.flashcard-page{ overflow: hidden; }
-.dark-theme .qtopbar{ display:flex;align-items:center;gap:10px;padding:16px 28px;color:#fff;position:relative }
+.dark-theme.flashcard-page{ overflow:hidden; height:100vh; display:flex; flex-direction:column; }
+.dark-theme .qtopbar{ display:flex;align-items:center;gap:10px;padding:16px 28px;color:#fff;position:relative;flex-shrink:0 }
 .dark-theme .qtopbar .logo2{ display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;cursor:pointer }
 .dark-theme .qtopbar .logo2 .sq{ width:20px;height:20px;border-radius:5px;background:linear-gradient(135deg,#6a5cff,#3fd3ff) }
 .dark-theme .qtopbar .chev{ opacity:.7;font-size:12px;margin-left:2px }
@@ -330,12 +329,12 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qbadge-learning{ color:#ff9a4d;border-color:#ff9a4d }
 .dark-theme .qbadge-know{ color:#4de6ac;border-color:#4de6ac }
 .dark-theme .qbadge.qbump{ transform:scale(1.12) }
-.dark-theme .qwrap{ max-width:1020px;margin:70px auto 0;padding:0 24px 40px }
-.dark-theme .qslide{ transition:transform .25s ease, opacity .25s ease }
+.dark-theme .qwrap{ max-width:1020px;margin:0 auto;padding:20px 24px 24px;flex:1;display:flex;flex-direction:column;min-height:0 }
+.dark-theme .qslide{ transition:transform .25s ease, opacity .25s ease;flex:1;min-height:0;display:flex;flex-direction:column }
 .dark-theme .qslide-hidden-left{ transform:translateX(-50px);opacity:0 }
 .dark-theme .qslide-hidden-right{ transform:translateX(50px);opacity:0 }
-.dark-theme .qscene{ perspective:1800px }
-.dark-theme .qflip3d{ position:relative;height:610px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.45,.05,.15,1);cursor:pointer;user-select:none;touch-action:pan-y;transform:rotateX(0deg) }
+.dark-theme .qscene{ perspective:1800px;flex:1;min-height:0 }
+.dark-theme .qflip3d{ position:relative;flex:1;min-height:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.45,.05,.15,1);cursor:pointer;user-select:none;touch-action:pan-y;transform:rotateX(0deg) }
 .dark-theme .qcard-shell{ position:absolute;inset:0;backface-visibility:hidden;background:#2b2f52;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35);display:flex;flex-direction:column;border:2px solid transparent }
 .dark-theme .qcard-shell.qshell-back{ transform:rotateX(180deg) }
 .dark-theme .qcard-top{ display:flex;justify-content:flex-end;align-items:center;padding:16px 22px;color:#cfd3ec;font-size:14px;font-weight:700 }
@@ -346,7 +345,7 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qcard-body{ flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px }
 .dark-theme .qcard-body .qtext{ color:#fff;font-size:38px;font-weight:500;line-height:1.4 }
 .dark-theme .qflipbar{ text-align:center;background:#3a3fce;color:#fff;font-weight:700;font-size:14px;padding:14px;letter-spacing:.01em }
-.dark-theme .qbottom{ display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:16px 24px;background:#1c1a42;border:1px solid #34306e;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.3) }
+.dark-theme .qbottom{ display:flex;align-items:center;justify-content:space-between;margin-top:0;padding:16px 24px;background:#1c1a42;border:1px solid #34306e;border-radius:18px;box-shadow:0 12px 30px rgba(0,0,0,.3);flex-shrink:0 }
 .dark-theme .qtoggle-wrap{ display:flex;align-items:center;gap:10px;color:#e3e5f7;font-weight:700;font-size:14px }
 .dark-theme .qtoggle{ width:40px;height:23px;border-radius:999px;background:#3a3f66;position:relative;cursor:pointer;border:none;transition:background .2s ease }
 .dark-theme .qtoggle::after{ content:'';position:absolute;top:2.5px;left:2.5px;width:18px;height:18px;border-radius:50%;background:#cfd3ec;transition:left .2s ease,background .2s ease }
@@ -365,7 +364,7 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 .dark-theme .qplay,.dark-theme .qshuffle{ width:50px;height:50px;border-radius:50%;border:none;background:#232752;color:#cfd3ec;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s ease,background .15s ease,color .15s ease }
 .dark-theme .qplay:hover,.dark-theme .qshuffle:hover{ background:#2f356b;color:#fff;transform:translateY(-2px) scale(1.05) }
 .dark-theme .qplay:active,.dark-theme .qshuffle:active{ transform:translateY(0) scale(.96) }
-@media(max-width:720px){ .dark-theme .qhead{ position:static;transform:none;margin-bottom:14px } .dark-theme .qtopbar{ flex-direction:column;align-items:flex-start;gap:14px } .dark-theme .qflip3d{ height:400px } .dark-theme .qcard-body{ padding:24px } .dark-theme .qcard-body .qtext{ font-size:26px } .dark-theme .qbottom{ flex-wrap:wrap;gap:14px;padding:14px } }
+@media(max-width:720px){ .dark-theme .qhead{ position:static;transform:none;margin-bottom:14px } .dark-theme .qtopbar{ flex-direction:column;align-items:flex-start;gap:14px } .dark-theme .qcard-body{ padding:24px } .dark-theme .qcard-body .qtext{ font-size:26px } .dark-theme .qbottom{ flex-wrap:wrap;gap:14px;padding:14px } }
 
 /* Dark-theme: create page overrides */
 .dark-theme .cwrap{ max-width:1450px;margin:0 auto;padding:28px 32px 60px }
@@ -559,9 +558,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 }
 
 /* ---- flashcard.html: 3D card scene ---- */
-.dark-theme .qflip3d{ height:clamp(320px, 62vh, 610px); }
 @media(max-width:900px){
-  .dark-theme .qwrap{ margin-top:16px; }
+  .dark-theme .qwrap{ margin-top:0; padding:10px 18px 16px; }
   .dark-theme .qhead{ position:static; transform:none; margin:0 0 12px; }
   .dark-theme .qtopbar{ flex-direction:column; align-items:flex-start; gap:10px; padding:16px 18px 0; }
 }
@@ -571,7 +569,6 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qhead{ margin:0 0 6px; }
   .dark-theme .qhead .qnum{ font-size:10px; }
   .dark-theme .qhead .qtitle{ font-size:10px; }
-  .dark-theme .qflip3d{ height:min(48vh, 280px); }
   .dark-theme .qcard-body{ padding:12px; min-height:120px; }
   .dark-theme .qcard-body .qtext{ font-size:clamp(15px,4.5vw,20px); }
   .dark-theme .qcard-shell{ border-radius:12px; }
@@ -588,12 +585,11 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qtoggle::after{ width:14px; height:14px; top:2px; left:2px; }
   .dark-theme .qtoggle.on::after{ left:16px; }
   .dark-theme .qbadge{ font-size:10px; padding:3px 8px; gap:4px; }
-  .dark-theme .qwrap{ margin-top:20px; padding:0 12px 20px; }
-  .dark-theme .qtrackbar{ gap:6px; margin-bottom:10px; }
+  .dark-theme .qwrap{ padding:8px 12px 12px; }
+  .dark-theme .qtrackbar{ gap:6px; margin-bottom:8px; }
 }
 @media(max-height:640px) and (orientation:landscape){
-  .dark-theme .qflip3d{ height:min(70vh, 300px); }
-  .dark-theme .qwrap{ margin-top:8px; }
+  .dark-theme .qwrap{ padding:6px 12px 10px; }
 }
 
 /* ---- login.html: small phones ---- */
@@ -729,7 +725,6 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qhead{ margin:0 0 4px; }
   .dark-theme .qhead .qnum{ font-size:9px; }
   .dark-theme .qhead .qtitle{ font-size:9px; }
-  .dark-theme .qflip3d{ height:min(45vh, 220px); }
   .dark-theme .qcard-body{ padding:8px; min-height:100px; }
   .dark-theme .qcard-body .qtext{ font-size:14px; line-height:1.25; }
   .dark-theme .qcard-shell{ border-radius:10px; }
@@ -744,8 +739,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qtoggle::after{ width:12px; height:12px; top:2px; left:2px; }
   .dark-theme .qtoggle.on::after{ left:14px; }
   .dark-theme .qbadge{ font-size:9px; padding:2px 6px; }
-  .dark-theme .qwrap{ margin-top:12px; padding:0 10px 16px; }
-  .dark-theme .qtrackbar{ gap:4px; margin-bottom:8px; }
+  .dark-theme .qwrap{ padding:6px 10px 10px; }
+  .dark-theme .qtrackbar{ gap:4px; margin-bottom:6px; }
 
   /* learn.html: kuis */
   .dark-theme .container{ padding:8px 8px 30px; margin-top:8px; }
@@ -843,7 +838,6 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   /* flashcard */
   .dark-theme .qtopbar{ padding:6px 8px 0; }
   .dark-theme .qtopbar .logo{ font-size:11px; }
-  .dark-theme .qflip3d{ height:min(42vh, 180px); }
   .dark-theme .qcard-body{ padding:6px; min-height:80px; }
   .dark-theme .qcard-body .qtext{ font-size:13px; }
   .dark-theme .qflipbar{ font-size:9px; padding:5px; }
@@ -851,7 +845,7 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:26px; height:26px; font-size:10px; }
   .dark-theme .qcard-top{ padding:5px 8px; }
   .dark-theme .qicons button{ font-size:12px; }
-  .dark-theme .qwrap{ margin-top:8px; padding:0 8px 12px; }
+  .dark-theme .qwrap{ padding:4px 8px 8px; }
 
   /* learn */
   .dark-theme .question-card{ padding:8px 6px !important; border-radius:8px !important; }
