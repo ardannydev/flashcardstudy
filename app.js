@@ -1,13 +1,19 @@
 /* ---------- penyimpanan data (localStorage) ---------- */
 const STORE_KEY = 'qz_sets_v1';
 
+function isLocalMode(){
+  const h = location.hostname;
+  return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || location.port === '5500';
+}
+
 function getSets(){
   try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
   catch(e){ return []; }
 }
 function saveSets(sets){
   localStorage.setItem(STORE_KEY, JSON.stringify(sets));
-  return pushSetsToServer(sets);
+  if(!isLocalMode()) return pushSetsToServer(sets);
+  return Promise.resolve();
 }
 
 /* ---------- Autentikasi & sinkronisasi akun (Vercel KV) ---------- */
@@ -31,6 +37,10 @@ function clearAuth(){
 }
 // Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login.
 function requireLogin(){
+  if(isLocalMode()){
+    if(!getToken()) setAuth('local_dev_token', 'dev');
+    return true;
+  }
   if(!getToken()){
     location.href = 'login.html';
     return false;
@@ -58,6 +68,7 @@ async function apiFetch(path, options={}){
 // Ambil data set milik akun dari server lalu simpan ke localStorage.
 // Dipanggil sekali di awal tiap halaman (setelah requireLogin) sebelum data dibaca.
 async function syncSetsFromServer(){
+  if(isLocalMode()) return getSets();
   try{
     const res = await apiFetch('/api/sets');
     if(!res.ok) return getSets();
@@ -72,7 +83,8 @@ async function syncSetsFromServer(){
 
 // Kirim seluruh data set ke server (dipanggil otomatis tiap kali saveSets() dipanggil).
 async function pushSetsToServer(sets){
-  if(!getToken()) return; // belum login, biarkan lokal saja (mis. saat di login.html)
+  if(isLocalMode()) return Promise.resolve();
+  if(!getToken()) return;
   const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets }) });
   if(!res.ok){
     const msg = await res.text().catch(() => '');

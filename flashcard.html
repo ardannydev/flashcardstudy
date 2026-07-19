@@ -16,7 +16,6 @@
       <div class="qtitle" id="setTitle"></div>
     </div>
     <div class="qtopright">
-      <a href="index.html" class="qshuffle" title="Kembali" aria-label="Kembali" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">←</a>
       <div class="qprogress-mini"><div class="qprogress-mini-fill" id="progressFill"></div></div>
     </div>
   </div>
@@ -81,10 +80,6 @@
 
 <script src="app.js"></script>
 <script>
-(async function(){
-if(!requireLogin()) return;
-await syncSetsFromServer();
-
 const setId = qs('id');
 const set = getSet(setId);
 
@@ -345,7 +340,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 render();
-})();
 </script>
 </body>
 </html>

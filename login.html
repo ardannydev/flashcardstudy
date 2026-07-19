@@ -159,6 +159,14 @@ loginForm.addEventListener('submit', async (e) => {
   if(!username || !password){ showError('Username dan password wajib diisi.'); return; }
 
   btn.disabled = true; btn.textContent = 'Memproses...';
+
+  if(isLocalMode()){
+    setAuth('local_dev_token', username);
+    location.href = 'index.html';
+    btn.disabled = false; btn.textContent = 'Masuk';
+    return;
+  }
+
   try{
     const res = await fetch('/api/login', {
       method: 'POST',
@@ -188,6 +196,14 @@ registerForm.addEventListener('submit', async (e) => {
   if(password !== password2){ showError('Password dan ulangi password tidak sama.'); return; }
 
   btn.disabled = true; btn.textContent = 'Memproses...';
+
+  if(isLocalMode()){
+    setAuth('local_dev_token', username);
+    location.href = 'index.html';
+    btn.disabled = false; btn.textContent = 'Daftar';
+    return;
+  }
+
   try{
     const res = await fetch('/api/register', {
       method: 'POST',

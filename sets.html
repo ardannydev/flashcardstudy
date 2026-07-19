@@ -3,103 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Set Kamu — FlashCardStudy</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body{
-      background:#0e0b2e;
-      background-image:
-        radial-gradient(circle at top left, rgba(106,92,255,.18) 0%, transparent 35%),
-        radial-gradient(circle at bottom right, rgba(63,211,255,.12) 0%, transparent 30%),
-        linear-gradient(180deg,#0e0b2e 0%,#0b0823 100%);
-      color:#fff;
-      font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
-      min-height:100vh;
-      margin:0;
-    }
-    *{box-sizing:border-box;}
-    a,button{outline:none;text-decoration:none;font-family:inherit;}
-
-    .main-header{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px 28px 18px;max-width:1080px;margin:0 auto;}
-    .header-brand{display:flex;flex-direction:column;gap:8px;}
-    .main-header .logo{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px;display:flex;align-items:center;gap:6px;}
-    .main-header .logo .dot{width:9px;height:9px;border-radius:50%;background:#6a5cff;}
-    .main-header .tagline{margin:0;color:#98a6d1;font-size:13px;max-width:520px;line-height:1.7;}
-    .header-actions{display:flex;gap:12px;flex-wrap:wrap;}
-
-    .page-header{max-width:1080px;margin:0 auto;padding:0 28px 24px;}
-    .page-header h1{margin:0;color:#fff;font-size:32px;line-height:1.1;}
-    .page-header p{margin:10px 0 0;color:#b3bee8;font-size:15px;line-height:1.7;max-width:680px;}
-
-    .icontainer{max-width:1080px;margin:0 auto;padding:0 24px 60px;}
-    .section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 auto 18px;max-width:1080px;}
-    .section-header h2{margin:0;color:#fff;font-size:24px;}
-    .section-sub{margin:6px 0 0;color:#8f9ad7;font-size:14px;line-height:1.6;}
-
-    .iset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;}
-    .iset-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px 24px;box-shadow:0 18px 60px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:18px;min-height:180px;}
-    .iset-card:hover{border-color:#4a4590;}
-    .iset-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
-    .set-number{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(80,108,255,.14);color:#d7dcff;font-size:13px;font-weight:700;flex-shrink:0;}
-    .iset-card h3{margin:0;font-size:19px;color:#fff;}
-    .iset-card p{margin:8px 0 0;color:#b3bee8;font-size:14px;min-height:42px;}
-    .iset-card-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-    .iterm-preview{display:flex;flex-wrap:wrap;gap:10px;line-height:1.5;}
-    .iterm-chip{background:rgba(255,255,255,.06);color:#d7dcff;font-size:13px;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.08);}
-    .iterm-chip b{color:#fff;}
-    .iset-count{background:rgba(74,79,224,.14);color:#a7b5ff;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;}
-    .iset-badge{background:rgba(255,111,57,.14);color:#ffb78f;font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;}
-    .iset-card-actions{display:flex;flex-wrap:wrap;gap:10px;}
-
-    .ibtn{border:none;border-radius:999px;padding:12px 18px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s ease,background .15s ease,color .15s ease;}
-    .ibtn:active{transform:scale(.97);}
-    .ibtn-primary{background:#506cff;color:#fff;}
-    .ibtn-primary:hover{background:#6b7cff;}
-    .ibtn-outline{background:transparent;color:#94b8ff;border:1.5px solid rgba(74,79,224,.35);}
-    .ibtn-outline:hover{background:rgba(74,79,224,.08);}
-    .ibtn-danger{background:transparent;color:#ff8a73;border:1.5px solid rgba(255,111,57,.35);}
-    .ibtn-danger:hover{background:rgba(255,111,57,.1);}
-
-    .iempty{text-align:center;padding:80px 20px;color:#9aa0c7;}
-    .iempty h2{color:#fff;margin-bottom:8px;}
-
-    @media(max-width:740px){.main-header{flex-direction:column;align-items:flex-start;padding:22px 20px 18px;} .page-header h1{font-size:28px;} }
-    @media(max-width:560px){.page-header h1{font-size:24px;} .page-header p{font-size:14px;} .iset-card{padding:20px;}}
-    @media(max-width:400px){
-      .main-header{padding:10px 10px 8px;}
-      .main-header .logo{font-size:14px;}
-      .main-header .tagline{font-size:9.5px;}
-      .ibtn{font-size:10px;padding:6px 8px;}
-      .page-header{padding:0 10px 10px;}
-      .page-header h1{font-size:1.15rem!important;}
-      .page-header p{font-size:11px;}
-      .icontainer{padding:0 10px 30px;}
-      .iset-grid{gap:8px;}
-      .iset-card{padding:10px;min-height:unset;gap:8px;}
-      .iset-card h3{font-size:13px;}
-      .iset-card p{font-size:10.5px;min-height:unset;}
-      .iset-count,.iset-badge{font-size:9px;padding:2px 6px;}
-      .iterm-chip{font-size:10px;padding:4px 6px;}
-      .set-number{width:22px;height:22px;font-size:9px;}
-      .iset-card-actions{gap:4px;}
-      .iset-card-actions .ibtn{font-size:9.5px;padding:6px 10px;}
-    }
-    @media(max-width:360px){
-      .main-header{padding:8px 8px 6px;}
-      .main-header .logo{font-size:12px;}
-      .ibtn{font-size:9px;padding:5px 7px;}
-      .page-header h1{font-size:1.05rem!important;}
-      .iset-card{padding:8px;gap:6px;}
-      .iset-card h3{font-size:12px;}
-      .iset-card p{font-size:9.5px;}
-      .iset-card-actions{flex-direction:column;align-items:stretch;}
-      .iset-card-actions a,.iset-card-actions button{width:100%;text-align:center;padding:7px;font-size:9.5px;}
-      .iterm-chip{font-size:9px;padding:3px 5px;}
-      .iset-count,.iset-badge{font-size:8px;padding:2px 5px;}
-    }
-  </style>
+<title>Set Kamu — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="dark-theme">
   <header class="main-header">
     <div class="header-brand">
       <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
