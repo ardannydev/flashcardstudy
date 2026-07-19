@@ -221,7 +221,7 @@ function parseBulk(){
   }
 }
 
-function handleSave(andPractice){
+async function handleSave(andPractice){
   const title = document.getElementById('title').value.trim();
   const desc = document.getElementById('desc').value.trim();
   const cleanTerms = rows
@@ -254,8 +254,18 @@ function handleSave(andPractice){
     terms: termsWithMeta,
     updatedAt: Date.now()
   };
-  upsertSet(set);
-  location.href = andPractice ? `learn.html?id=${set.id}` : 'index.html';
+
+  const saveBtn = document.querySelector('.ibtn-primary');
+  const originalLabel = saveBtn ? saveBtn.textContent : null;
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = 'Menyimpan...'; }
+
+  try{
+    await upsertSet(set); // tunggu sampai benar-benar tersimpan ke server sebelum pindah halaman
+    location.href = andPractice ? `learn.html?id=${set.id}` : 'index.html';
+  }catch(e){
+    createNotification('Gagal menyimpan set ke server. Coba lagi.', 'error');
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = originalLabel; }
+  }
 }
 
 // muat data jika mode edit

@@ -150,11 +150,16 @@
       const set = getSet(id);
       if(!set) return;
       showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
-        .then(confirmed => {
+        .then(async confirmed => {
           if(!confirmed) return;
-          deleteSet(id);
-          renderSets();
-          createNotification('Set berhasil dihapus.', 'success');
+          try{
+            await deleteSet(id);
+            renderSets();
+            createNotification('Set berhasil dihapus.', 'success');
+          }catch(e){
+            renderSets();
+            createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
+          }
         });
     }
 

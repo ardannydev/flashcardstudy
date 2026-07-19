@@ -7,7 +7,7 @@ function getSets(){
 }
 function saveSets(sets){
   localStorage.setItem(STORE_KEY, JSON.stringify(sets));
-  pushSetsToServer(sets);
+  return pushSetsToServer(sets);
 }
 
 /* ---------- Autentikasi & sinkronisasi akun (Vercel KV) ---------- */
@@ -73,10 +73,10 @@ async function syncSetsFromServer(){
 // Kirim seluruh data set ke server (dipanggil otomatis tiap kali saveSets() dipanggil).
 async function pushSetsToServer(sets){
   if(!getToken()) return; // belum login, biarkan lokal saja (mis. saat di login.html)
-  try{
-    await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets }) });
-  }catch(e){
-    console.warn('Gagal menyimpan ke server, perubahan hanya tersimpan lokal untuk saat ini.', e);
+  const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets }) });
+  if(!res.ok){
+    const msg = await res.text().catch(() => '');
+    throw new Error('Gagal menyimpan ke server: ' + res.status + ' ' + msg);
   }
 }
 function getSet(id){
@@ -86,10 +86,10 @@ function upsertSet(set){
   const sets = getSets();
   const i = sets.findIndex(s => s.id === set.id);
   if(i >= 0) sets[i] = set; else sets.unshift(set);
-  saveSets(sets);
+  return saveSets(sets);
 }
 function deleteSet(id){
-  saveSets(getSets().filter(s => s.id !== id));
+  return saveSets(getSets().filter(s => s.id !== id));
 }
 function uid(prefix='id'){
   return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
@@ -247,5 +247,5 @@ function updateReviewForTerm(setId, termId, quality){
   if(!term) return;
   ensureReviewMeta(term);
   sm2Update(term._review, quality);
-  upsertSet(set);
+  upsertSet(set).catch(e => console.warn('Gagal menyimpan progres review ke server (tersimpan lokal).', e));
 }
