@@ -469,24 +469,39 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .hero-panel{ padding:0 20px 20px; gap:18px; }
 }
 @media(max-width:480px){
-  .main-header .logo{ font-size:20px; }
-  .hero-panel{ padding:0 16px 16px; }
-  .hero-card{ padding:20px; border-radius:20px; }
-  .overview-row{ grid-template-columns:1fr; }
-  .dash-card{ padding:18px 20px; }
-  .dash-card strong{ font-size:1.7rem; }
-  .icontainer{ padding:0 16px 60px; }
+  .main-header .logo{ font-size:16px; }
+  .hero-panel{ padding:0 14px 10px; gap:10px; }
+  .hero-card{ padding:12px; border-radius:14px; }
+  .hero-card h2{ font-size:15px; }
+  .feature-grid{ gap:8px; }
+  .feature-chip{ padding:8px; gap:4px; }
+  .feature-chip strong{ font-size:12px; }
+  .feature-chip span{ font-size:11px; line-height:1.5; }
+  .overview-row{ grid-template-columns:1fr; gap:8px; }
+  .dash-card{ padding:10px 12px; }
+  .dash-card strong{ font-size:1.3rem; }
+  .dash-card .label{ font-size:9px; }
+  .dash-card span{ font-size:11px; }
+  .icontainer{ padding:0 14px 36px; }
 }
 
 /* ---- sets.html / index-style set grids ---- */
 .iset-grid{ grid-template-columns:repeat(auto-fit, minmax(min(280px,100%), 1fr)); }
 @media(max-width:480px){
-  .iset-grid{ grid-template-columns:1fr; gap:14px; }
-  .iset-card{ padding:18px; min-height:unset; }
-  .iset-card h3{ font-size:17px; }
-  .page-header h1{ font-size:1.6rem !important; }
-  .page-header{ padding:0 16px 18px !important; }
-  .icontainer{ padding:0 16px 50px !important; }
+  .iset-grid{ grid-template-columns:1fr; gap:10px; }
+  .iset-card{ padding:12px; min-height:unset; gap:10px; }
+  .iset-card h3{ font-size:14px; }
+  .iset-card p{ font-size:11.5px; min-height:unset; }
+  .iset-card-meta{ gap:5px; }
+  .iset-count,.iset-badge{ font-size:10px; padding:2px 7px; }
+  .iterm-chip{ font-size:11px; padding:5px 7px; gap:4px; }
+  .set-number{ width:24px; height:24px; font-size:10px; }
+  .iset-card-actions{ gap:6px; }
+  .iset-card-actions .ibtn{ font-size:11px; padding:7px 12px; }
+  .page-header h1{ font-size:1.3rem !important; }
+  .page-header p{ font-size:12px; }
+  .page-header{ padding:0 14px 12px !important; }
+  .icontainer{ padding:0 14px 36px !important; }
 }
 @media(max-width:360px){
   .iset-card-actions{ flex-direction:column; align-items:stretch; }
@@ -495,23 +510,50 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 
 /* ---- create.html: form rows, import box ---- */
 @media(max-width:480px){
-  .dark-theme .cwrap{ padding:14px 12px 44px; }
-  .main-header .tagline{ font-size:12px; }
-  .dark-theme .cfield-box{ padding:13px 14px; font-size:15px; }
-  .crow{ padding:14px; }
+  .dark-theme .cwrap{ padding:10px 10px 32px; }
+  .main-header .tagline{ font-size:10.5px; }
+  .dark-theme .cfield-box{ padding:10px 12px; font-size:13px; }
+  textarea.cfield-box{ min-height:38px; }
+  .crow{ padding:10px; gap:8px; }
+  .crow-num{ width:22px; height:22px; font-size:10px; }
+  .crow-tools{ gap:6px; }
+  .crow-tools button{ width:26px; height:26px; font-size:12px; }
+  .crow-inputs{ gap:10px; }
+  .cinput-group input{ font-size:12px; padding:8px 10px; }
+  .cinput-group label{ font-size:9px; }
+  .caddcard-btn{ font-size:11px; padding:8px 18px; }
+  .cimport-box{ padding:10px; }
+  .cimport-box p{ font-size:11px; }
   .cimport-grid{ grid-template-columns:1fr !important; }
-  .header-actions .ibtn{ font-size:12px; padding:10px 14px; }
+  .cimport-grid textarea{ min-height:70px; font-size:12px; padding:8px 10px; }
+  .cimport-grid select{ font-size:12px; padding:8px 10px; }
+  .header-actions .ibtn{ font-size:10.5px; padding:7px 10px; }
+  .dark-theme .crow-inputs{ gap:10px; }
+  .cpublic{ font-size:11px; padding:6px 10px; }
 }
 
 /* ---- learn.html: quiz card & choices ---- */
 @media(max-width:480px){
-  .dark-theme .qwrap{ padding:0 14px 30px; }
-  .dark-theme .question-card{ padding:20px 16px; border-radius:16px; }
-  .dark-theme .question-term{ font-size:clamp(19px,5vw,24px) !important; margin:12px 0 18px !important; }
-  .dark-theme .choice{ padding:14px 16px; font-size:14px; }
-  #sessionBadge{ font-size:11px !important; padding:5px 10px !important; white-space:normal !important; }
-  .seg-left,.seg-right,.dark-theme .seg-left,.dark-theme .seg-right{ width:36px; height:36px; font-size:13px; }
-  .score-circle{ width:100px; height:100px; font-size:22px; }
+  .dark-theme .qwrap{ padding:0 10px 20px; }
+  .dark-theme .question-card{ padding:14px 10px; border-radius:12px; }
+  .dark-theme .question-term{ font-size:clamp(16px,4.5vw,20px) !important; margin:8px 0 12px !important; line-height:1.3; }
+  .dark-theme .question-eyebrow{ font-size:10px; }
+  .dark-theme .question-prompt{ font-size:11px; margin:8px 0 6px; }
+  .dark-theme .choice{ padding:10px 10px; font-size:12px; border-radius:8px; }
+  .choice-num{ width:24px; font-size:11px; margin-right:8px; }
+  .dark-theme .question-footer{ margin-top:14px; font-size:11px; }
+  #sessionBadge{ font-size:9px !important; padding:3px 7px !important; white-space:normal !important; }
+  .seg-left,.seg-right,.dark-theme .seg-left,.dark-theme .seg-right{ width:28px; height:28px; font-size:11px; }
+  .dark-theme .seg-line{ height:6px; }
+  .score-circle{ width:70px; height:70px; font-size:18px; border-width:5px; }
+  .dark-theme .container{ margin-top:12px; padding:10px; }
+  .study-title{ font-size:14px; }
+  .learn-summary{ padding:20px 10px; }
+  .learn-summary h2{ font-size:16px; margin-bottom:6px; }
+  .learn-summary p{ font-size:12px; }
+  .learn-actions{ gap:8px; }
+  .learn-actions .btn{ font-size:12px; padding:8px 14px; }
+  .speaker-btn{ font-size:13px; }
 }
 @media(max-width:360px){
   .dark-theme .question-card{ padding:16px 12px; }
@@ -526,14 +568,28 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   .dark-theme .qtopbar{ flex-direction:column; align-items:flex-start; gap:10px; padding:16px 18px 0; }
 }
 @media(max-width:480px){
-  .dark-theme .qflip3d{ height:min(58vh, 380px); }
-  .dark-theme .qcard-body{ padding:18px; }
-  .dark-theme .qcard-body .qtext{ font-size:clamp(18px,5.5vw,24px); }
-  .dark-theme .qbottom{ padding:12px; gap:10px; }
-  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:42px; height:42px; font-size:15px; }
-  .dark-theme .qnav-center{ gap:10px; }
-  .dark-theme .qright-tools{ gap:8px; }
+  .dark-theme .qtopbar{ padding:10px 12px 0; gap:8px; }
+  .dark-theme .qtopbar .logo{ font-size:13px; }
+  .dark-theme .qhead{ margin:0 0 6px; }
+  .dark-theme .qhead .qnum{ font-size:10px; }
+  .dark-theme .qhead .qtitle{ font-size:10px; }
+  .dark-theme .qflip3d{ height:min(50vh, 300px); }
+  .dark-theme .qcard-body{ padding:12px; }
+  .dark-theme .qcard-body .qtext{ font-size:clamp(15px,4.5vw,20px); }
+  .dark-theme .qcard-shell{ border-radius:12px; }
+  .dark-theme .qcard-top{ padding:8px 12px; }
+  .dark-theme .qicons button{ font-size:15px; }
+  .dark-theme .qflipbar{ font-size:11px; padding:8px; }
+  .dark-theme .qbottom{ padding:8px; gap:6px; border-radius:12px; }
+  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:34px; height:34px; font-size:13px; }
+  .dark-theme .qnav-center{ gap:6px; }
+  .dark-theme .qright-tools{ gap:5px; }
+  .dark-theme .qtoggle-wrap{ font-size:11px; gap:6px; }
   .dark-theme .qtoggle-wrap span{ display:none; }
+  .dark-theme .qtoggle{ width:32px; height:18px; }
+  .dark-theme .qtoggle::after{ width:14px; height:14px; top:2px; left:2px; }
+  .dark-theme .qtoggle.on::after{ left:16px; }
+  .dark-theme .qbadge{ font-size:10px; padding:3px 8px; gap:4px; }
 }
 @media(max-height:640px) and (orientation:landscape){
   .dark-theme .qflip3d{ height:min(70vh, 300px); }
@@ -542,15 +598,29 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 
 /* ---- login.html: small phones ---- */
 @media(max-width:400px){
-  .auth-wrap{ padding:14px; }
-  .auth-card{ padding:22px 18px; border-radius:20px; }
-  .auth-title{ font-size:19px; }
+  .auth-wrap{ padding:10px; }
+  .auth-brand{ margin-bottom:12px; }
+  .auth-brand .logo{ font-size:16px; }
+  .auth-card{ padding:16px 12px; border-radius:16px; }
+  .auth-title{ font-size:16px; }
+  .auth-sub{ font-size:11px; margin-bottom:14px; }
+  .auth-tabs{ padding:4px; margin-bottom:16px; }
+  .auth-tab{ font-size:11px; padding:8px 8px; }
+  .auth-field{ margin-bottom:10px; }
+  .auth-field label{ font-size:11px; }
+  .auth-field input{ font-size:12px; padding:10px 11px; }
+  .auth-submit{ font-size:12px; padding:10px 12px; }
+  .auth-note{ font-size:10px; margin-top:12px; }
 }
 
 /* ---- notifications & confirm dialogs never overflow narrow screens ---- */
 @media(max-width:480px){
-  .notification-host{ left:12px; right:12px; top:12px; max-width:calc(100vw - 24px); }
-  .confirm-card{ padding:20px; }
+  .notification-host{ left:8px; right:8px; top:8px; max-width:calc(100vw - 16px); }
+  .notification{ font-size:11.5px; padding:8px 10px; border-radius:10px; }
+  .confirm-card{ padding:14px; border-radius:14px; }
+  .confirm-message{ font-size:12px; margin-bottom:10px; }
+  .confirm-actions{ gap:6px; }
+  .confirm-card .btn{ min-width:80px; font-size:12px; padding:8px 12px; }
 }
 
 /* ---- perbaikan mendasar: elemen teks di dalam flex/grid HARUS bisa menyusut
@@ -571,14 +641,14 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 
 /* ---- ukuran teks dasar dinaikkan sedikit di layar sempit agar tetap nyaman dibaca ---- */
 @media(max-width:480px){
-  body{ font-size:15px; }
-  .set-card p,.iset-card p{ font-size:13.5px; line-height:1.55; }
-  .term-chip,.iterm-chip{ font-size:12.5px; }
-  .iset-count,.iset-badge{ font-size:11.5px; }
+  body{ font-size:13px; }
+  .set-card p,.iset-card p{ font-size:11.5px; line-height:1.45; }
+  .term-chip,.iterm-chip{ font-size:11px; }
+  .iset-count,.iset-badge{ font-size:10px; }
 }
 @media(max-width:340px){
-  .hero-copy h1{ font-size:1.55rem; }
-  .header-actions .ibtn,.header-actions .btn{ font-size:11.5px; padding:9px 10px; }
+  .hero-copy h1{ font-size:1.3rem; }
+  .header-actions .ibtn,.header-actions .btn{ font-size:10.5px; padding:7px 8px; }
 }
 
 /* ---- teks pada chip/badge kecil: boleh wrap normal, JANGAN dipaksa satu baris
@@ -591,167 +661,212 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
 
 /* ---- Ukuran dasar untuk layar ≤400px ---- */
 @media(max-width:400px){
-  body{ font-size:14px; }
-  .main-header .logo{ font-size:18px; }
-  .ibtn,.btn,.cbtn{ font-size:12px; padding:10px 14px; min-height:38px; }
+  body{ font-size:12px; }
+  .main-header{ padding:10px 10px 8px; }
+  .main-header .logo{ font-size:15px; }
+  .main-header .tagline{ font-size:10px; }
+  .ibtn,.btn,.cbtn{ font-size:11px; padding:7px 10px; min-height:34px; }
   .ibtn:active,.btn:active,.cbtn:active{ transform:scale(.97); }
 
   /* index.html: hero & dashboard */
-  .hero-copy h1{ font-size:1.5rem !important; }
-  .hero-text{ font-size:13px !important; line-height:1.6 !important; }
-  .hero-panel{ padding:0 16px 14px; gap:14px; }
-  .hero-card{ padding:16px; border-radius:18px; }
-  .hero-card h2{ font-size:17px; }
-  .feature-chip{ padding:12px; }
-  .feature-chip strong{ font-size:13px; }
-  .feature-chip span{ font-size:12px; }
-  .dash-card{ padding:14px 16px; }
-  .dash-card strong{ font-size:1.4rem; }
-  .dash-card .label{ font-size:10px; }
-  .dash-card span{ font-size:12px; }
-  .icontainer{ padding:0 16px 50px; }
-  .overview-row{ gap:10px; }
+  .hero-copy h1{ font-size:1.25rem !important; }
+  .hero-copy .eyebrow{ font-size:10px; margin-bottom:8px; }
+  .hero-text{ font-size:11px !important; line-height:1.5 !important; }
+  .hero-panel{ padding:0 10px 8px; gap:8px; }
+  .hero-card{ padding:10px; border-radius:12px; }
+  .hero-card h2{ font-size:13px; }
+  .feature-grid{ gap:6px; }
+  .feature-chip{ padding:7px; gap:3px; }
+  .feature-chip strong{ font-size:11px; }
+  .feature-chip span{ font-size:10px; }
+  .dash-card{ padding:8px 10px; }
+  .dash-card strong{ font-size:1.1rem; }
+  .dash-card .label{ font-size:8px; }
+  .dash-card span{ font-size:10px; }
+  .icontainer{ padding:0 10px 30px; }
+  .overview-row{ gap:6px; }
 
   /* sets.html: kartu set */
-  .iset-card{ padding:14px; min-height:unset; }
-  .iset-card h3{ font-size:16px; }
-  .iset-card p{ font-size:12.5px; min-height:unset; }
-  .iset-card-meta{ gap:6px; }
-  .iset-count,.iset-badge{ font-size:10.5px; padding:3px 8px; }
-  .iterm-chip{ font-size:12px; padding:8px 10px; gap:6px; }
-  .set-number{ width:28px; height:28px; font-size:11px; }
+  .iset-grid{ gap:8px; }
+  .iset-card{ padding:10px; min-height:unset; gap:8px; }
+  .iset-card h3{ font-size:13px; }
+  .iset-card p{ font-size:10.5px; min-height:unset; }
+  .iset-card-meta{ gap:4px; }
+  .iset-count,.iset-badge{ font-size:9px; padding:2px 6px; }
+  .iterm-chip{ font-size:10px; padding:4px 6px; gap:3px; }
+  .set-number{ width:22px; height:22px; font-size:9px; }
+  .iset-card-actions{ gap:4px; }
+  .iset-card-actions .ibtn{ font-size:10px; padding:6px 10px; }
+  .page-header{ padding:0 10px 10px !important; }
+  .page-header h1{ font-size:1.15rem !important; }
+  .page-header p{ font-size:11px; }
 
   /* create.html: form & card rows */
-  .cfield-box{ font-size:14px !important; padding:12px 14px !important; }
-  textarea.cfield-box{ min-height:44px; }
-  .crow{ padding:14px; gap:10px; }
-  .crow-num{ width:26px; height:26px; font-size:12px; }
-  .crow-tools button{ width:30px; height:30px; font-size:14px; }
-  .cinput-group input{ font-size:13px; padding:10px 12px; }
-  .cinput-group label{ font-size:10px; }
-  .caddcard-btn{ font-size:12px; padding:10px 22px; }
-  .cimport-box{ padding:14px; }
-  .cimport-box p{ font-size:12px; }
-  .header-actions .ibtn{ font-size:11px; padding:8px 12px; }
+  .dark-theme .cwrap{ padding:8px 8px 28px; }
+  .cfield-box{ font-size:12px !important; padding:8px 10px !important; }
+  textarea.cfield-box{ min-height:34px; }
+  .crow{ padding:8px; gap:6px; border-radius:12px; }
+  .crow-num{ width:20px; height:20px; font-size:9px; border-radius:50%; }
+  .crow-tools{ gap:5px; }
+  .crow-tools button{ width:24px; height:24px; font-size:11px; }
+  .crow-body{ gap:8px; }
+  .crow-inputs{ gap:8px; }
+  .cinput-group{ gap:5px; }
+  .cinput-group input{ font-size:11px; padding:7px 9px; border-radius:6px; }
+  .cinput-group label{ font-size:8px; }
+  .caddcard-btn{ font-size:10px; padding:7px 16px; }
+  .cpublic{ font-size:10px; padding:5px 8px; }
+  .cimport-box{ padding:8px; }
+  .cimport-box p{ font-size:10px; }
+  .cimport-grid textarea{ min-height:60px; font-size:11px; padding:6px 8px; }
+  .cimport-grid select{ font-size:11px; padding:6px 8px; }
+  .cimport-grid label{ font-size:9px; }
+  .header-actions .ibtn{ font-size:10px; padding:6px 8px; }
 
   /* flashcard.html: kartu 3D */
-  .dark-theme .qtopbar{ padding:12px 14px 0; }
-  .dark-theme .qtopbar .logo{ font-size:14px; }
-  .dark-theme .qhead{ margin:0 0 8px; }
-  .dark-theme .qhead .qnum{ font-size:11px; }
-  .dark-theme .qhead .qtitle{ font-size:11px; }
-  .dark-theme .qflip3d{ height:240px; }
-  .dark-theme .qcard-body{ padding:10px; }
-  .dark-theme .qcard-body .qtext{ font-size:17px; line-height:1.3; }
-  .dark-theme .qcard-shell{ border-radius:12px; }
-  .dark-theme .qflipbar{ font-size:12px; padding:10px; }
-  .dark-theme .qbottom{ padding:8px 10px; gap:6px; border-radius:14px; }
-  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:36px; height:36px; font-size:13px; }
-  .dark-theme .qnav-center{ gap:8px; }
-  .dark-theme .qright-tools{ gap:6px; }
-  .dark-theme .qtoggle{ width:34px; height:20px; }
-  .dark-theme .qtoggle::after{ width:16px; height:16px; top:2px; left:2px; }
-  .dark-theme .qtoggle.on::after{ left:16px; }
-  .dark-theme .qtoggle-wrap span{ font-size:12px; }
-  .dark-theme .qbadge{ font-size:11px; padding:4px 10px; }
-  .dark-theme .qcard-top{ padding:10px 14px; }
-  .dark-theme .qicons button{ font-size:16px; }
+  .dark-theme .qtopbar{ padding:8px 10px 0; }
+  .dark-theme .qtopbar .logo{ font-size:12px; }
+  .dark-theme .qhead{ margin:0 0 4px; }
+  .dark-theme .qhead .qnum{ font-size:9px; }
+  .dark-theme .qhead .qtitle{ font-size:9px; }
+  .dark-theme .qflip3d{ height:200px; }
+  .dark-theme .qcard-body{ padding:8px; }
+  .dark-theme .qcard-body .qtext{ font-size:14px; line-height:1.25; }
+  .dark-theme .qcard-shell{ border-radius:10px; }
+  .dark-theme .qcard-top{ padding:6px 10px; }
+  .dark-theme .qicons button{ font-size:13px; }
+  .dark-theme .qflipbar{ font-size:10px; padding:6px; }
+  .dark-theme .qbottom{ padding:6px 8px; gap:5px; border-radius:10px; }
+  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:30px; height:30px; font-size:11px; }
+  .dark-theme .qnav-center{ gap:5px; }
+  .dark-theme .qright-tools{ gap:4px; }
+  .dark-theme .qtoggle{ width:28px; height:16px; }
+  .dark-theme .qtoggle::after{ width:12px; height:12px; top:2px; left:2px; }
+  .dark-theme .qtoggle.on::after{ left:14px; }
+  .dark-theme .qbadge{ font-size:9px; padding:2px 6px; }
 
   /* learn.html: kuis */
-  .dark-theme .container{ padding:14px 10px 40px; margin-top:14px; }
-  .dark-theme .seg-left,.dark-theme .seg-right{ width:32px; height:32px; font-size:12px; }
-  .dark-theme .seg-line{ height:8px; }
-  .study-title{ font-size:16px; }
-  .dark-theme .question-card{ padding:14px 10px !important; border-radius:14px !important; }
-  .dark-theme .question-box{ margin-bottom:16px; }
-  .dark-theme .question-eyebrow{ font-size:11px; }
-  .dark-theme .question-term{ font-size:20px !important; margin:10px 0 16px !important; line-height:1.3; }
-  .dark-theme .question-prompt{ font-size:12px; margin:10px 0 8px; }
-  .dark-theme .choice{ padding:12px 14px; font-size:13px; border-radius:10px; }
-  .choice-num{ width:28px; font-size:13px; margin-right:10px; }
-  .dark-theme .question-footer{ margin-top:20px; font-size:12px; }
-  .dark-theme .question-footer .dont-know{ font-size:12px; }
-  .score-circle{ width:90px; height:90px; font-size:20px; border-width:6px; }
-  .learn-actions{ flex-direction:column; align-items:stretch; gap:8px; }
-  .learn-actions .btn,.learn-actions a{ width:100%; text-align:center; }
-  .learn-actions .btn{ font-size:13px; padding:10px 16px; }
-  .question-card{ font-size:14px; }
-  .learn-summary h2{ font-size:18px; margin-bottom:8px; }
-  .learn-summary p{ font-size:13px; }
-  #sessionBadge{ font-size:10px !important; padding:4px 8px !important; }
+  .dark-theme .container{ padding:8px 8px 30px; margin-top:8px; }
+  .dark-theme .seg-left,.dark-theme .seg-right{ width:24px; height:24px; font-size:10px; }
+  .dark-theme .seg-line{ height:5px; }
+  .study-title{ font-size:12px; }
+  #sessionBadge{ font-size:8px !important; padding:2px 6px !important; }
+  .dark-theme .question-card{ padding:10px 8px !important; border-radius:10px !important; }
+  .dark-theme .question-box{ margin-bottom:10px; }
+  .dark-theme .question-eyebrow{ font-size:9px; }
+  .dark-theme .question-term{ font-size:16px !important; margin:6px 0 10px !important; }
+  .dark-theme .question-prompt{ font-size:10px; margin:6px 0 4px; }
+  .dark-theme .choice{ padding:8px 8px; font-size:11px; border-radius:6px; }
+  .choice-num{ width:20px; font-size:10px; margin-right:6px; }
+  .dark-theme .question-footer{ margin-top:10px; font-size:10px; }
+  .dark-theme .question-footer .dont-know{ font-size:10px; }
+  .score-circle{ width:60px; height:60px; font-size:16px; border-width:4px; }
+  .learn-summary{ padding:16px 8px; }
+  .learn-summary h2{ font-size:14px; margin-bottom:4px; }
+  .learn-summary p{ font-size:11px; }
+  .learn-actions{ gap:6px; }
+  .learn-actions .btn{ font-size:11px; padding:7px 12px; }
+  .speaker-btn{ font-size:12px; }
+  .flag{ font-size:13px; }
 
   /* login.html */
-  .auth-card{ padding:18px 14px; }
-  .auth-title{ font-size:18px; }
-  .auth-sub{ font-size:12px; }
-  .auth-field label{ font-size:12px; }
-  .auth-field input{ font-size:13px; padding:11px 12px; }
-  .auth-submit{ font-size:13px; padding:12px 14px; }
-  .auth-tab{ font-size:12px; padding:9px 10px; }
-  .auth-brand .logo{ font-size:18px; }
+  .auth-wrap{ padding:8px; }
+  .auth-brand{ margin-bottom:10px; }
+  .auth-brand .logo{ font-size:14px; }
+  .auth-card{ padding:12px 10px; border-radius:14px; }
+  .auth-title{ font-size:15px; }
+  .auth-sub{ font-size:10px; margin-bottom:12px; }
+  .auth-tabs{ padding:3px; margin-bottom:14px; }
+  .auth-tab{ font-size:10.5px; padding:7px 7px; }
+  .auth-field{ margin-bottom:8px; }
+  .auth-field label{ font-size:10px; }
+  .auth-field input{ font-size:11.5px; padding:9px 10px; }
+  .auth-submit{ font-size:11.5px; padding:9px 10px; }
+  .auth-note{ font-size:9.5px; margin-top:10px; }
 
   /* notification & confirm */
-  .notification-host{ left:10px; right:10px; top:10px; }
-  .notification{ font-size:12.5px; padding:10px 12px; border-radius:12px; }
-  .confirm-card{ padding:16px; border-radius:16px; }
-  .confirm-message{ font-size:13px; margin-bottom:14px; }
-  .confirm-actions{ gap:8px; }
+  .notification-host{ left:6px; right:6px; top:6px; }
+  .notification{ font-size:10.5px; padding:7px 8px; border-radius:8px; }
+  .confirm-card{ padding:12px; border-radius:12px; }
+  .confirm-message{ font-size:11px; margin-bottom:8px; }
+  .confirm-actions{ gap:5px; }
+  .confirm-card .btn{ min-width:70px; font-size:11px; padding:7px 10px; }
 }
 
 /* ---- Layar ekstra kecil ≤360px ---- */
 @media(max-width:360px){
-  body{ font-size:13px; }
-  .main-header{ padding:14px 12px 10px; }
-  .main-header .logo{ font-size:16px; }
-  .ibtn,.btn,.cbtn{ font-size:11px; padding:8px 10px; min-height:36px; }
-  .header-actions{ gap:8px; }
+  body{ font-size:11px; }
+  .main-header{ padding:8px 8px 6px; }
+  .main-header .logo{ font-size:13px; }
+  .main-header .tagline{ font-size:9px; }
+  .ibtn,.btn,.cbtn{ font-size:10px; padding:6px 8px; min-height:30px; }
+  .header-actions{ gap:5px; }
   .header-actions .ibtn,.header-actions .btn{ flex:1; min-width:0; }
 
   /* index.html */
-  .hero-copy h1{ font-size:1.35rem !important; }
-  .hero-text{ font-size:12px !important; }
-  .hero-card{ padding:14px; }
-  .hero-card h2{ font-size:15px; }
-  .feature-chip{ padding:10px; }
-  .dash-card{ padding:12px 14px; }
-  .dash-card strong{ font-size:1.2rem; }
+  .hero-copy h1{ font-size:1.1rem !important; }
+  .hero-copy .eyebrow{ font-size:9px; }
+  .hero-text{ font-size:10px !important; }
+  .hero-card{ padding:8px; }
+  .hero-card h2{ font-size:12px; }
+  .feature-chip{ padding:5px; }
+  .feature-chip strong{ font-size:10px; }
+  .feature-chip span{ font-size:9px; }
+  .dash-card{ padding:6px 8px; }
+  .dash-card strong{ font-size:1rem; }
+  .dash-card .label{ font-size:7px; }
+  .dash-card span{ font-size:9px; }
 
   /* sets */
-  .iset-card{ padding:12px; gap:12px; }
-  .iset-card h3{ font-size:15px; }
-  .iset-card p{ font-size:12px; }
+  .iset-card{ padding:8px; gap:6px; }
+  .iset-card h3{ font-size:12px; }
+  .iset-card p{ font-size:9.5px; }
   .iset-card-actions{ flex-direction:column; align-items:stretch; }
-  .iset-card-actions a,.iset-card-actions button{ width:100%; text-align:center; padding:10px; }
-  .iterm-chip{ font-size:11px; padding:6px 8px; }
+  .iset-card-actions a,.iset-card-actions button{ width:100%; text-align:center; padding:7px; font-size:9.5px; }
+  .iterm-chip{ font-size:9px; padding:3px 5px; }
+  .iset-count,.iset-badge{ font-size:8px; padding:2px 5px; }
+  .set-number{ width:20px; height:20px; font-size:8px; }
 
   /* create */
-  .cfield-box{ font-size:13px !important; padding:10px 12px !important; }
-  .crow{ padding:12px; }
-  .cinput-group input{ font-size:12px; }
-  .cinput-group label{ font-size:9px; }
+  .dark-theme .cwrap{ padding:6px 6px 24px; }
+  .cfield-box{ font-size:11px !important; padding:7px 8px !important; }
+  .crow{ padding:6px; gap:4px; }
+  .crow-num{ width:18px; height:18px; font-size:8px; }
+  .crow-tools button{ width:22px; height:22px; font-size:10px; }
+  .cinput-group input{ font-size:10px; padding:6px 8px; }
+  .cinput-group label{ font-size:7.5px; }
+  .caddcard-btn{ font-size:9.5px; padding:6px 14px; }
+  .cpublic{ font-size:9px; padding:4px 7px; }
 
   /* flashcard */
-  .dark-theme .qflip3d{ height:200px; }
-  .dark-theme .qcard-body .qtext{ font-size:15px; }
-  .dark-theme .qbottom{ padding:6px 8px; border-radius:10px; }
-  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:32px; height:32px; font-size:12px; }
-  .dark-theme .qflipbar{ font-size:11px; padding:8px; }
-  .dark-theme .qcard-top{ padding:8px 10px; }
-  .dark-theme .qicons button{ font-size:14px; }
+  .dark-theme .qtopbar{ padding:6px 8px 0; }
+  .dark-theme .qtopbar .logo{ font-size:11px; }
+  .dark-theme .qflip3d{ height:170px; }
+  .dark-theme .qcard-body{ padding:6px; }
+  .dark-theme .qcard-body .qtext{ font-size:13px; }
+  .dark-theme .qflipbar{ font-size:9px; padding:5px; }
+  .dark-theme .qbottom{ padding:5px 6px; gap:4px; border-radius:8px; }
+  .dark-theme .qarrow,.dark-theme .qplay,.dark-theme .qshuffle{ width:26px; height:26px; font-size:10px; }
+  .dark-theme .qcard-top{ padding:5px 8px; }
+  .dark-theme .qicons button{ font-size:12px; }
 
   /* learn */
-  .dark-theme .question-card{ padding:12px 8px !important; }
-  .dark-theme .question-term{ font-size:18px !important; margin:8px 0 12px !important; }
-  .dark-theme .choice{ padding:10px 12px; font-size:12px; }
-  .choice-num{ width:24px; font-size:12px; margin-right:8px; }
-  .score-circle{ width:80px; height:80px; font-size:18px; }
-  .learn-summary h2{ font-size:16px; }
-  .learn-summary p{ font-size:12px; }
-  .dark-theme .seg-left,.dark-theme .seg-right{ width:28px; height:28px; font-size:11px; }
+  .dark-theme .question-card{ padding:8px 6px !important; border-radius:8px !important; }
+  .dark-theme .question-term{ font-size:14px !important; margin:5px 0 8px !important; }
+  .dark-theme .choice{ padding:6px 7px; font-size:10px; border-radius:5px; }
+  .choice-num{ width:18px; font-size:9px; margin-right:5px; }
+  .score-circle{ width:50px; height:50px; font-size:14px; border-width:3px; }
+  .learn-summary h2{ font-size:13px; }
+  .learn-summary p{ font-size:10px; }
+  .dark-theme .seg-left,.dark-theme .seg-right{ width:22px; height:22px; font-size:9px; }
 
   /* login */
-  .auth-card{ padding:14px 10px; border-radius:16px; }
-  .auth-title{ font-size:16px; }
-  .auth-brand .logo{ font-size:16px; }
-  .auth-brand{ margin-bottom:16px; }
+  .auth-wrap{ padding:6px; }
+  .auth-brand .logo{ font-size:12px; }
+  .auth-card{ padding:10px 8px; border-radius:12px; }
+  .auth-title{ font-size:13px; }
+  .auth-field input{ font-size:10.5px; padding:8px 8px; }
+  .auth-submit{ font-size:10.5px; padding:8px 8px; }
+  .auth-tab{ font-size:10px; padding:6px 6px; }
+  .auth-note{ font-size:9px; }
 }
