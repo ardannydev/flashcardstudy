@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Buat atau edit set flashcard baru di FlashCardStudy.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b2e">
 <title>Buat Set — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -10,18 +13,16 @@
 
   <header class="main-header">
     <div class="header-brand">
-      <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
+      <a href="index.html" class="logo">FlashCardStudy</a>
       <p class="tagline">Buat set flashcard dengan tampilan utama yang lebih rapi.</p>
     </div>
     <div class="header-actions">
-      <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
+      <a class="ibtn ibtn-outline" href="index.html" id="leaveBtn">Beranda</a>
       <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Buat</button>
     </div>
   </header>
 
-  <div class="cwrap">
-    <button type="button" class="cpublic" title="Visibilitas set" aria-pressed="false" aria-label="Togg le visibilitas set">🌐 Publik</button>
-
+  <main class="cwrap">
     <input aria-label="Judul set" class="cfield-box" id="title" placeholder="Judul">
     <textarea aria-label="Deskripsi set" class="cfield-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
 
@@ -30,28 +31,9 @@
     </div>
 
     <div class="cimport-box" id="importBox">
-      <p>
-        Tempel daftar kotoba dan artinya, satu pasang per baris. Biarkan pemisah di "Deteksi otomatis" agar
-        mendukung →, -, :, tab, koma, dsb sekaligus.
-      </p>
       <div class="cimport-grid">
-        <div>
-          <label for="bulkText">Daftar kotoba</label>
-          <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
-        </div>
-        <div>
-          <label for="delim">Pemisah</label>
-          <select id="delim">
-            <option value="auto">Deteksi otomatis</option>
-            <option value="→">Panah ( → )</option>
-            <option value="-">Strip ( - )</option>
-            <option value="	">Tab</option>
-            <option value=",">Koma ( , )</option>
-            <option value=":">Titik dua ( : )</option>
-            <option value="=">Sama dengan ( = )</option>
-          </select>
-          <button class="cbtn cbtn-primary" style="width:100%;margin-top:10px" onclick="parseBulk()">Proses & urutkan</button>
-        </div>
+        <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
+        <button class="cbtn cbtn-primary" onclick="parseBulk()">Proses</button>
       </div>
     </div>
 
@@ -60,12 +42,13 @@
     <div class="caddcard-wrap">
       <button type="button" class="caddcard-btn" onclick="addRow()" aria-label="Tambahkan kartu">Tambahkan kartu</button>
     </div>
-  </div>
+  </main>
 
 <script src="app.js"></script>
 <script>
 let rows = []; // {id, term, def}
 let editingId = qs('id');
+let _saving = false;
 
 function addRow(term='', def=''){
   rows.push({id: uid('row'), term, def});
@@ -75,37 +58,81 @@ function removeRow(rid){
   rows = rows.filter(r => r.id !== rid);
   renderRows();
 }
+function moveRow(rid, dir){
+  const i = rows.findIndex(r => r.id === rid);
+  const j = i + dir;
+  if(j < 0 || j >= rows.length) return;
+  [rows[i], rows[j]] = [rows[j], rows[i]];
+  renderRows();
+}
+let dragRowId = null;
+function onDragStart(e, rid){
+  dragRowId = rid;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function onDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.crow').forEach(el => el.classList.remove('drag-over'));
+  dragRowId = null;
+}
+function onDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+function onDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+function onDrop(e, targetRid){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if(!dragRowId || dragRowId === targetRid) return;
+  const fromIdx = rows.findIndex(r => r.id === dragRowId);
+  const toIdx = rows.findIndex(r => r.id === targetRid);
+  const [moved] = rows.splice(fromIdx, 1);
+  rows.splice(toIdx, 0, moved);
+  renderRows();
+}
 function renderRows(){
   const wrap = document.getElementById('rows');
   if(rows.length === 0){
     wrap.innerHTML = '';
     return;
   }
-  wrap.innerHTML = rows.map((r,i) => `
-    <div class="crow">
+  wrap.innerHTML = rows.map((r,i) => {
+    const rid = escapeHtml(r.id);
+    return `
+    <div class="crow" draggable="true"
+      data-row-id="${rid}"
+      ondragstart="onDragStart(event,this.dataset.rowId)"
+      ondragend="onDragEnd(event)"
+      ondragover="onDragOver(event)"
+      ondragleave="onDragLeave(event)"
+      ondrop="onDrop(event,this.dataset.rowId)">
       <div class="crow-top">
         <div class="crow-num">${i+1}</div>
         <div class="crow-tools">
-          <button type="button" title="Geser urutan" aria-label="Geser urutan">≡</button>
-          <button type="button" title="Hapus kartu" onclick="removeRow('${r.id}')" aria-label="Hapus kartu ${i+1}">🗑</button>
+          <span class="crow-handle" title="Seret untuk geser urutan">⠿</span>
+          <button type="button" title="Hapus kartu" onclick="removeRow(this.closest('.crow').dataset.rowId)" aria-label="Hapus kartu ${i+1}">🗑</button>
         </div>
       </div>
       <div class="crow-body">
         <div class="crow-inputs">
           <div class="cinput-group">
             <input aria-label="Istilah ${i+1}" placeholder="" value="${escapeHtml(r.term)}"
-              oninput="rows.find(x=>x.id==='${r.id}').term=this.value">
+              oninput="rows.find(x=>x.id===this.closest('.crow').dataset.rowId).term=this.value">
             <label>Istilah</label>
           </div>
           <div class="cinput-group">
             <input aria-label="Definisi ${i+1}" placeholder="" value="${escapeHtml(r.def)}"
-              oninput="rows.find(x=>x.id==='${r.id}').def=this.value">
+              oninput="rows.find(x=>x.id===this.closest('.crow').dataset.rowId).def=this.value">
             <label>Definisi</label>
           </div>
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 const importToggle = document.getElementById('importToggle');
@@ -131,44 +158,75 @@ function splitLine(line, delim){
   return [term, def];
 }
 
-function parseBulk(){
-  const raw = document.getElementById('bulkText').value;
-  const delimChoice = document.getElementById('delim').value;
-  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+function parseCSV(text){
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const parsed = [];
   const failedLines = [];
 
   lines.forEach(line => {
-    let result = null;
-    if(delimChoice === 'auto'){
-      for(const d of AUTO_DELIMS){
-        result = splitLine(line, d);
-        if(result) break;
+    // Try CSV-style: "term","def" or term,def
+    const csvMatch = line.match(/^"([^"]*)",\s*"([^"]*)"$/);
+    if(csvMatch){
+      const term = csvMatch[1].trim();
+      const def = csvMatch[2].trim();
+      if(term && def){
+        parsed.push({id: uid('row'), term, def});
+        return;
       }
-      if(!result){
-        const m = line.split(/\s{2,}|\t+/).filter(Boolean);
-        if(m.length >= 2) result = [m[0].trim(), m.slice(1).join(' ').trim()];
-      }
-    } else {
-      result = splitLine(line, delimChoice);
     }
-    if(result) parsed.push({id: uid('row'), term: result[0], def: result[1]});
-    else failedLines.push(line);
+    // Try TSV
+    const parts = line.split('\t').map(s => s.trim()).filter(Boolean);
+    if(parts.length >= 2){
+      parsed.push({id: uid('row'), term: parts[0], def: parts.slice(1).join(' ')});
+      return;
+    }
+    // Try auto-delim
+    let result = null;
+    for(const d of AUTO_DELIMS){
+      result = splitLine(line, d);
+      if(result) break;
+    }
+    if(result){
+      parsed.push({id: uid('row'), term: result[0], def: result[1]});
+    } else {
+      const m = line.split(/\s{2,}|\t+/).filter(Boolean);
+      if(m.length >= 2){
+        parsed.push({id: uid('row'), term: m[0].trim(), def: m.slice(1).join(' ').trim()});
+      } else {
+        failedLines.push(line);
+      }
+    }
   });
 
+  return { parsed, failedLines };
+}
+
+function parseBulk(){
+  const raw = document.getElementById('bulkText').value;
+  const { parsed, failedLines } = parseCSV(raw);
+
   if(parsed.length === 0){
-    createNotification('Tidak ada baris yang berhasil dibaca. Pastikan tiap baris berformat "kotoba [pemisah] arti", contoh: こうきょう → publik', 'error');
+    createNotification('Tidak ada baris yang berhasil dibaca. Pastikan tiap baris berformat "kotoba [pemisah] arti" atau CSV/TSV.', 'error');
     return;
   }
+  // filter panjang
+  const valid = [];
+  const skipped = [];
+  parsed.forEach(p => {
+    if(p.term.length > 50 || p.def.length > 150) skipped.push(p);
+    else valid.push(p);
+  });
+
   rows = rows.filter(r => r.term.trim() || r.def.trim());
-  rows = rows.concat(parsed);
+  rows = rows.concat(valid);
   document.getElementById('bulkText').value = '';
   renderRows();
 
-  if(failedLines.length > 0){
-    createNotification(`${parsed.length} kotoba berhasil ditambahkan. ${failedLines.length} baris dilewati karena tidak sesuai format.`, 'info');
+  const skipCount = skipped.length + failedLines.length;
+  if(skipCount > 0){
+    createNotification(`${valid.length} kotoba berhasil ditambahkan. ${skipCount} baris dilewati.`, 'info');
   } else {
-    createNotification(`${parsed.length} kotoba berhasil ditambahkan.`, 'success');
+    createNotification(`${valid.length} kotoba berhasil ditambahkan.`, 'success');
   }
 }
 
@@ -211,9 +269,11 @@ async function handleSave(andPractice){
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = 'Menyimpan...'; }
 
   try{
+    _saving = true;
     await upsertSet(set); // tunggu sampai benar-benar tersimpan ke server sebelum pindah halaman
     location.href = andPractice ? `learn.html?id=${set.id}` : 'index.html';
   }catch(e){
+    _saving = false;
     createNotification('Gagal menyimpan set ke server. Coba lagi.', 'error');
     if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = originalLabel; }
   }
@@ -226,7 +286,7 @@ async function handleSave(andPractice){
   if(editingId){
     const set = getSet(editingId);
     if(set){
-      document.getElementById('pageTitle').textContent = 'Edit set';
+      document.querySelector('.tagline').textContent = 'Edit set';
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
@@ -234,6 +294,19 @@ async function handleSave(andPractice){
   }
   renderRows();
   if(rows.length === 0) addRow();
+
+  function hasUnsavedChanges(){
+    if(_saving) return false;
+    const title = document.getElementById('title').value.trim();
+    return title || rows.some(r => r.term.trim() || r.def.trim());
+  }
+
+  document.getElementById('leaveBtn').addEventListener('click', async (e) => {
+    if(!hasUnsavedChanges()) return;
+    e.preventDefault();
+    const confirmed = await showConfirm('Perubahan belum disimpan. Keluar?', {confirmText: 'Keluar', cancelText: 'Batal'});
+    if(confirmed) window.location.href = 'index.html';
+  });
 })();
 </script>
 </body>

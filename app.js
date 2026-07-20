@@ -1,5 +1,36 @@
+/* ---------- Global error handler ---------- */
+window.onerror = function(msg, url, line, col, err) {
+  console.error('[GlobalError]', msg, url, line, col, err);
+  if (typeof createNotification === 'function') {
+    createNotification('Terjadi kesalahan tak terduga. Coba muat ulang halaman.', 'error', 6000);
+  }
+  return false;
+};
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('[UnhandledRejection]', e.reason);
+  if (typeof createNotification === 'function') {
+    createNotification('Gagal menghubungi server. Periksa koneksi internet.', 'error', 6000);
+  }
+});
+
 /* ---------- penyimpanan data (localStorage) ---------- */
 const STORE_KEY = 'qz_sets_v1';
+const DB_VERSION_KEY = 'qz_db_version';
+const CURRENT_DB_VERSION = 1;
+
+function migrateData(){
+  const ver = parseInt(localStorage.getItem(DB_VERSION_KEY) || '0', 10);
+  if(ver >= CURRENT_DB_VERSION) return;
+
+  // Future migrations go here:
+  // if(ver < 2) { /* migrate to v2 */ }
+  // if(ver < 3) { /* migrate to v3 */ }
+
+  localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
+}
+
+// Run migration on load
+migrateData();
 
 function isLocalMode(){
   const h = location.hostname;
@@ -82,17 +113,38 @@ async function syncSetsFromServer(){
 }
 
 // Kirim seluruh data set ke server (dipanggil otomatis tiap kali saveSets() dipanggil).
-async function pushSetsToServer(sets){
+let _pushTimer = null;
+let _pendingSets = null;
+function pushSetsToServer(sets){
   if(isLocalMode()) return Promise.resolve();
-  if(!getToken()) return;
-  const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets }) });
-  if(!res.ok){
-    const msg = await res.text().catch(() => '');
-    throw new Error('Gagal menyimpan ke server: ' + res.status + ' ' + msg);
-  }
+  if(!getToken()) return Promise.resolve();
+  _pendingSets = sets;
+  if(_pushTimer) return;
+  return new Promise((resolve, reject) => {
+    _pushTimer = setTimeout(async () => {
+      _pushTimer = null;
+      const toPush = _pendingSets;
+      _pendingSets = null;
+      try{
+        const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets: toPush }) });
+        if(!res.ok) throw new Error('Server error ' + res.status);
+        resolve();
+      }catch(e){
+        console.warn('Gagal push ke server:', e.message);
+        reject(e);
+      }
+    }, 500);
+  });
 }
 function getSet(id){
   return getSets().find(s => s.id === id);
+}
+function getDueCount(set){
+  const now = Date.now();
+  return set.terms.filter(t => {
+    if(!t._review) return true;
+    return t._review.due <= now;
+  }).length;
 }
 function upsertSet(set){
   const sets = getSets();
@@ -137,7 +189,13 @@ function announce(text){
   lr.textContent = text;
 }
 
-function createNotification(message, type = 'info', duration = 4500) {
+const NOTIF_ICONS = {
+  success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>',
+  error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+};
+
+function createNotification(message, type = 'info', duration = 4000) {
   let host = document.getElementById('notificationHost');
   if(!host){
     host = document.createElement('div');
@@ -146,26 +204,29 @@ function createNotification(message, type = 'info', duration = 4500) {
     document.body.appendChild(host);
   }
 
-  const existing = host.querySelector('.notification.visible');
-  if(existing){
-    existing.classList.remove('visible');
-    existing.addEventListener('transitionend', () => existing.remove(), {once:true});
-  }
+  // Hapus notifikasi lama
+  const old = host.querySelector('.notification');
+  if(old) old.remove();
 
   const note = document.createElement('div');
   note.className = `notification ${type}`;
-  note.textContent = message;
+
+  const icon = document.createElement('div');
+  icon.className = 'notification-icon';
+  icon.innerHTML = NOTIF_ICONS[type] || NOTIF_ICONS.info;
+
+  const body = document.createElement('div');
+  body.className = 'notification-body';
+  const text = document.createElement('div');
+  text.className = 'notification-text';
+  text.textContent = message;
+  body.appendChild(text);
+
+  note.appendChild(icon);
+  note.appendChild(body);
   host.appendChild(note);
 
-  requestAnimationFrame(() => note.classList.add('visible'));
-
-  const close = () => {
-    note.classList.remove('visible');
-    note.addEventListener('transitionend', () => note.remove(), {once:true});
-  };
-
-  note.addEventListener('click', close);
-  if(duration > 0) setTimeout(close, duration);
+  if(duration > 0) setTimeout(() => { if(note.parentNode) note.remove(); }, duration);
   return note;
 }
 
@@ -173,32 +234,44 @@ function showConfirm(message, options = {}) {
   const {confirmText = 'Hapus', cancelText = 'Batal'} = options;
   return new Promise(resolve => {
     let overlay = document.getElementById('confirmOverlay');
-    if(overlay){
-      overlay.remove();
-    }
+    if(overlay) overlay.remove();
+    const prevFocus = document.activeElement;
     overlay = document.createElement('div');
     overlay.id = 'confirmOverlay';
     overlay.className = 'confirm-overlay';
 
     const safeMessage = message.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const safeConfirm = confirmText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const safeCancel = cancelText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     overlay.innerHTML = `
-      <div class="confirm-card">
+      <div class="confirm-card" role="alertdialog" aria-modal="true">
+        <div class="confirm-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
         <p class="confirm-message">${safeMessage}</p>
         <div class="confirm-actions">
-          <button type="button" class="btn btn-ghost confirm-cancel">${cancelText}</button>
-          <button type="button" class="btn btn-primary confirm-ok">${confirmText}</button>
+          <button type="button" class="btn confirm-cancel">${safeCancel}</button>
+          <button type="button" class="btn confirm-ok">${safeConfirm}</button>
         </div>
       </div>
     `;
 
     document.body.appendChild(overlay);
-    overlay.querySelector('.confirm-cancel').addEventListener('click', () => {
-      overlay.remove();
-      resolve(false);
-    });
-    overlay.querySelector('.confirm-ok').addEventListener('click', () => {
-      overlay.remove();
-      resolve(true);
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const okBtn = overlay.querySelector('.confirm-ok');
+    const cancelBtn = overlay.querySelector('.confirm-cancel');
+    okBtn.focus();
+
+    const close = (result) => {
+      overlay.classList.remove('visible');
+      overlay.addEventListener('transitionend', () => overlay.remove(), {once:true});
+      if(prevFocus && prevFocus.focus) prevFocus.focus();
+      resolve(result);
+    };
+    cancelBtn.addEventListener('click', () => close(false));
+    okBtn.addEventListener('click', () => close(true));
+    overlay.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape') close(false);
     });
   });
 }
@@ -224,6 +297,20 @@ function ensureReviewMeta(term){
     };
   }
   return term._review;
+}
+
+/** Format due timestamp to human-readable Indonesian date */
+function formatDueDate(dueTs){
+  if(!dueTs) return 'Sekarang';
+  const now = Date.now();
+  const diff = dueTs - now;
+  if(diff <= 0) return 'Sekarang';
+  const days = Math.ceil(diff / (24*60*60*1000));
+  if(days === 1) return 'Besok';
+  if(days < 7) return `${days} hari lagi`;
+  if(days < 30) return `${Math.ceil(days/7)} minggu lagi`;
+  if(days < 365) return `${Math.ceil(days/30)} bulan lagi`;
+  return `${Math.ceil(days/365)} tahun lagi`;
 }
 
 // SM-2 algorithm: quality 0-5 (5 = perfect). We'll map isCorrect -> quality 5, wrong -> 2.

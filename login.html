@@ -3,75 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Masuk atau daftar akun FlashCardStudy untuk menyimpan flashcard kamu.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b2e">
 <title>Masuk — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
-<style>
-  body.dark-theme{
-    background:#0e0b2e;
-    background-image:
-      radial-gradient(circle at top left, rgba(106,92,255,.2) 0%, transparent 35%),
-      radial-gradient(circle at bottom right, rgba(63,211,255,.14) 0%, transparent 30%),
-      linear-gradient(180deg,#0e0b2e 0%,#0b0823 100%);
-    color:#fff;font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
-    min-height:100vh;margin:0;
-    display:flex;align-items:center;justify-content:center;
-  }
-  *{box-sizing:border-box;}
-  .auth-wrap{width:100%;max-width:420px;padding:24px;}
-  .auth-brand{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:22px;}
-  .auth-brand .logo{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px;}
-  .auth-brand .dot{width:9px;height:9px;border-radius:50%;background:#506cff;display:inline-block;}
-  .auth-card{
-    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:28px;
-    padding:32px 28px;box-shadow:0 40px 120px rgba(0,0,0,.25);backdrop-filter:blur(16px);
-  }
-  .auth-tabs{display:flex;gap:8px;background:rgba(255,255,255,.04);border-radius:999px;padding:6px;margin-bottom:24px;}
-  .auth-tab{flex:1;text-align:center;padding:10px 12px;border-radius:999px;border:none;background:transparent;color:#98a6d1;font-weight:700;font-size:13px;cursor:pointer;transition:background .15s ease,color .15s ease;}
-  .auth-tab.active{background:#506cff;color:#fff;}
-  .auth-title{margin:0 0 6px;font-size:22px;color:#fff;}
-  .auth-sub{margin:0 0 22px;color:#98a6d1;font-size:13px;line-height:1.6;}
-  .auth-field{margin-bottom:16px;}
-  .auth-field label{display:block;margin-bottom:8px;color:#b3bee8;font-size:13px;}
-  .auth-field input{width:100%;border:none;border-radius:16px;background:rgba(255,255,255,.06);color:#fff;padding:14px 16px;outline:none;font-size:14px;}
-  .auth-field input::placeholder{color:rgba(255,255,255,.4);}
-  .auth-submit{width:100%;border:none;border-radius:999px;padding:14px 18px;font-weight:700;font-size:14px;cursor:pointer;background:#506cff;color:#fff;transition:background .15s ease,transform .12s ease;margin-top:6px;}
-  .auth-submit:hover{background:#6b7cff;}
-  .auth-submit:active{transform:scale(.98);}
-  .auth-submit:disabled{opacity:.6;cursor:not-allowed;}
-  .auth-error{background:rgba(255,111,57,.12);border:1px solid rgba(255,111,57,.35);color:#ffb78f;font-size:13px;padding:12px 14px;border-radius:14px;margin-bottom:16px;display:none;line-height:1.5;}
-  .auth-error.show{display:block;}
-  .auth-note{margin-top:18px;text-align:center;color:#7e8bbf;font-size:12px;line-height:1.6;}
-  @media(max-width:400px){
-    .auth-wrap{padding:10px;}
-    .auth-brand .logo{font-size:15px;}
-    .auth-brand{margin-bottom:10px;}
-    .auth-card{padding:14px 10px;border-radius:14px;}
-    .auth-title{font-size:15px;}
-    .auth-sub{font-size:10px;margin-bottom:12px;}
-    .auth-field{margin-bottom:8px;}
-    .auth-field label{font-size:10px;}
-    .auth-field input{font-size:11.5px;padding:9px 10px;}
-    .auth-submit{font-size:11.5px;padding:9px 10px;}
-    .auth-tab{font-size:10.5px;padding:7px 8px;}
-    .auth-note{font-size:9.5px;}
-  }
-  @media(max-width:360px){
-    .auth-wrap{padding:8px;}
-    .auth-brand .logo{font-size:13px;}
-    .auth-card{padding:10px 8px;border-radius:12px;}
-    .auth-title{font-size:13px;}
-    .auth-field input{font-size:10.5px;padding:8px 8px;}
-    .auth-submit{font-size:10.5px;padding:8px 8px;}
-    .auth-tab{font-size:10px;padding:6px 6px;}
-    .auth-note{font-size:9px;}
-  }
-</style>
 </head>
-<body class="dark-theme">
+<body class="dark-theme login-page">
 
-  <div class="auth-wrap">
+  <main class="auth-wrap">
     <div class="auth-brand">
-      <span class="dot"></span>
       <span class="logo">FlashCardStudy</span>
     </div>
 
@@ -117,9 +58,8 @@
         <button type="submit" class="auth-submit" id="registerBtn">Daftar</button>
       </form>
 
-      <p class="auth-note">Data disimpan di server (Vercel KV) dan hanya bisa diakses lewat akunmu sendiri.</p>
     </div>
-  </div>
+  </main>
 
 <script src="app.js"></script>
 <script>

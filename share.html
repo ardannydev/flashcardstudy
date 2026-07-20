@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Flashcard publik di FlashCardStudy.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b2e">
+<title>Flashcard Publik — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+
+  <header class="main-header">
+    <div class="header-brand">
+      <a href="index.html" class="logo">FlashCardStudy</a>
+      <p class="tagline" id="setTitle">Memuat...</p>
+    </div>
+    <div class="header-actions">
+      <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
+    </div>
+  </header>
+
+  <main class="icontainer" id="app">
+    <div id="shareContent" style="max-width:700px;margin:0 auto;padding:0 20px;"></div>
+  </main>
+
+<script src="app.js"></script>
+<script>
+(async function(){
+  const setId = qs('id');
+  if(!setId){
+    document.getElementById('shareContent').innerHTML = '<div class="empty"><h2>Link tidak valid</h2><p>ID set tidak ditemukan di URL.</p></div>';
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/share?id=' + encodeURIComponent(setId));
+    if(!res.ok){
+      document.getElementById('shareContent').innerHTML = '<div class="empty"><h2>Set tidak ditemukan</h2><p>Set ini mungkin sudah dihapus atau tidak tersedia.</p></div>';
+      return;
+    }
+    const data = await res.json();
+    const set = data.set;
+    document.getElementById('setTitle').textContent = set.title;
+
+    document.getElementById('shareContent').innerHTML = `
+      <div style="margin-bottom:20px;">
+        <h1 style="font-size:24px;margin:0 0 8px;">${escapeHtml(set.title)}</h1>
+        ${set.desc ? `<p style="color:#8892b5;margin:0 0 16px;">${escapeHtml(set.desc)}</p>` : ''}
+        <p style="color:#8892b5;font-size:13px;margin:0;">${set.terms.length} kartu</p>
+      </div>
+      <div class="iset-grid">
+        ${set.terms.map((t,i) => `
+          <div class="iset-card" style="padding:16px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+              <span class="iset-count">${i+1}</span>
+              <strong style="font-size:16px;">${escapeHtml(t.term)}</strong>
+            </div>
+            <p style="margin:0;color:#8892b5;">${escapeHtml(t.def)}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('shareContent').innerHTML = '<div class="empty"><h2>Gagal memuat</h2><p>Periksa koneksi internet dan coba lagi.</p></div>';
+  }
+})();
+</script>
+</body>
+</html>

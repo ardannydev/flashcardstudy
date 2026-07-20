@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Set Kamu — FlashCardStudy</title>
+  <meta name="description" content="Kelola semua set flashcard kamu di satu halaman.">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e0b2e">
+  <title>Set Kamu — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
   <header class="main-header">
     <div class="header-brand">
-      <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
+      <a href="index.html" class="logo">FlashCardStudy</a>
       <p class="tagline">Semua set flashcard kamu ditampilkan di sini.</p>
     </div>
     <div class="header-actions">
@@ -30,6 +33,17 @@
       <p>Mulai dengan membuat set baru, lalu kembali ke halaman ini untuk melihat semua setmu.</p>
       <a href="create.html" class="ibtn ibtn-primary" style="display:inline-block;margin-top:14px;">+ Buat set baru</a>
     </div>
+    <div id="shareOverlay" class="share-overlay">
+      <div class="share-card">
+        <h3>Bagikan Set</h3>
+        <p>Salin link di bawah ini untuk membagikan set ini ke orang lain.</p>
+        <div class="share-link-box">
+          <input type="text" id="shareLinkInput" readonly>
+          <button class="btn btn-primary" onclick="copyShareLink()">Salin</button>
+        </div>
+        <button class="btn btn-outline" onclick="closeShareOverlay()">Tutup</button>
+      </div>
+    </div>
   </main>
 
   <script src="app.js"></script>
@@ -38,13 +52,60 @@
     if(!requireLogin()) return;
     await syncSetsFromServer();
 
-    function getDueCount(set){
-      const now = Date.now();
-      return set.terms.filter(t => {
-        if(!t._review) return true;
-        return t._review.due <= now;
-      }).length;
+    function closeShareOverlay(){
+      document.getElementById('shareOverlay').classList.remove('visible');
     }
+    function copyShareLink(){
+      const input = document.getElementById('shareLinkInput');
+      navigator.clipboard.writeText(input.value).then(()=>{
+        createNotification('Link berhasil disalin!', 'success');
+      }).catch(()=>{
+        input.select();
+        document.execCommand('copy');
+        createNotification('Link berhasil disalin!', 'success');
+      });
+    }
+    async function handleShare(id){
+      const set = getSet(id);
+      if(!set) return;
+      try {
+        const res = await apiFetch('/api/share', { method:'POST', body: JSON.stringify({setId:id}) });
+        const data = await res.json();
+        if(res.ok && data.shareUrl){
+          const fullUrl = location.origin + data.shareUrl;
+          document.getElementById('shareLinkInput').value = fullUrl;
+          document.getElementById('shareOverlay').classList.add('visible');
+        } else {
+          createNotification('Gagal membuat link share.', 'error');
+        }
+      } catch(e) {
+        createNotification('Gagal membuat link share.', 'error');
+      }
+    }
+
+    function handleDelete(id){
+      const set = getSet(id);
+      if(!set) return;
+      showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
+        .then(async confirmed => {
+          if(!confirmed) return;
+          try{
+            await deleteSet(id);
+            renderSets();
+            createNotification('Set berhasil dihapus.', 'success');
+          }catch(e){
+            renderSets();
+            createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
+          }
+        });
+    }
+
+    document.getElementById('setGrid').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-delete-id]');
+      if(btn) handleDelete(btn.dataset.deleteId);
+      const shareBtn = e.target.closest('[data-share-id]');
+      if(shareBtn) handleShare(shareBtn.dataset.shareId);
+    });
 
     function renderSets(){
       const sets = getSets();
@@ -78,29 +139,29 @@
               ).join('')}
             </div>
             <div class="iset-card-actions">
-              <a class="ibtn ibtn-outline" href="flashcard.html?id=${set.id}">Flashcard</a>
-              <a class="ibtn ibtn-primary" href="learn.html?id=${set.id}">Pelajari</a>
-              <button class="ibtn ibtn-danger" onclick="handleDelete('${set.id}')">Hapus</button>
+              <a class="ibtn ibtn-card-outline" href="flashcard.html?id=${set.id}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Flashcard
+              </a>
+              <a class="ibtn ibtn-card-primary" href="learn.html?id=${set.id}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                Pelajari
+              </a>
+              <a class="ibtn ibtn-card-ghost" href="create.html?id=${set.id}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </a>
+              <button class="ibtn ibtn-card-danger" data-delete-id="${escapeHtml(set.id)}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Hapus
+              </button>
+              <button class="ibtn ibtn-card-ghost" data-share-id="${escapeHtml(set.id)}">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Bagikan
+              </button>
             </div>
           </div>`;
       }).join('');
-    }
-
-    function handleDelete(id){
-      const set = getSet(id);
-      if(!set) return;
-      showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
-        .then(async confirmed => {
-          if(!confirmed) return;
-          try{
-            await deleteSet(id);
-            renderSets();
-            createNotification('Set berhasil dihapus.', 'success');
-          }catch(e){
-            renderSets();
-            createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
-          }
-        });
     }
 
     renderSets();

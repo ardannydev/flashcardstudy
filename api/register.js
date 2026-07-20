@@ -1,38 +1,49 @@
 const { kv } = require('@vercel/kv');
 const { hashPassword, createToken } = require('./_lib/auth');
+const { rateLimit, getClientIp } = require('./_lib/ratelimit');
 
 module.exports = async (req, res) => {
-  if(req.method !== 'POST'){
+  if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
+
+  /* --- Rate limit: 5 registrations per IP per hour --- */
+  const ip = getClientIp(req);
+  const rl = rateLimit(`register:${ip}`, 5, 60 * 60 * 1000);
+  if (!rl.ok) {
+    res.setHeader('Retry-After', Math.ceil(rl.retryAfterMs / 1000));
+    res.status(429).json({ error: 'Terlalu banyak percobaan pendaftaran. Coba lagi nanti.' });
+    return;
+  }
+
   let body = req.body;
-  if(typeof body === 'string'){
-    try{ body = JSON.parse(body); }catch(e){ body = {}; }
+  if (typeof body === 'string') {
+    try { body = JSON.parse(body); } catch (e) { body = {}; }
   }
   const { username, password } = body || {};
 
-  if(!username || !password){
+  if (!username || !password) {
     res.status(400).json({ error: 'Username dan password wajib diisi.' });
     return;
   }
   const cleanUsername = String(username).trim().toLowerCase();
-  if(cleanUsername.length < 3){
+  if (cleanUsername.length < 3) {
     res.status(400).json({ error: 'Username minimal 3 karakter.' });
     return;
   }
-  if(!/^[a-z0-9_.-]+$/.test(cleanUsername)){
+  if (!/^[a-z0-9_.-]+$/.test(cleanUsername)) {
     res.status(400).json({ error: 'Username hanya boleh huruf, angka, titik, garis bawah, dan strip.' });
     return;
   }
-  if(String(password).length < 6){
+  if (String(password).length < 6) {
     res.status(400).json({ error: 'Password minimal 6 karakter.' });
     return;
   }
 
   const userKey = `user:${cleanUsername}`;
   const existing = await kv.get(userKey);
-  if(existing){
+  if (existing) {
     res.status(409).json({ error: 'Username sudah dipakai. Silakan pilih username lain.' });
     return;
   }
@@ -45,6 +56,10 @@ module.exports = async (req, res) => {
     createdAt: Date.now()
   });
   await kv.set(`sets:${cleanUsername}`, []);
+
+  /* --- Audit: log new registration --- */
+  const auditKey = `audit:${cleanUsername}`;
+  await kv.set(auditKey, [{ ts: Date.now(), ip, type: 'register' }]);
 
   const token = createToken(cleanUsername);
   res.status(200).json({ token, username: cleanUsername });

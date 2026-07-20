@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FlashCardStudy — Belajar kosakata dengan flashcard interaktif. Buat set, ulangi, dan ingat kata baru setiap hari.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b2e">
 <title>FlashCardStudy — Beranda</title>
 <link rel="stylesheet" href="style.css">
 </head>
@@ -10,11 +13,10 @@
 
   <header class="main-header">
     <div class="header-brand">
-      <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
+      <a href="index.html" class="logo">FlashCardStudy</a>
       <p class="tagline">Belajar kosakata dengan flashcard.</p>
     </div>
     <div class="header-actions">
-      <a class="ibtn ibtn-primary" href="create.html">Buat set baru</a>
       <button type="button" class="ibtn ibtn-outline" onclick="logout()">Keluar</button>
     </div>
   </header>
@@ -25,23 +27,45 @@
       <h1>Flashcard yang lebih ringkas, rapi, dan fokus.</h1>
         <p class="hero-text">Atur set, ulangi dengan mudah, dan ingat kata baru setiap hari.</p>
         <div class="hero-actions">
-          <a class="ibtn ibtn-primary" href="sets.html">Lihat set</a>
+          <a class="ibtn ibtn-hero-primary" href="sets.html">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Lihat set
+          </a>
+          <a class="ibtn ibtn-hero-ghost" href="create.html">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Buat set baru
+          </a>
         </div>
     </div>
     <div class="hero-card">
         <h2>Ringkas, cepat, langsung pakai</h2>
         <div class="feature-grid">
           <div class="feature-chip">
-            <strong>Set rapih</strong>
-            <span>Judul, deskripsi, dan kami simpan otomatis.</span>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div>
+              <strong>Set rapih</strong>
+              <span>Judul, deskripsi, dan kami simpan otomatis.</span>
+            </div>
           </div>
           <div class="feature-chip">
-            <strong>Mulai cepat</strong>
-            <span>Langsung belajar tanpa langkah berlebih.</span>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <strong>Mulai cepat</strong>
+              <span>Langsung belajar tanpa langkah berlebih.</span>
+            </div>
           </div>
           <div class="feature-chip">
-            <strong>Review pintar</strong>
-            <span>Lihat kartu yang harus diulang hari ini.</span>
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div>
+              <strong>Review pintar</strong>
+              <span>Lihat kartu yang harus diulang hari ini.</span>
+            </div>
           </div>
         </div>
     </div>
@@ -50,36 +74,59 @@
   <main class="icontainer">
     <section class="overview-row">
         <div class="dash-card">
-          <div class="label">Set</div>
-          <strong id="totalSets">0</strong>
-          <span>Jumlah set yang tersimpan.</span>
+          <div class="dash-card-body">
+            <div class="label">Set</div>
+            <strong id="totalSets">0</strong>
+            <span>Jumlah set yang tersimpan.</span>
+          </div>
         </div>
         <div class="dash-card">
-          <div class="label">Kartu</div>
-          <strong id="totalCards">0</strong>
-          <span>Istilah dan definisi yang tersedia.</span>
+          <div class="dash-card-body">
+            <div class="label">Kartu</div>
+            <strong id="totalCards">0</strong>
+            <span>Istilah dan definisi yang tersedia.</span>
+          </div>
         </div>
         <div class="dash-card">
-          <div class="label">Review</div>
-          <strong id="totalDue">0</strong>
-          <span>Kartu yang siap diulang hari ini.</span>
+          <div class="dash-card-body">
+            <div class="label">Review</div>
+            <strong id="totalDue">0</strong>
+            <span>Kartu yang siap diulang hari ini.</span>
+          </div>
         </div>
+    </section>
+
+    <section class="stats-grid" id="statsGrid" style="display:none;">
+      <div class="stats-card">
+        <span class="stats-num" id="statMastered">0</span>
+        <span class="stats-label">Dikuasai</span>
+        <span class="stats-sub" id="statMasteredSub"></span>
+      </div>
+      <div class="stats-card">
+        <span class="stats-num" id="statLearning">0</span>
+        <span class="stats-label">Sedang Dipelajari</span>
+      </div>
+      <div class="stats-card">
+        <span class="stats-num" id="statNew">0</span>
+        <span class="stats-label">Belum Dipelajari</span>
+      </div>
+      <div class="stats-card">
+        <span class="stats-num" id="statAccuracy">0%</span>
+        <span class="stats-label">Akurasi Rata-rata</span>
+      </div>
     </section>
   </main>
 
+  <footer class="site-footer">
+    <p>Dibuat dengan ❤️ oleh <strong>Ardwanny</strong></p>
+  </footer>
+
 <script src="app.js"></script>
 <script>
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 (async function(){
   if(!requireLogin()) return;
   await syncSetsFromServer();
-
-  function getDueCount(set){
-    const now = Date.now();
-    return set.terms.filter(t => {
-      if(!t._review) return true;
-      return t._review.due <= now;
-    }).length;
-  }
 
   function updateDashboard(sets){
     const totalSets = sets.length;
@@ -91,6 +138,29 @@
   }
 
   updateDashboard(getSets());
+
+  function updateStats(sets){
+    let mastered=0, learning=0, newCards=0, totalReps=0;
+    sets.forEach(set=>{
+      set.terms.forEach(t=>{
+        const r = t._review;
+        if(!r || r.reps===0){ newCards++; }
+        else if(r.interval >= 21){ mastered++; }
+        else { learning++; }
+        if(r && r.last) totalReps++;
+      });
+    });
+    const totalCards = mastered+learning+newCards;
+    document.getElementById('statMastered').textContent = mastered;
+    document.getElementById('statMasteredSub').textContent = totalCards > 0 ? Math.round((mastered/totalCards)*100)+'% dari total' : '';
+    document.getElementById('statLearning').textContent = learning;
+    document.getElementById('statNew').textContent = newCards;
+    document.getElementById('statAccuracy').textContent = totalReps > 0 ? Math.round((mastered/totalReps)*100)+'%' : '0%';
+
+    const statsGrid = document.getElementById('statsGrid');
+    if(totalCards > 0) statsGrid.style.display = '';
+  }
+  updateStats(getSets());
 })();
 </script>
 </body>

@@ -3,32 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Mode kuis pilihan ganda untuk belajar kosakata dengan FlashCardStudy.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e0b2e">
 <title>Pelajari — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <!-- dark theme CSS moved to style.css -->
 
 </head>
 <body class="dark-theme">
-  <header class="topbar">
-    <a href="index.html" class="logo"><span class="dot"></span>FlashCardStudy</a>
-    <div class="topbar-spacer"></div>
-    <a href="index.html" class="btn btn-ghost">Kembali</a>
+  <header class="main-header">
+    <div class="header-brand">
+      <a href="index.html" class="logo">FlashCardStudy</a>
+      <p class="tagline">Mode pelajaran aktif.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
+    </div>
   </header>
 
-  <main class="container" id="app">
+  <main class="icontainer" id="app">
     <div class="seg-wrap">
-      <div class="seg-left">1</div>
-      <div class="seg-line-container" id="segLineContainer" style="flex: 1; display: flex; gap: 8px;"></div>
-      <div class="seg-right">0</div>
-    </div>
-
-    <div class="learn-head">
-      <div class="study-title" id="setTitle"></div>
-      <div id="sessionBadge">
-        Sesi 1 dari 5 — Istilah → Definisi
-      </div>
-      <div class="progressbar" style="display:none;"><div class="progressbar-fill" id="progressFill"></div></div>
+      <div class="seg-left"><span id="segLeftCount">0</span><span class="seg-label">Benar</span></div>
+      <div class="seg-line-container" id="segLineContainer"></div>
+      <div class="seg-right"><span id="segRightCount">0</span><span class="seg-label">Total</span></div>
     </div>
 
     <div id="quizArea"></div>
@@ -48,8 +46,6 @@ if(!set || set.terms.length < 2){
     '<div class="empty"><h2>Butuh minimal 2 kotoba</h2><p>Tambahkan lebih banyak kotoba ke set ini untuk memakai mode Pelajari.</p><a class="btn btn-primary" href="index.html" style="display:inline-block;margin-top:12px">Kembali ke beranda</a></div>';
   throw new Error('not enough terms');
 }
-
-document.getElementById('setTitle').textContent = set.title;
 
 // Pre-load voices for TTS
 if ('speechSynthesis' in window) {
@@ -82,35 +78,16 @@ function speakText(text) {
   }
 }
 
-// Accessibility: aria-live announcer for screen readers
-function announce(text){
-  let lr = document.getElementById('a11yLive');
-  if(!lr){
-    lr = document.createElement('div');
-    lr.id = 'a11yLive';
-    lr.setAttribute('aria-live','polite');
-    lr.style.position = 'absolute';
-    lr.style.left = '-9999px';
-    document.body.appendChild(lr);
-  }
-  lr.textContent = text;
-}
-
-const ROUND_SIZE = 10;
-const TOTAL_SESSIONS = Math.ceil(set.terms.length / ROUND_SIZE);
-let currentSession = 1;
-let totalCorrectCount = 0;
-let queue = [];                // urutan soal ronde berjalan
+const SESSION_KEY = 'qz_learn_session_' + setId;
+let queue = [];
 let qIndex = 0;
 let correctCount = 0;
 let missed = [];
 let answered = false;
 
-function getSessionTerms(sessionNum) {
-  // Prefer cards that are due (SM-2), then fill with new/not-due cards up to ROUND_SIZE.
+function getQuizTerms() {
   const now = Date.now();
-  // Ensure review meta exists for all terms (helper from app.js)
-  set.terms.forEach(t => { try { ensureReviewMeta(t); } catch (e) { /* ignore if helper missing */ } });
+  set.terms.forEach(t => { try { ensureReviewMeta(t); } catch (e) {} });
 
   const due = set.terms.filter(t => t._review && t._review.due <= now);
   const notDue = set.terms.filter(t => !(t._review && t._review.due <= now));
@@ -118,56 +95,50 @@ function getSessionTerms(sessionNum) {
   const dueShuffled = shuffle(due);
   const notDueShuffled = shuffle(notDue);
 
-  const selected = dueShuffled.slice(0, ROUND_SIZE);
-  if (selected.length < ROUND_SIZE) {
-    selected.push(...notDueShuffled.slice(0, ROUND_SIZE - selected.length));
-  }
-  return selected;
+  return [...dueShuffled, ...notDueShuffled];
 }
 
-function renderProgressSegments() {
+function renderProgressBar() {
   const container = document.getElementById('segLineContainer');
-  if (container) {
-    container.innerHTML = '';
-    for (let s = 1; s <= TOTAL_SESSIONS; s++) {
-      const segLine = document.createElement('div');
-      segLine.className = 'seg-line';
-      
-      const segFill = document.createElement('div');
-      segFill.className = 'seg-fill';
-      segFill.id = `segFill${s}`;
-      
-      segLine.appendChild(segFill);
-      container.appendChild(segLine);
-    }
-  }
+  if (!container) return;
+  container.innerHTML = '';
+  const total = queue.length || 1;
+  const pct = Math.round((qIndex / total) * 100);
+  const bar = document.createElement('div');
+  bar.className = 'seg-line';
+  const fill = document.createElement('div');
+  fill.className = 'seg-fill';
+  fill.id = 'segFill1';
+  fill.style.width = pct + '%';
+  bar.appendChild(fill);
+  container.appendChild(bar);
 }
 
-function startSession(sessionNum) {
-  if (sessionNum === 1) {
-    totalCorrectCount = 0;
-  }
-  currentSession = sessionNum;
-  const isTermToDef = (currentSession % 2 !== 0);
-  
-  // Update session badge UI
-  const badge = document.getElementById('sessionBadge');
-  if (badge) {
-    badge.textContent = `Sesi ${currentSession} dari ${TOTAL_SESSIONS} — ${isTermToDef ? 'Istilah → Definisi' : 'Definisi → Istilah'}`;
-  }
-  
-  queue = getSessionTerms(currentSession);
+function saveSessionState(data){
+  try{ localStorage.setItem(SESSION_KEY, JSON.stringify(data)); }catch(e){}
+}
+function loadSessionState(){
+  try{ return JSON.parse(localStorage.getItem(SESSION_KEY)); }catch(e){ return null; }
+}
+function clearSessionState(){
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+}
+
+function startQuiz() {
+  queue = getQuizTerms();
   qIndex = 0;
   correctCount = 0;
   missed = [];
+  clearSessionState();
   renderQuestion();
 }
 
-function retryMissedSession(missedTerms) {
+function retryMissed(missedTerms) {
   queue = shuffle(missedTerms);
   qIndex = 0;
   correctCount = 0;
   missed = [];
+  clearSessionState();
   renderQuestion();
 }
 
@@ -181,29 +152,14 @@ function makeChoices(correctTerm){
 function renderQuestion(){
   answered = false;
   const total = queue.length;
-  if (document.getElementById('progressFill')) {
-    document.getElementById('progressFill').style.width = `${(correctCount/total)*100}%`;
-  }
 
-  // Update left circle with totalCorrectCount, right circle with set.terms.length
-  const segLeft = document.querySelector('.seg-left');
-  const segRight = document.querySelector('.seg-right');
-  if(segLeft) segLeft.textContent = totalCorrectCount;
-  if(segRight) segRight.textContent = set.terms.length;
+  // Update counters
+  const segLeftCount = document.getElementById('segLeftCount');
+  const segRightCount = document.getElementById('segRightCount');
+  if(segLeftCount) segLeftCount.textContent = correctCount;
+  if(segRightCount) segRightCount.textContent = total;
 
-  // Update segmented fills for sessions 1 to TOTAL_SESSIONS
-  for (let s = 1; s <= TOTAL_SESSIONS; s++) {
-    const fillEl = document.getElementById(`segFill${s}`);
-    if (fillEl) {
-      if (s < currentSession) {
-        fillEl.style.width = '100%';
-      } else if (s === currentSession) {
-        fillEl.style.width = `${(correctCount / total) * 100}%`;
-      } else {
-        fillEl.style.width = '0%';
-      }
-    }
-  }
+  renderProgressBar();
 
   if(qIndex >= total){
     renderSummary();
@@ -212,7 +168,7 @@ function renderQuestion(){
 
   const current = queue[qIndex];
   const choices = makeChoices(current);
-  const isTermToDef = (currentSession % 2 !== 0);
+  const isTermToDef = (qIndex % 2 === 0);
 
   const area = document.getElementById('quizArea');
   area.innerHTML = `
@@ -233,13 +189,11 @@ function renderQuestion(){
       <div class="choices" id="choicesWrap"></div>
 
       <div class="question-footer">
-        <span class="flag">⚐</span>
-        <a class="dont-know" href="#">Tidak tahu jawabannya?</a>
+        <button type="button" class="dont-know" id="dontKnowBtn">Tidak tahu jawabannya?</button>
       </div>
-
-      <div class="question-next-wrap">
-        <button class="btn btn-primary" id="nextQBtn" style="display:none">Lanjut →</button>
-      </div>
+    </div>
+    <div class="question-next-wrap">
+      <button class="btn btn-primary" id="nextQBtn" style="display:none">Lanjutkan</button>
     </div>
   `;
 
@@ -250,31 +204,37 @@ function renderQuestion(){
   });
 
   // Don't know click listener
-  const dontKnowLink = area.querySelector('.dont-know');
-  if (dontKnowLink) {
-    dontKnowLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (answered) return;
-      
-      answered = true;
-      document.querySelectorAll('.choice').forEach(el => {
-        el.classList.add('disabled');
-        if(el.dataset.id === current.id) {
-          el.classList.add('correct');
-        }
-      });
-      missed.push(current);
-      document.getElementById('nextQBtn').style.display = 'inline-block';
-      document.getElementById('nextQBtn').onclick = () => {
-        qIndex++;
-        renderQuestion();
-      };
+  document.getElementById('dontKnowBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (answered) return;
+    const btn = e.currentTarget;
+    btn.classList.remove('pulse');
+    void btn.offsetWidth;
+    btn.classList.add('pulse');
+    
+    answered = true;
+    document.querySelectorAll('.choice').forEach(el => {
+      el.classList.add('disabled');
+      if(el.dataset.id === current.id) {
+        el.classList.add('correct');
+      }
     });
-  }
+    missed.push(current);
+      const promptEl = area.querySelector('.question-prompt');
+      if(promptEl) promptEl.outerHTML = '<div class="question-wrong-msg">Gak apa-apa, Anda masih belajar!</div>';
+      const nextBtn = document.getElementById('nextQBtn');
+      nextBtn.style.display = 'inline-block';
+      nextBtn.classList.add('show');
+      nextBtn.textContent = 'Lanjutkan';
+      nextBtn.onclick = () => {
+      qIndex++;
+      renderQuestion();
+    };
+  });
 
   const wrap = document.getElementById('choicesWrap');
   wrap.innerHTML = choices.map((c,i) => `
-    <button class="choice" data-id="${c.id}">
+    <button class="choice" data-id="${escapeHtml(c.id)}">
       <span class="choice-num">${i+1}</span>
       <span class="choice-text">${escapeHtml(isTermToDef ? c.def : c.term)}</span>
     </button>
@@ -282,13 +242,6 @@ function renderQuestion(){
 
   wrap.querySelectorAll('.choice').forEach((btn, i) => {
     btn.addEventListener('click', () => handleAnswer(btn, current, choices));
-    // accessibility attributes and keyboard support
-    btn.setAttribute('aria-pressed','false');
-    btn.setAttribute('role','button');
-    btn.tabIndex = 0;
-    btn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
-    });
   });
 
   // keep legacy progress fill in sync (hidden by CSS here)
@@ -310,11 +263,11 @@ function handleAnswer(btn, current, choices){
 
   if(isCorrect){
     correctCount++;
-    totalCorrectCount++;
-    const segLeft = document.querySelector('.seg-left');
-    if(segLeft) segLeft.textContent = totalCorrectCount;
   } else {
     missed.push(current);
+    const wrongMsgs = ['Hampir benar, Anda masih belajar!','Gak apa-apa, Anda masih belajar!','Belum tepat, coba lagi nanti!','Sabar ya, pasti bisa!','Keep going, belum nyampe!'];
+    const promptEl = document.querySelector('.question-prompt');
+    if(promptEl) promptEl.outerHTML = `<div class="question-wrong-msg">${wrongMsgs[Math.floor(Math.random()*wrongMsgs.length)]}</div>`;
   }
 
   // update ARIA states and announce result for screen readers
@@ -325,7 +278,7 @@ function handleAnswer(btn, current, choices){
       el.setAttribute('aria-pressed', 'false');
     }
   });
-  const isTermToDef = (currentSession % 2 !== 0);
+  const isTermToDef = (qIndex % 2 === 0);
   announce(isCorrect ? 'Benar' : `Salah. Jawaban yang benar: ${isTermToDef ? current.def : current.term}`);
 
   // Update SM-2 metadata: quality 5 for correct, 2 for wrong
@@ -333,76 +286,106 @@ function handleAnswer(btn, current, choices){
     updateReviewForTerm(set.id, current.id, isCorrect ? 5 : 2);
   }catch(e){ console.warn('SM2 update failed', e); }
 
-  document.getElementById('nextQBtn').style.display = 'inline-block';
-  document.getElementById('nextQBtn').onclick = () => {
-    qIndex++;
-    renderQuestion();
-  };
+  const nextBtn = document.getElementById('nextQBtn');
+
+  if(isCorrect){
+    const msgs = ['Benar!','Luar biasa!','Tepat sekali!','Keren!','Hebat!','Mantap!','Sempurna!','Asik benar!','Jago!','Nice!'];
+    const promptEl = document.querySelector('.question-prompt');
+    if(promptEl) promptEl.outerHTML = `<div class="question-correct-msg">${msgs[Math.floor(Math.random()*msgs.length)]}</div>`;
+    setTimeout(() => { qIndex++; renderQuestion(); }, 800);
+  } else {
+    nextBtn.style.display = 'inline-block';
+    nextBtn.classList.add('show');
+    nextBtn.textContent = 'Lanjutkan';
+    nextBtn.onclick = () => { qIndex++; renderQuestion(); };
+  }
 }
 
 function renderSummary(){
-  if (document.getElementById('progressFill')) {
-    document.getElementById('progressFill').style.width = '100%';
-  }
-  
-  // Update segmented progress fills to 100% for completed sessions
-  for (let s = 1; s <= TOTAL_SESSIONS; s++) {
-    const fillEl = document.getElementById(`segFill${s}`);
-    if (fillEl) {
-      if (s <= currentSession) {
-        fillEl.style.width = '100%';
-      } else {
-        fillEl.style.width = '0%';
-      }
-    }
-  }
+  // save state so refresh stays on summary
+  saveSessionState({ correctCount, total: queue.length, missedIds: missed.map(m => m.id) });
 
   const total = queue.length;
   const pct = Math.round((correctCount/total)*100);
   const area = document.getElementById('quizArea');
-  const isFinalSession = (currentSession === TOTAL_SESSIONS);
+  const circumference = 2 * Math.PI * 58;
+  const offset = circumference - (pct / 100) * circumference;
+  const allCorrect = missed.length === 0;
 
   area.innerHTML = `
-      <div class="learn-summary">
-      <div class="score-circle">${pct}%</div>
-      <h2>Sesi ${currentSession} Selesai!</h2>
-      <p class="page-sub">
-        ${correctCount} dari ${total} jawaban benar. 
-        ${missed.length === 0 
-          ? 'Sempurna! Semua jawaban benar di sesi ini.' 
-          : `${missed.length} kata masih perlu dilatih lagi.`}
-      </p>
-      
-      ${isFinalSession && missed.length === 0 ? `
-        <h3 style="color: #0fb07a; margin-bottom: 20px;">🎉 Selamat! Anda telah menyelesaikan seluruh ${TOTAL_SESSIONS} Sesi latihan!</h3>
+    <div class="learn-summary">
+      <div class="summary-ring-wrap">
+        <svg class="summary-ring-svg" viewBox="0 0 140 140">
+          <circle class="summary-ring-track" cx="70" cy="70" r="58" />
+          <circle class="summary-ring-fill" cx="70" cy="70" r="58"
+            stroke-dasharray="${circumference}"
+            stroke-dashoffset="${circumference}"
+            data-target="${offset}" />
+        </svg>
+        <div class="summary-ring-inner">
+          <span class="summary-ring-pct">${pct}%</span>
+          <span class="summary-ring-label">benar</span>
+        </div>
+      </div>
+
+      <h2 class="summary-title">${allCorrect ? 'Semua Selesai!' : 'Selesai!'}</h2>
+      <p class="summary-desc">${correctCount} dari ${total} jawaban benar.</p>
+
+      <div class="summary-stats">
+        <div class="summary-stat summary-stat-correct">
+          <span class="summary-stat-num">${correctCount}</span>
+          <span class="summary-stat-label">Benar</span>
+        </div>
+        <div class="summary-stat summary-stat-wrong">
+          <span class="summary-stat-num">${missed.length}</span>
+          <span class="summary-stat-label">Salah</span>
+        </div>
+        <div class="summary-stat summary-stat-total">
+          <span class="summary-stat-num">${total}</span>
+          <span class="summary-stat-label">Total</span>
+        </div>
+      </div>
+
+      ${allCorrect ? `
+        <div class="summary-congrats">Semua kata sudah dikuasai! Pertahankan!</div>
       ` : ''}
 
       <div class="learn-actions">
-        ${missed.length > 0 ? '<button class="btn btn-primary" id="retryMissedBtn">Ulangi yang salah</button>' : ''}
-        
-        ${isFinalSession 
-          ? '<button class="btn btn-outline" id="restartSessionsBtn">Mulai Ulang Sesi 1</button>'
-          : `<button class="btn btn-primary" id="nextSessionBtn">Lanjut ke Sesi ${currentSession + 1} →</button>`
-        }
-        
-        <a class="btn btn-ghost" href="index.html">Ke Beranda</a>
+        ${missed.length > 0 ? '<button class="btn btn-primary summary-btn" id="retryMissedBtn">Ulangi yang salah</button>' : ''}
+        <button class="btn btn-outline summary-btn" id="restartBtn">Mulai Ulang</button>
+        <a class="btn btn-ghost summary-btn" href="index.html">Ke Beranda</a>
       </div>
     </div>
   `;
 
+  // animate ring
+  requestAnimationFrame(() => {
+    const fill = document.querySelector('.summary-ring-fill');
+    if(fill) fill.style.strokeDashoffset = fill.dataset.target;
+  });
+
   if(missed.length > 0){
-    document.getElementById('retryMissedBtn').addEventListener('click', () => retryMissedSession(missed));
+document.getElementById('retryMissedBtn').addEventListener('click', () => retryMissed(missed));
   }
-  
-  if(isFinalSession){
-    document.getElementById('restartSessionsBtn').addEventListener('click', () => startSession(1));
-  } else {
-    document.getElementById('nextSessionBtn').addEventListener('click', () => startSession(currentSession + 1));
-  }
+  document.getElementById('restartBtn').addEventListener('click', () => startQuiz());
 }
 
-renderProgressSegments();
-startSession(1);
+// detect if this is a refresh vs fresh navigation
+const navEntries = performance.getEntriesByType('navigation');
+const isRefresh = navEntries.length > 0 && navEntries[0].type === 'reload';
+
+// restore summary state on refresh only
+const saved = loadSessionState();
+if(isRefresh && saved && saved.correctCount !== undefined){
+  correctCount = saved.correctCount || 0;
+  queue = getQuizTerms();
+  qIndex = queue.length;
+  missed = (saved.missedIds || []).map(id => set.terms.find(t => t.id === id)).filter(Boolean);
+  renderSummary();
+} else {
+  clearSessionState();
+  startQuiz();
+}
 })();
 </script>
 </body>
