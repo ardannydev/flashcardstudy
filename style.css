@@ -558,8 +558,8 @@ body.dark-theme .choice.wrong::before{ content:'✕' !important;position:absolut
 }
 
 /* Dark-theme: flashcard page */
-html:has(.flashcard-page){ overflow:hidden; height:100%; }
-.dark-theme.flashcard-page{ overflow:hidden; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; position:fixed; top:0; left:0; right:0; width:100%; display:flex; flex-direction:column; overscroll-behavior:none; touch-action:none; padding-bottom:env(safe-area-inset-bottom); box-sizing:border-box; }
+html:has(.flashcard-page){ overflow:hidden; height:100%; height:-webkit-fill-available; }
+.dark-theme.flashcard-page{ overflow:hidden; height:100vh; height:100dvh; height:-webkit-fill-available; max-height:100vh; max-height:100dvh; max-height:-webkit-fill-available; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; display:flex; flex-direction:column; overscroll-behavior:none; touch-action:none; padding-bottom:env(safe-area-inset-bottom); box-sizing:border-box; }
 .dark-theme .qwrap{ overflow:hidden; }
 .dark-theme .qslide{ overflow:hidden; }
 .dark-theme .qtopbar{ display:flex;align-items:center;gap:10px;padding:16px 32px;color:#fff;position:relative;flex-shrink:0 }
