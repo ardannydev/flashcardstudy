@@ -558,7 +558,10 @@ body.dark-theme .choice.wrong::before{ content:'✕' !important;position:absolut
 }
 
 /* Dark-theme: flashcard page */
-.dark-theme.flashcard-page{ overflow:hidden; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; display:flex; flex-direction:column; }
+html:has(.flashcard-page){ overflow:hidden; height:100%; }
+.dark-theme.flashcard-page{ overflow:hidden; height:100vh; height:100dvh; max-height:100vh; max-height:100dvh; position:fixed; inset:0; width:100%; display:flex; flex-direction:column; overscroll-behavior:none; touch-action:none; }
+.dark-theme .qwrap{ overflow:hidden; }
+.dark-theme .qslide{ overflow:hidden; }
 .dark-theme .qtopbar{ display:flex;align-items:center;gap:10px;padding:16px 32px;color:#fff;position:relative;flex-shrink:0 }
 .dark-theme .qtopbar .logo{ color:#fff;font-size:16px; }
 .dark-theme .qhead{ position:absolute;left:50%;top:16px;transform:translateX(-50%);text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;gap:4px;white-space:nowrap }
