@@ -5,120 +5,114 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="FlashCardStudy — Belajar kosakata dengan flashcard interaktif. Buat set, ulangi, dan ingat kata baru setiap hari.">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0e0b2e">
+<meta name="theme-color" content="#0B1426">
 <title>FlashCardStudy — Beranda</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
+  <canvas id="bgCanvas"></canvas>
 
-  <header class="main-header">
-    <div class="header-brand">
-      <a href="index.html" class="logo">FlashCardStudy</a>
-      <p class="tagline">Belajar kosakata dengan flashcard.</p>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="ibtn ibtn-outline" onclick="logout()">Keluar</button>
+  <header class="nh">
+    <div class="nh-inner">
+      <div class="nh-bar">
+        <a href="index.html" class="nh-logo">FlashCardStudy</a>
+        <nav class="nh-nav-desktop">
+          <div class="nh-skew-wrap">
+            <a href="index.html" class="nh-link active">Beranda</a>
+            <a href="sets.html" class="nh-link">Set</a>
+            <a href="create.html" class="nh-link">Buat</a>
+          </div>
+        </nav>
+        <div class="nh-actions">
+          <button class="nh-theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </button>
+          <button class="nh-btn nh-btn-ghost" onclick="logout()">Keluar</button>
+          <button class="nh-mobile-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 18h16"/><path d="M4 6h16"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
- 
-  <section class="hero-panel">
-    <div class="hero-copy">
-      <p class="eyebrow">Belajar kosakata</p>
-      <h1>Flashcard yang lebih ringkas, rapi, dan fokus.</h1>
-        <p class="hero-text">Atur set, ulangi dengan mudah, dan ingat kata baru setiap hari.</p>
-        <div class="hero-actions">
-          <a class="ibtn ibtn-hero-primary" href="sets.html">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-            Lihat set
-          </a>
-          <a class="ibtn ibtn-hero-ghost" href="create.html">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Buat set baru
-          </a>
-        </div>
-    </div>
-    <div class="hero-card">
-        <h2>Ringkas, cepat, langsung pakai</h2>
-        <div class="feature-grid">
-          <div class="feature-chip">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            </div>
-            <div>
-              <strong>Set rapih</strong>
-              <span>Judul, deskripsi, dan kami simpan otomatis.</span>
-            </div>
-          </div>
-          <div class="feature-chip">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div>
-              <strong>Mulai cepat</strong>
-              <span>Langsung belajar tanpa langkah berlebih.</span>
-            </div>
-          </div>
-          <div class="feature-chip">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </div>
-            <div>
-              <strong>Review pintar</strong>
-              <span>Lihat kartu yang harus diulang hari ini.</span>
-            </div>
-          </div>
-        </div>
-    </div>
-  </section>
 
-  <main class="icontainer">
-    <section class="overview-row">
-        <div class="dash-card">
-          <div class="dash-card-body">
-            <div class="label">Set</div>
-            <strong id="totalSets">0</strong>
-            <span>Jumlah set yang tersimpan.</span>
-          </div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-body">
-            <div class="label">Kartu</div>
-            <strong id="totalCards">0</strong>
-            <span>Istilah dan definisi yang tersedia.</span>
-          </div>
-        </div>
-        <div class="dash-card">
-          <div class="dash-card-body">
-            <div class="label">Review</div>
-            <strong id="totalDue">0</strong>
-            <span>Kartu yang siap diulang hari ini.</span>
-          </div>
-        </div>
-    </section>
+  <main class="hm-main">
+    <div class="hm-glow"></div>
 
-    <section class="stats-grid" id="statsGrid" style="display:none;">
-      <div class="stats-card">
-        <span class="stats-num" id="statMastered">0</span>
-        <span class="stats-label">Dikuasai</span>
-        <span class="stats-sub" id="statMasteredSub"></span>
+    <div class="hm-hero">
+      <div class="hm-hero-text">
+        <h1 class="hm-title">Flashcard yang lebih ringkas, rapi, dan fokus.</h1>
+        <p class="hm-desc">Atur set, ulangi dengan mudah, dan ingat kata baru setiap hari.</p>
       </div>
-      <div class="stats-card">
-        <span class="stats-num" id="statLearning">0</span>
-        <span class="stats-label">Sedang Dipelajari</span>
+      <div class="hm-actions">
+        <a class="hm-btn hm-btn-primary" href="sets.html">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Lihat set
+        </a>
+        <a class="hm-btn hm-btn-secondary" href="create.html">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Buat set baru
+        </a>
       </div>
-      <div class="stats-card">
-        <span class="stats-num" id="statNew">0</span>
-        <span class="stats-label">Belum Dipelajari</span>
+    </div>
+
+    <div class="hm-stats">
+      <div class="hm-stat-card">
+        <span class="hm-stat-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </span>
+        <div class="hm-stat-body">
+          <span class="hm-stat-num" id="totalSets">0</span>
+          <span class="hm-stat-label">Set</span>
+        </div>
       </div>
-      <div class="stats-card">
-        <span class="stats-num" id="statAccuracy">0%</span>
-        <span class="stats-label">Akurasi Rata-rata</span>
+      <div class="hm-stat-card">
+        <span class="hm-stat-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </span>
+        <div class="hm-stat-body">
+          <span class="hm-stat-num" id="totalCards">0</span>
+          <span class="hm-stat-label">Kartu</span>
+        </div>
       </div>
-    </section>
+      <div class="hm-stat-card">
+        <span class="hm-stat-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <div class="hm-stat-body">
+          <span class="hm-stat-num" id="totalDue">0</span>
+          <span class="hm-stat-label">Jatuh tempo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hm-progress" id="progressSection">
+      <div class="hm-progress-header">
+        <h2 class="hm-section-title">Progress Belajar</h2>
+        <span class="hm-section-sub">Kuasai set demi set</span>
+      </div>
+      <div class="hm-progress-items">
+        <div class="hm-prog-item">
+          <div class="hm-prog-top"><span class="hm-prog-label">Dikuasai</span><span class="hm-prog-pct" id="statMasteredPercent">0%</span></div>
+          <div class="hm-prog-bar"><div class="hm-prog-fill hm-prog-fill-mastered" id="progressMastered"></div></div>
+          <span class="hm-prog-count" id="statMastered">0 kartu</span>
+        </div>
+        <div class="hm-prog-item">
+          <div class="hm-prog-top"><span class="hm-prog-label">Diproses</span><span class="hm-prog-pct" id="statLearningPercent">0%</span></div>
+          <div class="hm-prog-bar"><div class="hm-prog-fill hm-prog-fill-learning" id="progressLearning"></div></div>
+          <span class="hm-prog-count" id="statLearning">0 kartu</span>
+        </div>
+        <div class="hm-prog-item">
+          <div class="hm-prog-top"><span class="hm-prog-label">Baru</span><span class="hm-prog-pct" id="statNewPercent">0%</span></div>
+          <div class="hm-prog-bar"><div class="hm-prog-fill hm-prog-fill-new" id="progressNew"></div></div>
+          <span class="hm-prog-count" id="statNew">0 kartu</span>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">
-    <p>Dibuat dengan ❤️ oleh <strong>Ardwanny</strong></p>
+    <p>FlashCardStudy &mdash; oleh <strong>Ardwanny</strong></p>
   </footer>
 
 <script src="app.js"></script>
@@ -140,27 +134,129 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
   updateDashboard(getSets());
 
   function updateStats(sets){
-    let mastered=0, learning=0, newCards=0, totalReps=0;
+    let mastered=0, learning=0, newCards=0;
     sets.forEach(set=>{
       set.terms.forEach(t=>{
         const r = t._review;
         if(!r || r.reps===0){ newCards++; }
         else if(r.interval >= 21){ mastered++; }
         else { learning++; }
-        if(r && r.last) totalReps++;
       });
     });
     const totalCards = mastered+learning+newCards;
+
     document.getElementById('statMastered').textContent = mastered;
-    document.getElementById('statMasteredSub').textContent = totalCards > 0 ? Math.round((mastered/totalCards)*100)+'% dari total' : '';
     document.getElementById('statLearning').textContent = learning;
     document.getElementById('statNew').textContent = newCards;
-    document.getElementById('statAccuracy').textContent = totalReps > 0 ? Math.round((mastered/totalReps)*100)+'%' : '0%';
 
-    const statsGrid = document.getElementById('statsGrid');
-    if(totalCards > 0) statsGrid.style.display = '';
+    const progressSection = document.getElementById('progressSection');
+    if(totalCards > 0) progressSection.style.display = '';
+
+    const updateBar = (id, value) => {
+      const bar = document.getElementById(id);
+      if(bar) bar.style.width = (totalCards > 0 ? (value / totalCards) * 100 : 0) + '%';
+    };
+    updateBar('progressMastered', mastered);
+    updateBar('progressLearning', learning);
+    updateBar('progressNew', newCards);
+
+    const updatePercent = (id, value) => {
+      const el = document.getElementById(id + 'Percent');
+      if(el && totalCards > 0) el.textContent = Math.round((value / totalCards) * 100) + '%';
+    };
+    updatePercent('statMastered', mastered);
+    updatePercent('statLearning', learning);
+    updatePercent('statNew', newCards);
   }
+
   updateStats(getSets());
+})();
+</script>
+<script>
+// Nav helpers
+function toggleTheme(){
+  document.body.classList.toggle('dark-theme');
+  localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+}
+function toggleMobileMenu(){
+  const menu = document.getElementById('mobileNav');
+  if(menu){ menu.classList.toggle('open'); }
+}
+// Internal navigation — no loading, no nav animation
+document.querySelectorAll('.nh-link').forEach(function(el){
+  if(el.id==='leaveBtn') return;
+  el.addEventListener('click',function(e){
+    var href = this.getAttribute('href');
+    if(!href||href.startsWith('#')) return;
+    e.preventDefault();
+    sessionStorage.setItem('navInternal','1');
+    window.location.href = href;
+  });
+});
+// If coming from internal nav, skip nav animation
+if(sessionStorage.getItem('navInternal')){
+  document.querySelector('.nh').classList.add('nh-no-anim');
+  sessionStorage.removeItem('navInternal');
+}
+</script>
+<script>
+// Particle constellation animation
+(function(){
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [], w, h;
+  const COUNT = 60, MAX_DIST = 130;
+  const CYAN = '0,217,255', PURPLE = '139,92,246';
+  const isDark = document.body.classList.contains('dark-theme');
+  const COLOR = isDark ? CYAN : PURPLE;
+  const SPEED = 0.3;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  for(let i=0;i<COUNT;i++){
+    particles.push({
+      x: Math.random()*w, y: Math.random()*h,
+      vx: (Math.random()-0.5)*SPEED, vy: (Math.random()-0.5)*SPEED,
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<COUNT;i++){
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>w) p.vx*=-1;
+      if(p.y<0||p.y>h) p.vy*=-1;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,1.8,0,Math.PI*2);
+      ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba('+COLOR+',.4)';
+      ctx.fillStyle = 'rgba('+COLOR+',.7)';
+      ctx.fill();
+      for(let j=i+1;j<COUNT;j++){
+        const q = particles[j];
+        const dx=p.x-q.x, dy=p.y-q.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        if(dist<MAX_DIST){
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y);
+          ctx.lineTo(q.x,q.y);
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = 'rgba('+COLOR+',.15)';
+          ctx.strokeStyle = 'rgba('+COLOR+','+(0.12*(1-dist/MAX_DIST))+')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
 })();
 </script>
 </body>

@@ -12,21 +12,27 @@
 </head>
 <body class="dark-theme flashcard-page">
 
-  <div class="qtopbar">
-    <div class="qhead">
-      <div class="qnum" id="counter">1 / 1</div>
-      <div class="qtitle" id="setTitle"></div>
+  <div class="fc-sidenav" id="fcSidenav">
+    <a href="#" class="fc-logo" onclick="toggleNav(event)">FCS</a>
+    <div class="fc-nav">
+      <a href="index.html" class="fc-nav-link" data-title="Beranda" onclick="navClick(event,this)"><span class="fc-nav-icon">B</span><span class="fc-nav-text">Beranda</span></a>
+      <a href="sets.html" class="fc-nav-link" data-title="Set" onclick="navClick(event,this)"><span class="fc-nav-icon">S</span><span class="fc-nav-text">Set</span></a>
+      <a href="create.html" class="fc-nav-link" data-title="Buat" onclick="navClick(event,this)"><span class="fc-nav-icon">C</span><span class="fc-nav-text">Buat</span></a>
     </div>
-    <div class="qtopright">
-      <div class="qprogress-mini"><div class="qprogress-mini-fill" id="progressFill"></div></div>
-    </div>
+    <div style="flex:1;min-height:4px"></div>
+    <button class="fc-side-btn" data-title="Keluar" onclick="logout()"><span class="fc-nav-icon">✕</span><span class="fc-nav-text">Keluar</span></button>
   </div>
 
+  <div class="qcontainer">
+  <div class="qab"></div>
   <main class="qwrap" id="app">
-    <div class="qtrackbar" id="trackBar" style="display:none">
-      <div class="qbadge qbadge-learning" id="learningBadge"><span id="learningCount">0</span> Masih dipelajari</div>
-      <div class="qbadge qbadge-know" id="knowBadge">Tahu <span id="knowCount">0</span></div>
-    </div>
+      <div class="qtitle-bar">
+        <span class="qtitle-bar-label" id="titleLabel">Judul</span>
+        <div class="qbadge qbadge-learning" id="learningBadge" style="display:none"><span id="learningCount">0</span> Masih dipelajari</div>
+        <span class="qtitle-bar-text" id="setTitle"></span>
+        <div class="qbadge qbadge-know" id="knowBadge" style="display:none">Tahu <span id="knowCount">0</span></div>
+        <button class="qtitle-star-filter" id="starFilterBtn" data-title="Tinjau kartu bintang"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Bookmark</button>
+      </div>
     <div class="qslide" id="slideWrap">
     <div class="qscene">
       <div class="qflip3d" id="flipInner" role="button" tabindex="0" aria-label="Kartu. Tekan spasi untuk membalik.">
@@ -103,51 +109,38 @@
         </div>
       </div>
     </div>
+  </main>
 
-    <div class="qbottom" id="qbottom">
+  <div class="qbottom-bar">
+    <span class="qbottom-bar-left">Kartu</span>
+    <span class="qbottom-bar-right"><span class="qnum" id="counter">1 / 1</span></span>
+  </div>
+  <div class="qbottom-progress"><div class="qbottom-progress-fill" id="progressFill"></div></div>
+  <div class="qbottom" id="qbottom">
       <div class="qtoggle-wrap">
         <span>Pantau kemajuan</span>
         <button class="qtoggle" id="progressToggle" role="switch" aria-checked="false" aria-label="Pantau kemajuan"></button>
       </div>
 
       <div class="qnav-center" id="navArrows">
-        <button class="qarrow" id="prevBtn">←</button>
-        <button class="qarrow" id="nextBtn">→</button>
+        <button class="qarrow" id="prevBtn" data-title="Sebelumnya"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="qarrow" id="nextBtn" data-title="Selanjutnya"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
       </div>
       <div class="qnav-center" id="navTrack" style="display:none">
-        <button class="qarrow qx" id="xBtn" title="Masih dipelajari">✕</button>
-        <button class="qarrow qcheck" id="checkBtn" title="Tahu">✓</button>
+        <button class="qarrow qx" id="xBtn" data-title="Masih dipelajari"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        <button class="qarrow qcheck" id="checkBtn" data-title="Tahu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></button>
       </div>
 
       <div class="qright-tools">
-        <button class="qplay" id="shortcutsBtn" title="Shortcut keyboard">?</button>
-        <button class="qplay" id="exportPdfBtn" title="Export ke PDF" style="font-size:11px;">PDF</button>
-        <button class="qplay" id="starFilterBtn" title="Tinjau kartu bintang" style="display:none">★</button>
-        <button class="qplay" id="restartBtn" title="Ulangi dari awal">▶</button>
-        <button class="qplay" id="undoBtn" title="Batalkan" style="display:none">↺</button>
-        <button class="qshuffle" id="shuffleBtn" title="Acak">⤨</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- Keyboard shortcuts modal -->
-  <div class="shortcuts-overlay" id="shortcutsOverlay">
-    <div class="shortcuts-card">
-      <h3>Shortcut Keyboard</h3>
-      <div class="shortcut-row"><span class="shortcut-label">Balik kartu</span><div class="shortcut-keys"><span class="shortcut-key">Space</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Kartu sebelumnya</span><div class="shortcut-keys"><span class="shortcut-key">←</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Kartu berikutnya</span><div class="shortcut-keys"><span class="shortcut-key">→</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Tahu (mode progress)</span><div class="shortcut-keys"><span class="shortcut-key">✓</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Masih dipelajari</span><div class="shortcut-keys"><span class="shortcut-key">✕</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Batalkan</span><div class="shortcut-keys"><span class="shortcut-key">Ctrl</span><span class="shortcut-key">Z</span></div></div>
-      <div class="shortcut-row"><span class="shortcut-label">Tutup modal</span><div class="shortcut-keys"><span class="shortcut-key">Esc</span></div></div>
-      <div style="text-align:center;margin-top:16px;">
-        <button class="btn btn-outline" onclick="document.getElementById('shortcutsOverlay').classList.remove('visible')">Tutup</button>
+        <button class="qplay" id="restartBtn" data-title="Putar otomatis"><svg class="qplay-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg><svg class="qpause-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+        <button class="qplay" id="undoBtn" data-title="Batalkan" style="display:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h13a4 4 0 010 8H10"/><path d="M7 6l-4 4 4 4"/></svg></button>
+        <button class="qshuffle" id="shuffleBtn" data-title="Acak"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
       </div>
     </div>
   </div>
 
-<script src="app.js"></script>
+    
+    <script src="app.js"></script>
 <script>
 (function(){
 const setId = qs('id');
@@ -156,7 +149,6 @@ const set = getSet(setId);
 if(!set || !set.terms.length){
   document.getElementById('app').innerHTML =
     '<div class="empty" style="color:#cfd3ec"><h2 style="color:#fff">Set tidak ditemukan</h2><p>Set ini kosong atau sudah dihapus.</p><a class="btn btn-primary" href="index.html" style="display:inline-block;margin-top:12px">Kembali ke beranda</a></div>';
-  document.getElementById('trackBar').style.display = 'none';
   document.getElementById('slideWrap').style.display = 'none';
   document.getElementById('qbottom').style.display = 'none';
   return;
@@ -199,9 +191,11 @@ function render(){
   document.getElementById('prevBtn').disabled = idx === 0;
   document.getElementById('nextBtn').disabled = idx === order.length - 1;
 
-  // show star filter button if there are starred cards
-  const hasStarred = starred.size > 0;
-  document.getElementById('starFilterBtn').style.display = (!trackProgress && hasStarred) ? 'flex' : 'none';
+  // show star filter button (always visible except in track progress mode)
+  document.getElementById('starFilterBtn').style.display = !trackProgress ? 'flex' : 'none';
+  document.getElementById('titleLabel').style.display = trackProgress ? 'none' : 'block';
+  document.getElementById('learningBadge').style.display = trackProgress ? 'inline-flex' : 'none';
+  document.getElementById('knowBadge').style.display = trackProgress ? 'inline-flex' : 'none';
 
   // poker stack: show/hide bg cards (always empty — plain card shapes)
   const bgIds = ['cardBg1','cardBg2'];
@@ -404,7 +398,6 @@ function showResults(){
   });
 
   // hide bottom bar controls, show only results
-  document.getElementById('trackBar').style.display = 'none';
   document.getElementById('navTrack').style.display = 'none';
   document.getElementById('navArrows').style.display = 'none';
   document.getElementById('undoBtn').style.display = 'none';
@@ -417,7 +410,6 @@ function showResults(){
 function hideResults(){
   document.getElementById('resultsScreen').style.display = 'none';
   document.getElementById('slideWrap').style.display = '';
-  document.getElementById('trackBar').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('navTrack').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('navArrows').style.display = trackProgress ? 'none' : 'flex';
   document.getElementById('undoBtn').style.display = trackProgress ? 'flex' : 'none';
@@ -450,6 +442,7 @@ function goTo(newIdx){
 }
 function toggleStar(e){
   e.stopPropagation();
+  e.preventDefault();
   const id = currentTerm().id;
   starred.has(id) ? starred.delete(id) : starred.add(id);
   saveStarred();
@@ -533,7 +526,13 @@ document.getElementById('undoBtn').addEventListener('click', () => {
   resetFrontTransform();
   render();
 });
+function stopStarPointer(e){
+  e.stopPropagation();
+}
+
+document.getElementById('starBtnFront').addEventListener('pointerdown', stopStarPointer);
 document.getElementById('starBtnFront').addEventListener('click', toggleStar);
+document.getElementById('starBtnBack').addEventListener('pointerdown', stopStarPointer);
 document.getElementById('starBtnBack').addEventListener('click', toggleStar);
 document.getElementById('shuffleBtn').addEventListener('click', () => {
   order = shuffle(order);
@@ -542,15 +541,14 @@ document.getElementById('shuffleBtn').addEventListener('click', () => {
   render();
 });
 document.getElementById('starFilterBtn').addEventListener('click', () => {
+  const btn = document.getElementById('starFilterBtn');
   if(order.length === set.terms.length){
-    // filter to starred only
     order = set.terms.filter(t => starred.has(t.id)).map(t => t.id);
     if(order.length === 0){ order = set.terms.map(t => t.id); return; }
-    document.getElementById('starFilterBtn').textContent = '★ ' + order.length;
+    btn.classList.add('active');
   } else {
-    // restore full order
     order = set.terms.map(t => t.id);
-    document.getElementById('starFilterBtn').textContent = '★';
+    btn.classList.remove('active');
   }
   idx = 0;
   resetToFront();
@@ -561,10 +559,12 @@ document.getElementById('restartBtn').addEventListener('click', () => {
     if(autoPlayTimer){
       clearInterval(autoPlayTimer);
       autoPlayTimer = null;
-      document.getElementById('restartBtn').textContent = '▶';
+      document.getElementById('restartBtn').querySelector('.qplay-icon').style.display = '';
+      document.getElementById('restartBtn').querySelector('.qpause-icon').style.display = 'none';
       return;
     }
-    document.getElementById('restartBtn').textContent = '⏸';
+    document.getElementById('restartBtn').querySelector('.qplay-icon').style.display = 'none';
+    document.getElementById('restartBtn').querySelector('.qpause-icon').style.display = '';
     autoPlayTimer = setInterval(() => {
       if(idx < order.length - 1){
         commitNav(1);
@@ -585,11 +585,14 @@ document.getElementById('progressToggle').addEventListener('click', function(){
   trackProgress = !trackProgress;
   this.classList.toggle('on', trackProgress);
   this.setAttribute('aria-checked', trackProgress);
-  document.getElementById('trackBar').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('navArrows').style.display = trackProgress ? 'none' : 'flex';
   document.getElementById('navTrack').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('restartBtn').style.display = trackProgress ? 'none' : 'flex';
   document.getElementById('undoBtn').style.display = trackProgress ? 'flex' : 'none';
+  document.getElementById('titleLabel').style.display = trackProgress ? 'none' : 'block';
+  document.getElementById('starFilterBtn').style.display = trackProgress ? 'none' : 'flex';
+  document.getElementById('learningBadge').style.display = trackProgress ? 'inline-flex' : 'none';
+  document.getElementById('knowBadge').style.display = trackProgress ? 'inline-flex' : 'none';
   if(autoPlayTimer){
     clearInterval(autoPlayTimer);
     autoPlayTimer = null;
@@ -672,31 +675,40 @@ document.addEventListener('keydown', (e) => {
 
 render();
 })();
-document.getElementById('shortcutsBtn').addEventListener('click', ()=>{
-  document.getElementById('shortcutsOverlay').classList.toggle('visible');
+// Nav helpers
+function toggleTheme(){
+  document.body.classList.toggle('dark-theme');
+  localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+}
+function navigate(e,el){
+  var href = el.getAttribute('href');
+  if(!href||href.startsWith('#')) return;
+  e.preventDefault();
+  sessionStorage.setItem('navInternal','1');
+  window.location.href = href;
+}
+function toggleNav(e){
+  if(e) e.preventDefault();
+  document.getElementById('fcSidenav').classList.toggle('expanded');
+}
+function navClick(e,el){
+  var nav = document.getElementById('fcSidenav');
+  if(!nav.classList.contains('expanded')){
+    e.preventDefault();
+    nav.classList.add('expanded');
+  } else {
+    navigate(e,el);
+  }
+}
+document.addEventListener('click',function(e){
+  var nav = document.getElementById('fcSidenav');
+  if(nav.classList.contains('expanded') && !nav.contains(e.target)){
+    nav.classList.remove('expanded');
+  }
 });
-document.getElementById('shortcutsOverlay').addEventListener('click', (e)=>{
-  if(e.target === e.currentTarget) e.target.classList.remove('visible');
-});
-document.getElementById('exportPdfBtn').addEventListener('click', ()=>{
-  const printWin = window.open('','_blank');
-  let html = '<html><head><title>'+escapeHtml(set.title)+' — FlashCardStudy</title><style>';
-  html += 'body{font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:0 auto;padding:20px;color:#1a1a2e;}';
-  html += 'h1{font-size:22px;margin-bottom:4px;} .desc{color:#666;margin-bottom:20px;font-size:14px;}';
-  html += '.card{border:1px solid #ddd;border-radius:8px;padding:14px 16px;margin-bottom:10px;page-break-inside:avoid;}';
-  html += '.card-num{color:#999;font-size:12px;margin-bottom:4px;} .term{font-weight:700;font-size:16px;} .def{color:#444;margin-top:4px;}';
-  html += '@media print{body{padding:0;}}';
-  html += '</style></head><body>';
-  html += '<h1>'+escapeHtml(set.title)+'</h1>';
-  if(set.desc) html += '<p class="desc">'+escapeHtml(set.desc)+'</p>';
-  set.terms.forEach((t,i)=>{
-    html += '<div class="card"><div class="card-num">#'+(i+1)+'</div><div class="term">'+escapeHtml(t.term)+'</div><div class="def">'+escapeHtml(t.def)+'</div></div>';
-  });
-  html += '</body></html>';
-  printWin.document.write(html);
-  printWin.document.close();
-  setTimeout(()=>{ printWin.print(); }, 300);
-});
+if(sessionStorage.getItem('navInternal')){
+  sessionStorage.removeItem('navInternal');
+}
 </script>
 </body>
 </html>
