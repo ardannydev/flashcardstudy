@@ -10,6 +10,7 @@ const PRECACHE = [
   '/style.css',
   '/app.js',
   '/manifest.json'
+  '/profile.html',
 ];
 
 self.addEventListener('install', (e) => {

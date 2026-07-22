@@ -18,21 +18,21 @@
       <a href="index.html" class="fc-nav-link" data-title="Beranda" onclick="navClick(event,this)"><span class="fc-nav-icon">B</span><span class="fc-nav-text">Beranda</span></a>
       <a href="sets.html" class="fc-nav-link" data-title="Set" onclick="navClick(event,this)"><span class="fc-nav-icon">S</span><span class="fc-nav-text">Set</span></a>
       <a href="create.html" class="fc-nav-link" data-title="Buat" onclick="navClick(event,this)"><span class="fc-nav-icon">C</span><span class="fc-nav-text">Buat</span></a>
+      <a href="profile.html" class="fc-nav-link" data-title="Profil" onclick="navClick(event,this)"><span class="fc-nav-icon">P</span><span class="fc-nav-text">Profil</span></a>
     </div>
     <div style="flex:1;min-height:4px"></div>
-    <button class="fc-side-btn" data-title="Keluar" onclick="logout()"><span class="fc-nav-icon">✕</span><span class="fc-nav-text">Keluar</span></button>
   </div>
 
   <div class="qcontainer">
   <div class="qab"></div>
   <main class="qwrap" id="app">
-      <div class="qtitle-bar">
-        <span class="qtitle-bar-label" id="titleLabel">Judul</span>
-        <div class="qbadge qbadge-learning" id="learningBadge" style="display:none"><span id="learningCount">0</span> Masih dipelajari</div>
-        <span class="qtitle-bar-text" id="setTitle"></span>
-        <div class="qbadge qbadge-know" id="knowBadge" style="display:none">Tahu <span id="knowCount">0</span></div>
-        <button class="qtitle-star-filter" id="starFilterBtn" data-title="Tinjau kartu bintang"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Bookmark</button>
-      </div>
+    <div class="qtitle-bar">
+      <span class="qtitle-bar-label" id="titleLabel">Judul</span>
+      <div class="qbadge qbadge-learning" id="learningBadge" style="display:none"><span id="learningCount">0</span> Masih dipelajari</div>
+      <span class="qtitle-bar-text" id="setTitle"></span>
+      <div class="qbadge qbadge-know" id="knowBadge" style="display:none">Tahu <span id="knowCount">0</span></div>
+      <button class="qtitle-star-filter" id="starFilterBtn" data-title="Tinjau kartu bintang"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Bookmark</button>
+    </div>
     <div class="qslide" id="slideWrap">
     <div class="qscene">
       <div class="qflip3d" id="flipInner" role="button" tabindex="0" aria-label="Kartu. Tekan spasi untuk membalik.">
@@ -109,14 +109,13 @@
         </div>
       </div>
     </div>
-  </main>
-
-  <div class="qbottom-bar">
-    <span class="qbottom-bar-left">Kartu</span>
-    <span class="qbottom-bar-right"><span class="qnum" id="counter">1 / 1</span></span>
-  </div>
-  <div class="qbottom-progress"><div class="qbottom-progress-fill" id="progressFill"></div></div>
-  <div class="qbottom" id="qbottom">
+    <div class="qbottom-panel">
+    <div class="qbottom-bar">
+      <span class="qbottom-bar-left">Kartu</span>
+      <span class="qbottom-bar-right"><span class="qnum" id="counter">1 / 1</span></span>
+    </div>
+    <div class="qbottom-progress"><div class="qbottom-progress-fill" id="progressFill"></div></div>
+    <div class="qbottom" id="qbottom">
       <div class="qtoggle-wrap">
         <span>Pantau kemajuan</span>
         <button class="qtoggle" id="progressToggle" role="switch" aria-checked="false" aria-label="Pantau kemajuan"></button>
@@ -138,7 +137,7 @@
       </div>
     </div>
   </div>
-
+  </div>
     
     <script src="app.js"></script>
 <script>

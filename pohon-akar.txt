@@ -1,0 +1,27 @@
+flashcard project
+|-- AGENTS.md
+|-- app.js
+|-- create.html
+|-- flashcard.html
+|-- index.html
+|-- learn.html
+|-- login.html
+|-- manifest.json
+|-- package.json
+|-- profile.html
+|-- README.md
+|-- sets.html
+|-- share.html
+|-- style.css
+|-- sw.js
+|-- vercel.json
+|-- api
+|   |-- login.js
+|   |-- register.js
+|   |-- sets.js
+|   |-- share.js
+|   |-- user.js
+|   `-- _lib
+|       |-- auth.js
+|       `-- ratelimit.js
+
