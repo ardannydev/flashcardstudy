@@ -52,11 +52,15 @@ function clearAuth(){
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(STORE_KEY);
 }
-// Helper untuk generate avatar URL unik per user
+// Helper untuk generate avatar unik per user tanpa request ke layanan eksternal.
 function getUserAvatarUrl(){
   const username = getCurrentUser() || 'pengguna';
-  // Gunakan DiceBear dengan gaya "lorelei" yang lebih realistis
-  return `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(username)}&backgroundType=gradientLinear&backgroundColor=6366f1,8b5cf6,ec4899&scale=120&radius=20`;
+  let hash = 0;
+  for(let i = 0; i < username.length; i++) hash = ((hash << 5) - hash + username.charCodeAt(i)) | 0;
+  const hue = Math.abs(hash) % 360;
+  const initial = (username.trim().charAt(0) || 'P').toUpperCase();
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl(${hue} 78% 58%)"/><stop offset="1" stop-color="hsl(${(hue + 55) % 360} 78% 52%)"/></linearGradient></defs><rect width="120" height="120" rx="24" fill="url(#g)"/><circle cx="60" cy="47" r="22" fill="#fff" fill-opacity=".9"/><path d="M24 106c4-24 18-36 36-36s32 12 36 36" fill="#fff" fill-opacity=".9"/><text x="60" y="116" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#fff">${initial}</text></svg>`;
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 // Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login.
 function requireLogin(){
