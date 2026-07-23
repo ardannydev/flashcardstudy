@@ -704,11 +704,11 @@ document.getElementById('resultsBtnLearn').addEventListener('click', () => {
 });
 document.getElementById('resultsBtnPractice').addEventListener('click', () => {
   const setId = qs('id');
-  window.location.href = 'learn.html?id=' + setId;
+  navigateTo('learn.html?id=' + setId);
 });
 document.getElementById('resultsBackLink').addEventListener('click', (e) => {
   e.preventDefault();
-  window.location.href = 'sets.html';
+  navigateTo('sets.html');
 });
 
 document.getElementById('infoBtn').addEventListener('click', function(){
@@ -755,7 +755,7 @@ function navigate(e,el){
   if(!href||href.startsWith('#')) return;
   e.preventDefault();
   sessionStorage.setItem('navInternal','1');
-  window.location.href = href;
+  navigateTo(href);
 }
 function toggleNav(e){
   if(e) e.preventDefault();

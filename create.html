@@ -356,7 +356,7 @@ async function handleSave(andPractice){
     _saving = true;
     await upsertSet(set);
     sessionStorage.setItem('navInternal','1');
-    location.href = andPractice ? `learn.html?id=${set.id}` : 'sets.html';
+    navigateTo(andPractice ? `learn.html?id=${set.id}` : 'sets.html');
   }catch(e){
     _saving = false;
     createNotification('Gagal menyimpan set ke server. Coba lagi.', 'error');
@@ -389,7 +389,7 @@ async function handleSave(andPractice){
     if(!hasUnsavedChanges()) return;
     e.preventDefault();
     const confirmed = await showConfirm('Perubahan belum disimpan. Keluar?', {confirmText: 'Keluar', cancelText: 'Batal'});
-    if(confirmed){ sessionStorage.setItem('navInternal','1'); window.location.href = 'index.html'; }
+    if(confirmed){ navigateTo('index.html'); }
   });
   
   // Render avatar profil di navbar

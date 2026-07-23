@@ -69,14 +69,14 @@ function requireLogin(){
     return true;
   }
   if(!getToken()){
-    location.href = 'login.html';
+    navigateTo('login.html', { replace: true });
     return false;
   }
   return true;
 }
 function logout(){
   clearAuth();
-  location.href = 'login.html';
+  navigateTo('login.html', { replace: true });
 }
 
 async function apiFetch(path, options={}){
@@ -86,7 +86,7 @@ async function apiFetch(path, options={}){
   const res = await fetch(path, Object.assign({}, options, {headers}));
   if(res.status === 401){
     clearAuth();
-    location.href = 'login.html';
+    navigateTo('login.html', { replace: true });
     throw new Error('Unauthorized');
   }
   return res;
@@ -342,35 +342,75 @@ function updateReviewForTerm(setId, termId, quality){
   upsertSet(set).catch(e => console.warn('Gagal menyimpan progres review ke server (tersimpan lokal).', e));
 }
 
-/* ---------- Nav dot sliding animation ---------- */
+/* ---------- Navigasi tanpa reload ---------- */
 (function(){
-  var dot = document.getElementById('navDot');
-  if(!dot) return;
-  var wrap = dot.parentElement;
-  var links = wrap.querySelectorAll('.nh-link');
-  var active = wrap.querySelector('.nh-link.active');
-  
-  function positionDot(el){
-    if(!el) { dot.style.opacity = '0'; return; }
-    dot.style.opacity = '1';
-    var offset = el.offsetLeft;
-    var w = el.offsetWidth;
-    dot.style.left = (offset + w/2 - 2.5) + 'px';
+  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html']);
+  let navigationBusy = false;
+
+  function isSpaUrl(url){
+    return url.origin === location.origin && spaPages.has(url.pathname.split('/').pop() || 'index.html');
   }
-  
-  positionDot(active);
-  
-  // On nav click: slide dot, then navigate
-  links.forEach(function(link){
-    link.addEventListener('click', function(e){
-      if(this.classList.contains('active')) return;
-      if(this.id === 'leaveBtn') return;
-      var href = this.getAttribute('href');
-      if(!href || href.startsWith('#')) return;
-      e.preventDefault();
-      sessionStorage.setItem('navInternal','1');
-      positionDot(this);
-      setTimeout(function(){ window.location.href = href; }, 150);
-    });
+
+  async function navigateTo(url, options = {}){
+    const target = new URL(url, location.href);
+    if(!isSpaUrl(target)){
+      location.href = target.href;
+      return;
+    }
+    if(navigationBusy) return;
+    if(target.href === location.href && options.history !== false) return;
+
+    navigationBusy = true;
+    document.documentElement.classList.add('spa-loading');
+    try{
+      const response = await fetch(target.href, { headers: { 'X-SPA-Navigation': '1' } });
+      if(!response.ok) throw new Error(`Navigation failed: ${response.status}`);
+      const html = await response.text();
+      if(!/<html[\s>]/i.test(html)) throw new Error('Invalid HTML response');
+
+      if(options.replace) history.replaceState({}, '', target.href);
+      else if(options.history !== false) history.pushState({}, '', target.href);
+
+      document.open();
+      document.write(html);
+      document.close();
+    }catch(error){
+      console.warn('Soft navigation gagal, memuat ulang halaman.', error);
+      location.href = target.href;
+    }finally{
+      navigationBusy = false;
+    }
+  }
+
+  window.navigateTo = navigateTo;
+
+  function updateNavDot(){
+    const dot = document.getElementById('navDot');
+    const active = document.querySelector('.nh-link.active');
+    if(!dot) return;
+    if(!active){
+      dot.style.opacity = '0';
+      return;
+    }
+    dot.style.opacity = '1';
+    dot.style.left = `${active.offsetLeft + active.offsetWidth / 2 - 2.5}px`;
+  }
+  updateNavDot();
+
+  document.addEventListener('click', function(e){
+    if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const link = e.target.closest('a[href]');
+    if(!link || link.target === '_blank' || link.hasAttribute('download')) return;
+    if(link.id === 'leaveBtn') return;
+    const href = link.getAttribute('href');
+    if(!href || href.startsWith('#')) return;
+    const target = new URL(href, location.href);
+    if(!isSpaUrl(target)) return;
+    e.preventDefault();
+    navigateTo(target.href);
+  }, true);
+
+  window.addEventListener('popstate', function(){
+    navigateTo(location.href, { history: false });
   });
 })();

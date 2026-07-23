@@ -66,7 +66,7 @@
 <script>
 // kalau sudah login, langsung ke beranda
 if(getToken()){
-  location.href = 'index.html';
+  navigateTo('index.html', { replace: true });
 }
 
 const tabLogin = document.getElementById('tabLogin');
@@ -103,7 +103,7 @@ loginForm.addEventListener('submit', async (e) => {
 
   if(isLocalMode()){
     setAuth('local_dev_token', username);
-    location.href = 'index.html';
+    navigateTo('index.html');
     btn.disabled = false; btn.textContent = 'Masuk';
     return;
   }
@@ -118,7 +118,7 @@ loginForm.addEventListener('submit', async (e) => {
     if(!res.ok){ showError(data.error || 'Gagal masuk.'); return; }
     setAuth(data.token, data.username);
     await syncSetsFromServer();
-    location.href = 'index.html';
+    navigateTo('index.html');
   }catch(err){
     showError('Tidak bisa terhubung ke server. Coba lagi.');
   }finally{
@@ -140,7 +140,7 @@ registerForm.addEventListener('submit', async (e) => {
 
   if(isLocalMode()){
     setAuth('local_dev_token', username);
-    location.href = 'index.html';
+    navigateTo('index.html');
     btn.disabled = false; btn.textContent = 'Daftar';
     return;
   }
@@ -154,7 +154,7 @@ registerForm.addEventListener('submit', async (e) => {
     const data = await res.json();
     if(!res.ok){ showError(data.error || 'Gagal mendaftar.'); return; }
     setAuth(data.token, data.username);
-    location.href = 'index.html';
+    navigateTo('index.html');
   }catch(err){
     showError('Tidak bisa terhubung ke server. Coba lagi.');
   }finally{
