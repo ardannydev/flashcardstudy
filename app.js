@@ -18,6 +18,11 @@ const STORE_KEY = 'qz_sets_v1';
 const DB_VERSION_KEY = 'qz_db_version';
 const CURRENT_DB_VERSION = 1;
 
+function isLocalMode(){
+  const hostname = location.hostname;
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500';
+}
+
 function getSets(){
   try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
   catch(e){ return []; }
