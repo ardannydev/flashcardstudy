@@ -212,7 +212,8 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   position:absolute; bottom:8px; height:5px; width:5px; border-radius:50%;
   background:#00D9FF; box-shadow:0 0 8px rgba(0,217,255,.6);
   transform:skewX(12deg); pointer-events:none;
-  transition:left .2s cubic-bezier(.22,1,.36,1),opacity .2s;
+  will-change:left;
+  transition:left .38s cubic-bezier(.22,1,.36,1),opacity .22s;
   z-index:2;
 }
 .nh-link{

@@ -423,9 +423,12 @@ function updateReviewForTerm(setId, termId, quality){
       document.body.replaceChildren();
 
       if(keepHeader){
+        const currentDot = currentHeader.querySelector('#navDot');
         currentHeader.className = nextHeader.className;
         currentHeader.classList.add('nh-no-anim');
         currentHeader.innerHTML = nextHeader.innerHTML;
+        const nextDot = currentHeader.querySelector('#navDot');
+        if(currentDot && nextDot) nextDot.replaceWith(currentDot);
         document.body.appendChild(currentHeader);
         updateActiveNav(target);
       } else if(nextHeader){

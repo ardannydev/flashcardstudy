@@ -372,8 +372,8 @@ async function handleSave(andPractice){
 // muat data jika mode edit
 (async function init(){
   if(!requireLogin()) return;
-  await syncSetsFromServer();
-  if(editingId){
+  function applyEditingSet(){
+    if(!editingId) return;
     const set = getSet(editingId);
     if(set){
       document.getElementById('title').value = set.title;
@@ -382,8 +382,10 @@ async function handleSave(andPractice){
       window.rows = rows;
     }
   }
+  applyEditingSet();
   renderRows();
   if(rows.length === 0) addRow();
+  const initialRows = JSON.stringify(rows);
 
   function hasUnsavedChanges(){
     if(_saving) return false;
@@ -413,6 +415,14 @@ async function handleSave(andPractice){
     }
   }
   renderNavAvatar();
+
+  // Tampilkan cache lokal lebih dulu, lalu rapikan jika data server berubah.
+  syncSetsFromServer().then(() => {
+    if(editingId && JSON.stringify(rows) === initialRows){
+      applyEditingSet();
+      renderRows();
+    }
+  });
 })();
 </script>
 <script>

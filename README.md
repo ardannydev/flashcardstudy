@@ -40,6 +40,10 @@ Aplikasi ini membantu pengguna mengulang kosakata, melihat progres belajar, dan 
 
 ### 24 Juli 2026
 
+- Memastikan elemen navbar tetap persisten saat navigasi sehingga animasi header hanya muncul ketika web pertama kali dibuka atau direfresh.
+- Menambahkan animasi perpindahan dot yang lebih halus dengan mempertahankan posisi dot sebelumnya.
+- Memperbaiki editor create set agar isi set langsung tampil dari cache lokal tanpa menunggu sinkronisasi server.
+- Sinkronisasi data set di background sekarang hanya mengganti tampilan jika data terbaru memang berbeda.
 - Memperbaiki navigasi tanpa reload agar hanya konten halaman yang berganti.
 - Menjaga bagian browser `<head>` dan navbar tetap aktif saat berpindah halaman.
 - Memperbaiki tombol Back dan Forward browser agar konten ikut diperbarui.
