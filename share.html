@@ -17,8 +17,7 @@
       <p class="tagline" id="setTitle">Memuat...</p>
     </div>
     <div class="header-actions">
-      <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" style="display:inline-flex;align-items:center;justify-content:center;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" style="display:inline-flex;align-items:center;justify-content:center;" id="navProfileBtn">
       </a>
       <a class="ibtn ibtn-outline" href="index.html">Beranda</a>
     </div>
@@ -69,6 +68,16 @@
     document.getElementById('shareContent').innerHTML = '<div class="empty"><h2>Gagal memuat</h2><p>Periksa koneksi internet dan coba lagi.</p></div>';
   }
 })();
+  </script>
+<script>
+  // Render avatar profil di navbar
+  function renderNavAvatar(){
+    const btn = document.getElementById('navProfileBtn');
+    if(btn && typeof getUserAvatarUrl === 'function'){
+      btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+    }
+  }
+  renderNavAvatar();
 </script>
 </body>
 </html>

@@ -18,25 +18,6 @@ const STORE_KEY = 'qz_sets_v1';
 const DB_VERSION_KEY = 'qz_db_version';
 const CURRENT_DB_VERSION = 1;
 
-function migrateData(){
-  const ver = parseInt(localStorage.getItem(DB_VERSION_KEY) || '0', 10);
-  if(ver >= CURRENT_DB_VERSION) return;
-
-  // Future migrations go here:
-  // if(ver < 2) { /* migrate to v2 */ }
-  // if(ver < 3) { /* migrate to v3 */ }
-
-  localStorage.setItem(DB_VERSION_KEY, CURRENT_DB_VERSION);
-}
-
-// Run migration on load
-migrateData();
-
-function isLocalMode(){
-  const h = location.hostname;
-  return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0' || location.port === '5500';
-}
-
 function getSets(){
   try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
   catch(e){ return []; }
@@ -65,6 +46,12 @@ function clearAuth(){
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(STORE_KEY);
+}
+// Helper untuk generate avatar URL unik per user
+function getUserAvatarUrl(){
+  const username = getCurrentUser() || 'pengguna';
+  // Gunakan DiceBear dengan gaya "lorelei" yang lebih realistis
+  return `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(username)}&backgroundType=gradientLinear&backgroundColor=6366f1,8b5cf6,ec4899&scale=120&radius=20`;
 }
 // Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login.
 function requireLogin(){
@@ -204,29 +191,26 @@ function createNotification(message, type = 'info', duration = 4000) {
     document.body.appendChild(host);
   }
 
-  // Hapus notifikasi lama
   const old = host.querySelector('.notification');
   if(old) old.remove();
 
   const note = document.createElement('div');
   note.className = `notification ${type}`;
 
-  const icon = document.createElement('div');
+  const icon = document.createElement('span');
   icon.className = 'notification-icon';
   icon.innerHTML = NOTIF_ICONS[type] || NOTIF_ICONS.info;
 
-  const body = document.createElement('div');
-  body.className = 'notification-body';
-  const text = document.createElement('div');
-  text.className = 'notification-text';
-  text.textContent = message;
-  body.appendChild(text);
-
   note.appendChild(icon);
-  note.appendChild(body);
+  note.appendChild(document.createTextNode(message));
   host.appendChild(note);
 
-  if(duration > 0) setTimeout(() => { if(note.parentNode) note.remove(); }, duration);
+  if(duration > 0) setTimeout(() => {
+    if(note.parentNode){
+      note.classList.add('removing');
+      setTimeout(() => { if(note.parentNode) note.remove(); }, 200);
+    }
+  }, duration);
   return note;
 }
 

@@ -18,7 +18,7 @@
       <a href="index.html" class="fc-nav-link" data-title="Beranda" onclick="navClick(event,this)"><span class="fc-nav-icon">B</span><span class="fc-nav-text">Beranda</span></a>
       <a href="sets.html" class="fc-nav-link" data-title="Set" onclick="navClick(event,this)"><span class="fc-nav-icon">S</span><span class="fc-nav-text">Set</span></a>
       <a href="create.html" class="fc-nav-link" data-title="Buat" onclick="navClick(event,this)"><span class="fc-nav-icon">C</span><span class="fc-nav-text">Buat</span></a>
-      <a href="profile.html" class="fc-nav-link" data-title="Profil" onclick="navClick(event,this)"><span class="fc-nav-icon">P</span><span class="fc-nav-text">Profil</span></a>
+      <a href="profile.html" class="fc-nav-link" data-title="Profil" onclick="navClick(event,this)"><span class="fc-nav-icon" id="fcNavAvatar">P</span><span class="fc-nav-text">Profil</span></a>
     </div>
     <div style="flex:1;min-height:4px"></div>
   </div>
@@ -648,7 +648,8 @@ document.getElementById('progressToggle').addEventListener('click', function(){
   if(autoPlayTimer){
     clearInterval(autoPlayTimer);
     autoPlayTimer = null;
-    document.getElementById('restartBtn').textContent = '▶';
+    document.getElementById('restartBtn').querySelector('.qplay-icon').style.display = '';
+    document.getElementById('restartBtn').querySelector('.qpause-icon').style.display = 'none';
   }
   if(trackProgress){
     learningCount = 0; knowCount = 0; history = []; swipedIds.clear();
@@ -735,14 +736,19 @@ document.addEventListener('keydown', (e) => {
   else if(e.code === 'ArrowLeft'){ goTo(idx-1); }
 });
 
+  // Render avatar profil di sidebar
+  function renderFcNavAvatar(){
+    const avatarEl = document.getElementById('fcNavAvatar');
+    if(avatarEl && typeof getUserAvatarUrl === 'function'){
+      avatarEl.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
+    }
+  }
+  renderFcNavAvatar();
+
 render();
 })();
 
 // Nav helpers
-function toggleTheme(){
-  document.body.classList.toggle('dark-theme');
-  localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-}
 function navigate(e,el){
   var href = el.getAttribute('href');
   if(!href||href.startsWith('#')) return;
