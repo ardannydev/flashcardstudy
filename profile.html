@@ -11,19 +11,20 @@
 </head>
 <body class="dark-theme">
 
-  <header class="nh">
+  <header class="nh nh-nav-always">
     <div class="nh-inner">
       <div class="nh-bar">
         <a href="index.html" class="nh-logo">FlashCardStudy</a>
         <nav class="nh-nav-desktop">
           <div class="nh-skew-wrap">
-            <a href="index.html" class="nh-link">Beranda</a>
-            <a href="sets.html" class="nh-link">Set</a>
-            <a href="create.html" class="nh-link">Buat</a>
+            <a href="index.html" class="nh-link" draggable="false">Beranda</a>
+            <a href="sets.html" class="nh-link" draggable="false">Set</a>
+            <a href="create.html" class="nh-link" draggable="false">Buat</a>
+            <span class="nh-nav-dot" id="navDot"></span>
           </div>
         </nav>
         <div class="nh-actions">
-          <a href="profile.html" class="nh-profile-btn" aria-label="Profil">
+          <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </a>
         </div>
@@ -64,7 +65,11 @@
     </div>
   </main>
 
-<script src="app.js"></script>
+  <footer class="site-footer">
+    <p>FlashCardStudy &mdash; oleh <strong>Ardwanny</strong></p>
+  </footer>
+
+  <script src="app.js"></script>
 <script>
 (async function(){
   if(!requireLogin()) return;
@@ -83,7 +88,7 @@
         document.getElementById('profileJoined').textContent = 'Terdaftar: ' + d.toLocaleDateString('id-ID', { year:'numeric', month:'long', day:'numeric' });
       }
     }
-  } catch(e) { /* fallback */ }
+  } catch(e) { /* server not available */ }
 
   // Calculate stats from local sets
   const sets = getSets();
@@ -110,16 +115,6 @@
 })();
 </script>
 <script>
-}
-document.querySelectorAll('.nh-link').forEach(function(el){
-  el.addEventListener('click',function(e){
-    var href = this.getAttribute('href');
-    if(!href||href.startsWith('#')) return;
-    e.preventDefault();
-    sessionStorage.setItem('navInternal','1');
-    window.location.href = href;
-  });
-});
 if(sessionStorage.getItem('navInternal')){
   document.querySelector('.nh').classList.add('nh-no-anim');
   sessionStorage.removeItem('navInternal');

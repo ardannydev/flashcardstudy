@@ -9,7 +9,7 @@ const PRECACHE = [
   '/login.html',
   '/style.css',
   '/app.js',
-  '/manifest.json'
+  '/manifest.json',
   '/profile.html',
 ];
 

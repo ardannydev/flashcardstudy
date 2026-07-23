@@ -28,9 +28,9 @@
   <main class="qwrap" id="app">
     <div class="qtitle-bar">
       <span class="qtitle-bar-label" id="titleLabel">Judul</span>
-      <div class="qbadge qbadge-learning" id="learningBadge" style="display:none"><span id="learningCount">0</span> Masih dipelajari</div>
+      <div class="qbadge qbadge-learning" id="learningBadge" style="display:none"><span class="qbadge-count" id="learningCount">0</span> Masih dipelajari</div>
       <span class="qtitle-bar-text" id="setTitle"></span>
-      <div class="qbadge qbadge-know" id="knowBadge" style="display:none">Tahu <span id="knowCount">0</span></div>
+      <div class="qbadge qbadge-know" id="knowBadge" style="display:none">Tahu <span class="qbadge-count" id="knowCount">0</span></div>
       <button class="qtitle-star-filter" id="starFilterBtn" data-title="Tinjau kartu bintang"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Bookmark</button>
     </div>
     <div class="qslide" id="slideWrap">
@@ -48,6 +48,7 @@
         <!-- sisi depan: kotoba -->
         <div class="qcard-shell qshell-front" id="cardFront">
           <div class="qcard-top">
+            <span class="qside-label">Depan</span>
             <div class="qicons">
               <button class="qstar" id="starBtnFront" title="Tandai" aria-label="Tandai bintang" aria-pressed="false">★</button>
             </div>
@@ -59,6 +60,7 @@
         <!-- sisi belakang: arti -->
         <div class="qcard-shell qshell-back">
           <div class="qcard-top">
+            <span class="qside-label">Belakang</span>
             <div class="qicons">
               <button class="qstar" id="starBtnBack" title="Tandai" aria-label="Tandai bintang" aria-pressed="false">★</button>
             </div>
@@ -74,38 +76,44 @@
     <!-- Completion results screen (hidden by default) -->
     <div class="qresults" id="resultsScreen" style="display:none">
       <div class="qresults-card">
-        <h2 class="qresults-title">Luar biasa! Kamu hampir sampai.</h2>
-        <p class="qresults-sub">Bagaimana kemajuan Anda sejauh ini?</p>
-        <div class="qresults-ring">
-          <svg class="qresults-svg" viewBox="0 0 120 120">
-            <circle class="qresults-ring-bg" cx="60" cy="60" r="52" />
-            <circle class="qresults-ring-fill" id="resultsRingFill" cx="60" cy="60" r="52" />
-          </svg>
-          <span class="qresults-pct" id="resultsPct">0%</span>
+        <div class="qresults-header">
+          <div class="qresults-ring">
+            <svg class="qresults-svg" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00D9FF"/>
+                  <stop offset="100%" stop-color="#8B5CF6"/>
+                </linearGradient>
+              </defs>
+              <circle class="qresults-ring-bg" cx="60" cy="60" r="52" />
+              <circle class="qresults-ring-fill" id="resultsRingFill" cx="60" cy="60" r="52" stroke="url(#ringGrad)" />
+            </svg>
+            <span class="qresults-pct" id="resultsPct">0%</span>
+          </div>
+          <h2 class="qresults-title" id="resultsTitle">Luar biasa!</h2>
         </div>
         <div class="qresults-stats">
           <div class="qresults-stat qresults-stat-know">
+            <span class="qresults-stat-icon">✓</span>
             <span class="qresults-stat-num" id="resultsKnow">0</span>
             <span class="qresults-stat-label">Tahu</span>
           </div>
           <div class="qresults-stat qresults-stat-learn">
+            <span class="qresults-stat-icon">↻</span>
             <span class="qresults-stat-num" id="resultsLearn">0</span>
-            <span class="qresults-stat-label">Masih dipelajari</span>
+            <span class="qresults-stat-label">Belajar</span>
           </div>
           <div class="qresults-stat qresults-stat-left">
+            <span class="qresults-stat-icon">◉</span>
             <span class="qresults-stat-num" id="resultsLeft">0</span>
-            <span class="qresults-stat-label">Istilah yang tersisa</span>
+            <span class="qresults-stat-label">Sisa</span>
           </div>
         </div>
         <div class="qresults-next">
-          <h3>Langkah selanjutnya</h3>
-          <button class="qresults-btn qresults-btn-practice" id="resultsBtnPractice">Latihan dengan pertanyaan</button>
-          <button class="qresults-btn qresults-btn-learn" id="resultsBtnLearn">Pelajari <span id="resultsLearnBtnCount">0</span> kartu</button>
-          <button class="qresults-btn qresults-btn-restart" id="resultsBtnRestart">Mulai Flashcard lagi</button>
-        </div>
-        <div class="qresults-bottom-nav">
-          <a href="#" class="qresults-back" id="resultsBackLink">← Kembali ke kartu terakhir</a>
-          <span class="qresults-hint">Tekan tombol apa saja untuk melanjutkan</span>
+          <button class="qresults-btn qresults-btn-primary" id="resultsBtnPractice">Latihan soal</button>
+          <button class="qresults-btn qresults-btn-secondary" id="resultsBtnLearn">Pelajari <span id="resultsLearnBtnCount">0</span></button>
+          <button class="qresults-btn qresults-btn-ghost" id="resultsBtnRestart">Ulangi flashcard</button>
+          <a href="#" class="qresults-back" id="resultsBackLink">← Kembali</a>
         </div>
       </div>
     </div>
@@ -117,8 +125,14 @@
     <div class="qbottom-progress"><div class="qbottom-progress-fill" id="progressFill"></div></div>
     <div class="qbottom" id="qbottom">
       <div class="qtoggle-wrap">
-        <span>Pantau kemajuan</span>
-        <button class="qtoggle" id="progressToggle" role="switch" aria-checked="false" aria-label="Pantau kemajuan"></button>
+        <span class="qtoggle-tt" id="toggleTooltip" data-title="Aktifkan pantau kemajuan">
+          <button class="qtoggle" id="progressToggle" role="switch" aria-checked="false" aria-label="Pantau kemajuan">
+            <svg class="qtoggle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </span>
+        <button class="qinfo-btn" id="infoBtn" data-title="Lihat bantuan" aria-label="Info set">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        </button>
       </div>
 
       <div class="qnav-center" id="navArrows">
@@ -175,6 +189,13 @@ let dragY = 0;
 let suppressClick = false;
 const DRAG_THRESHOLD = 80;
 let autoPlayTimer = null;
+
+const savedResults = JSON.parse(sessionStorage.getItem('qz_results'));
+if(savedResults && savedResults.total === set.terms.length){
+  knowCount = savedResults.knowCount;
+  learningCount = savedResults.learningCount;
+  showResults();
+}
 
 function currentTerm(){
   const id = order[idx];
@@ -298,7 +319,7 @@ function animateSwipeTransition(exitX, exitY, onMidpoint){
     front.style.opacity = '';
     setShellGlow(null, 0);
     applyFlipRotation();
-    render();
+    if(document.getElementById('resultsScreen').style.display === 'none') render();
     void front.offsetWidth;
 
     front.style.transition = 'transform .35s ease, opacity .35s ease';
@@ -326,7 +347,7 @@ function animateNavTransition(dir, onMidpoint){
     front.style.transition = 'none';
     front.style.transform = `translateX(${-dir*600}px)`;
     applyFlipRotation();
-    render();
+    if(document.getElementById('resultsScreen').style.display === 'none') render();
     void front.offsetWidth;
 
     front.style.transition = 'transform .25s ease-out, opacity .25s ease-out';
@@ -357,9 +378,11 @@ function commitSwipe(action){
 }
 
 function commitNav(dir){
+  if(dir < 0 && idx === 0) return snapBack();
+  if(dir > 0 && idx === order.length - 1) return snapBack();
   animateNavTransition(dir, () => {
-    if(dir < 0) idx = (idx - 1 + order.length) % order.length;
-    else idx = (idx + 1) % order.length;
+    if(dir < 0) idx--;
+    else idx++;
   });
 }
 
@@ -401,9 +424,19 @@ function showResults(){
   document.getElementById('navArrows').style.display = 'none';
   document.getElementById('undoBtn').style.display = 'none';
   document.getElementById('shuffleBtn').style.display = 'none';
+  document.getElementById('restartBtn').style.display = 'none';
 
   document.getElementById('counter').textContent = `Selesai`;
   document.getElementById('progressFill').style.width = '100%';
+
+  // hide track badges, show title & bookmark
+  document.getElementById('learningBadge').style.display = 'none';
+  document.getElementById('knowBadge').style.display = 'none';
+  document.getElementById('titleLabel').style.display = 'block';
+  document.getElementById('starFilterBtn').style.display = 'flex';
+  document.querySelector('.qtoggle-wrap').style.display = 'none';
+  trackProgress = false;
+  sessionStorage.setItem('qz_results', JSON.stringify({ knowCount, learningCount, total }));
 }
 
 function hideResults(){
@@ -413,6 +446,24 @@ function hideResults(){
   document.getElementById('navArrows').style.display = trackProgress ? 'none' : 'flex';
   document.getElementById('undoBtn').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('shuffleBtn').style.display = '';
+  document.getElementById('restartBtn').style.display = trackProgress ? 'none' : 'flex';
+
+  // restore title/star/badge visibility based on track mode
+  document.getElementById('titleLabel').style.display = trackProgress ? 'none' : 'block';
+  document.getElementById('starFilterBtn').style.display = trackProgress ? 'none' : 'flex';
+  if(trackProgress){
+    document.getElementById('learningBadge').style.display = 'inline-flex';
+    document.getElementById('knowBadge').style.display = 'inline-flex';
+  } else {
+    document.getElementById('learningBadge').style.display = 'none';
+    document.getElementById('knowBadge').style.display = 'none';
+  }
+  document.getElementById('progressToggle').disabled = false;
+  document.querySelector('.qtoggle-wrap').style.display = '';
+  document.getElementById('progressToggle').classList.toggle('on', trackProgress);
+  document.getElementById('progressToggle').setAttribute('aria-checked', trackProgress);
+  document.getElementById('toggleTooltip').dataset.title = trackProgress ? 'Nonaktifkan pantau kemajuan' : 'Aktifkan pantau kemajuan';
+  sessionStorage.removeItem('qz_results');
 }
 function goTo(newIdx){
   if(newIdx < 0 || newIdx >= order.length) return;
@@ -543,7 +594,7 @@ document.getElementById('starFilterBtn').addEventListener('click', () => {
   const btn = document.getElementById('starFilterBtn');
   if(order.length === set.terms.length){
     order = set.terms.filter(t => starred.has(t.id)).map(t => t.id);
-    if(order.length === 0){ order = set.terms.map(t => t.id); return; }
+    if(order.length === 0){ order = set.terms.map(t => t.id); createNotification('Belum ada kartu berbintang','info',2000); return; }
     btn.classList.add('active');
   } else {
     order = set.terms.map(t => t.id);
@@ -581,9 +632,11 @@ document.getElementById('restartBtn').addEventListener('click', () => {
   render();
 });
 document.getElementById('progressToggle').addEventListener('click', function(){
+  if(document.getElementById('resultsScreen').style.display !== 'none') return;
   trackProgress = !trackProgress;
   this.classList.toggle('on', trackProgress);
   this.setAttribute('aria-checked', trackProgress);
+  document.getElementById('toggleTooltip').dataset.title = trackProgress ? 'Nonaktifkan pantau kemajuan' : 'Aktifkan pantau kemajuan';
   document.getElementById('navArrows').style.display = trackProgress ? 'none' : 'flex';
   document.getElementById('navTrack').style.display = trackProgress ? 'flex' : 'none';
   document.getElementById('restartBtn').style.display = trackProgress ? 'none' : 'flex';
@@ -610,6 +663,12 @@ document.getElementById('resultsBtnRestart').addEventListener('click', () => {
   knowCount = 0;
   history = [];
   updateBadges();
+  trackProgress = true;
+  const tog = document.getElementById('progressToggle');
+  tog.disabled = false;
+  tog.classList.add('on');
+  tog.setAttribute('aria-checked', 'true');
+  tog.parentElement.dataset.title = 'Nonaktifkan pantau kemajuan';
   hideResults();
   idx = 0;
   resetToFront();
@@ -617,13 +676,25 @@ document.getElementById('resultsBtnRestart').addEventListener('click', () => {
 });
 document.getElementById('resultsBtnLearn').addEventListener('click', () => {
   const learnIds = history.filter(h => h.action === 'learning').map(h => order[h.idx]);
-  if(learnIds.length === 0){ hideResults(); idx = 0; resetToFront(); render(); return; }
+  if(learnIds.length === 0){
+    trackProgress = true;
+    const tog = document.getElementById('progressToggle');
+    tog.disabled = false; tog.classList.add('on'); tog.setAttribute('aria-checked', 'true'); tog.parentElement.dataset.title = 'Nonaktifkan pantau kemajuan';
+    hideResults(); idx = 0; resetToFront(); render();
+    return;
+  }
   order = learnIds;
   swipedIds.clear();
   learningCount = 0;
   knowCount = 0;
   history = [];
   updateBadges();
+  trackProgress = true;
+  const tog = document.getElementById('progressToggle');
+  tog.disabled = false;
+  tog.classList.add('on');
+  tog.setAttribute('aria-checked', 'true');
+  tog.parentElement.dataset.title = 'Nonaktifkan pantau kemajuan';
   hideResults();
   idx = 0;
   resetToFront();
@@ -635,20 +706,12 @@ document.getElementById('resultsBtnPractice').addEventListener('click', () => {
 });
 document.getElementById('resultsBackLink').addEventListener('click', (e) => {
   e.preventDefault();
-  if(history.length > 0){
-    const last = history[history.length - 1];
-    order = set.terms.map(t => t.id);
-    swipedIds.clear();
-    learningCount = 0;
-    knowCount = 0;
-    history = [];
-    updateBadges();
-    hideResults();
-    idx = last.idx;
-    flipped = false;
-    resetToFront();
-    render();
-  }
+  window.location.href = 'sets.html';
+});
+
+document.getElementById('infoBtn').addEventListener('click', function(){
+  document.body.classList.toggle('show-titles');
+  document.getElementById('fcSidenav').classList.toggle('expanded');
 });
 
 document.addEventListener('keydown', (e) => {
@@ -674,6 +737,7 @@ document.addEventListener('keydown', (e) => {
 
 render();
 })();
+
 // Nav helpers
 function toggleTheme(){
   document.body.classList.toggle('dark-theme');

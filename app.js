@@ -348,3 +348,36 @@ function updateReviewForTerm(setId, termId, quality){
   sm2Update(term._review, quality);
   upsertSet(set).catch(e => console.warn('Gagal menyimpan progres review ke server (tersimpan lokal).', e));
 }
+
+/* ---------- Nav dot sliding animation ---------- */
+(function(){
+  var dot = document.getElementById('navDot');
+  if(!dot) return;
+  var wrap = dot.parentElement;
+  var links = wrap.querySelectorAll('.nh-link');
+  var active = wrap.querySelector('.nh-link.active');
+  
+  function positionDot(el){
+    if(!el) { dot.style.opacity = '0'; return; }
+    dot.style.opacity = '1';
+    var offset = el.offsetLeft;
+    var w = el.offsetWidth;
+    dot.style.left = (offset + w/2 - 2.5) + 'px';
+  }
+  
+  positionDot(active);
+  
+  // On nav click: slide dot, then navigate
+  links.forEach(function(link){
+    link.addEventListener('click', function(e){
+      if(this.classList.contains('active')) return;
+      if(this.id === 'leaveBtn') return;
+      var href = this.getAttribute('href');
+      if(!href || href.startsWith('#')) return;
+      e.preventDefault();
+      sessionStorage.setItem('navInternal','1');
+      positionDot(this);
+      setTimeout(function(){ window.location.href = href; }, 150);
+    });
+  });
+})();

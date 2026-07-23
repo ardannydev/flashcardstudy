@@ -11,19 +11,20 @@
 </head>
 <body class="dark-theme">
 
-  <header class="nh">
+  <header class="nh nh-nav-always">
     <div class="nh-inner">
       <div class="nh-bar">
         <a href="index.html" class="nh-logo">FlashCardStudy</a>
         <nav class="nh-nav-desktop">
           <div class="nh-skew-wrap">
-            <a href="index.html" class="nh-link">Beranda</a>
-            <a href="sets.html" class="nh-link">Set</a>
-            <a href="create.html" class="nh-link active" id="leaveBtn">Buat</a>
+            <a href="index.html" class="nh-link" draggable="false">Beranda</a>
+            <a href="sets.html" class="nh-link" draggable="false">Set</a>
+            <a href="create.html" class="nh-link active" draggable="false" id="leaveBtn">Buat</a>
+            <span class="nh-nav-dot" id="navDot"></span>
           </div>
         </nav>
         <div class="nh-actions">
-          <a href="profile.html" class="nh-profile-btn" aria-label="Profil">
+          <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </a>
 
@@ -55,7 +56,11 @@
     </div>
   </main>
 
-<script src="app.js"></script>
+  <footer class="site-footer">
+    <p>FlashCardStudy &mdash; oleh <strong>Ardwanny</strong></p>
+  </footer>
+
+  <script src="app.js"></script>
 <script>
 let rows = []; // {id, term, def}
 let editingId = qs('id');
@@ -248,17 +253,12 @@ if (importToggle) {
   });
 }
 
-// urutan pemisah yang dicoba saat mode "Deteksi otomatis"
-const AUTO_DELIMS = ['→', '->', '—', ':', '-', '\t', '=', ','];
+const HAS_JP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
+const JP_ONLY = /[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3005\u3006\u3007\u3031-\u303B\u30FC\u30FB\u3001\u3002\s]/g;
+const PARENS = /\s*[（(][^）)]*[）)]\s*/g;
 
-// pisah satu baris jadi [kotoba, arti] pakai pemisah tertentu, atau null kalau gagal
-function splitLine(line, delim){
-  const idx = line.indexOf(delim);
-  if(idx === -1) return null;
-  const term = line.slice(0, idx).trim();
-  const def = line.slice(idx + delim.length).trim();
-  if(!term || !def) return null;
-  return [term, def];
+function cleanTerm(raw){
+  return raw.replace(PARENS, ' ').replace(JP_ONLY, '').replace(/\s+/g, ' ').trim();
 }
 
 function parseCSV(text){
@@ -267,55 +267,17 @@ function parseCSV(text){
   const failedLines = [];
 
   lines.forEach(line => {
-    // Try CSV-style: "term","def" or term,def
-    const csvMatch = line.match(/^"([^"]*)",\s*"([^"]*)"$/);
-    if(csvMatch){
-      const term = csvMatch[1].trim();
-      const def = csvMatch[2].trim();
-      if(term && def){
-        parsed.push({id: uid('row'), term, def});
-        return;
-      }
-    }
-    // Try TSV
-    const parts = line.split('\t').map(s => s.trim()).filter(Boolean);
-    if(parts.length >= 2){
-      parsed.push({id: uid('row'), term: parts[0], def: parts.slice(1).join(' ')});
-      return;
-    }
-    // Try auto-delim
-    let result = null;
-    for(const d of AUTO_DELIMS){
-      result = splitLine(line, d);
-      if(result) break;
-    }
-    if(result){
-      parsed.push({id: uid('row'), term: result[0], def: result[1]});
-    } else {
-      const m = line.split(/\s{2,}|\t+/).filter(Boolean);
-      if(m.length >= 2){
-        parsed.push({id: uid('row'), term: m[0].trim(), def: m.slice(1).join(' ').trim()});
-      } else {
-        failedLines.push(line);
-      }
-    }
+    const idx = line.indexOf('→');
+    if(idx === -1){ failedLines.push(line); return; }
+    const rawTerm = line.slice(0, idx).trim();
+    const def = line.slice(idx + 1).trim();
+    if(!rawTerm || !def){ failedLines.push(line); return; }
+    const term = cleanTerm(rawTerm);
+    if(!term || !HAS_JP.test(term)){ failedLines.push(line); return; }
+    parsed.push({id: uid('row'), term, def: def.replace(/\s+/g, ' ').trim()});
   });
 
-  parsed.forEach(p => {
-    p.term = p.term
-      .replace(/\s*[（(][^）)]*[）)]\s*/g, ' ')
-      .replace(/[a-zA-Z0-9]/g, '')
-      .replace(/[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3005\u3006\u3007\u3031-\u303B\u30FC\u30FB\u3001\u3002\s]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    p.def = p.def.replace(/\s+/g, ' ').trim();
-  });
-
-  // Buang baris yang term atau def kosong setelah dibersihkan
-  const result = parsed.filter(p => p.term.length > 0 && p.def.length > 0);
-
-  return { parsed: result, failedLines };
+  return { parsed, failedLines };
 }
 
 function parseBulk(){
@@ -338,6 +300,10 @@ function parseBulk(){
   rows = rows.concat(valid);
   document.getElementById('bulkText').value = '';
   renderRows();
+  setTimeout(() => {
+    const el = document.querySelector('.crow:last-child');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 50);
 
   const skipCount = skipped.length + failedLines.length;
   if(skipCount > 0 && valid.length > 0){
@@ -391,7 +357,7 @@ async function handleSave(andPractice){
     _saving = true;
     await upsertSet(set);
     sessionStorage.setItem('navInternal','1');
-    location.href = andPractice ? `learn.html?id=${set.id}` : 'index.html';
+    location.href = andPractice ? `learn.html?id=${set.id}` : 'sets.html';
   }catch(e){
     _saving = false;
     createNotification('Gagal menyimpan set ke server. Coba lagi.', 'error');
@@ -430,18 +396,7 @@ async function handleSave(andPractice){
 })();
 </script>
 <script>
-}
 // Internal navigation — no loading, no nav animation
-document.querySelectorAll('.nh-link').forEach(function(el){
-  if(el.id==='leaveBtn') return;
-  el.addEventListener('click',function(e){
-    var href = this.getAttribute('href');
-    if(!href||href.startsWith('#')) return;
-    e.preventDefault();
-    sessionStorage.setItem('navInternal','1');
-    window.location.href = href;
-  });
-});
 // If coming from internal nav, skip nav animation
 if(sessionStorage.getItem('navInternal')){
   document.querySelector('.nh').classList.add('nh-no-anim');
