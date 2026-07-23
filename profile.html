@@ -77,15 +77,12 @@
   const username = getCurrentUser() || 'Pengguna';
   document.getElementById('profileName').textContent = username;
 
-  // Get user creation date from server if possible
+  // Profile data is cached in app.js during soft navigation.
   try {
-    const res = await apiFetch('/api/user');
-    if(res.ok) {
-      const data = await res.json();
-      if(data.createdAt) {
-        const d = new Date(data.createdAt);
-        document.getElementById('profileJoined').textContent = 'Terdaftar: ' + d.toLocaleDateString('id-ID', { year:'numeric', month:'long', day:'numeric' });
-      }
+    const data = await getUserProfile();
+    if(data && data.createdAt) {
+      const d = new Date(data.createdAt);
+      document.getElementById('profileJoined').textContent = 'Terdaftar: ' + d.toLocaleDateString('id-ID', { year:'numeric', month:'long', day:'numeric' });
     }
   } catch(e) { /* server not available */ }
 

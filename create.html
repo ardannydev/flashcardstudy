@@ -71,6 +71,7 @@ function addRow(term='', def=''){
 }
 function removeRow(rid){
   rows = rows.filter(r => r.id !== rid);
+  window.rows = rows;
   renderRows();
 }
 function moveRow(rid, dir){
@@ -242,6 +243,10 @@ function renderRows(){
   `}).join('');
 }
 
+// Keep inline mobile handlers working when this page is loaded by the SPA router.
+window.rows = rows;
+Object.assign(window, { addRow, removeRow, moveRow, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onTouchStart, parseBulk, handleSave });
+
 const importToggle = document.getElementById('importToggle');
 if (importToggle) {
   importToggle.addEventListener('click', () => {
@@ -374,6 +379,7 @@ async function handleSave(andPractice){
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
+      window.rows = rows;
     }
   }
   renderRows();
@@ -385,12 +391,19 @@ async function handleSave(andPractice){
     return title || rows.some(r => r.term.trim() || r.def.trim());
   }
 
-  document.getElementById('leaveBtn').addEventListener('click', async (e) => {
+  const leaveBtn = document.getElementById('leaveBtn');
+  const leaveHandler = async (e) => {
     if(!hasUnsavedChanges()) return;
     e.preventDefault();
     const confirmed = await showConfirm('Perubahan belum disimpan. Keluar?', {confirmText: 'Keluar', cancelText: 'Batal'});
     if(confirmed){ navigateTo('index.html'); }
-  });
+  };
+  leaveBtn.addEventListener('click', leaveHandler);
+  window.__pageCleanup = () => {
+    leaveBtn.removeEventListener('click', leaveHandler);
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+  };
   
   // Render avatar profil di navbar
   function renderNavAvatar(){

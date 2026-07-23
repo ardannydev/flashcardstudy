@@ -156,6 +156,11 @@ button,a,.choice,.iset-card-actions a,.iset-card-actions button{touch-action:man
   animation:nhSlideIn .5s ease-out;
 }
 .nh.nh-no-anim{ animation:none; }
+.spa-content-enter{ animation:spaContentEnter .2s ease-out both; }
+@keyframes spaContentEnter{
+  from{ opacity:0; transform:translateY(5px); }
+  to{ opacity:1; transform:translateY(0); }
+}
 .dark-theme .nh{
   background:rgba(11,20,38,.4);
   border-color:rgba(0,217,255,.3);

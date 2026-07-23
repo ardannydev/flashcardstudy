@@ -17,6 +17,10 @@ window.addEventListener('unhandledrejection', function(e) {
 const STORE_KEY = 'qz_sets_v1';
 const DB_VERSION_KEY = 'qz_db_version';
 const CURRENT_DB_VERSION = 1;
+let _setsSynced = false;
+let _setsSyncPromise = null;
+let _userProfileCache = null;
+let _userProfilePromise = null;
 
 function isLocalMode(){
   const hostname = location.hostname;
@@ -29,6 +33,7 @@ function getSets(){
 }
 function saveSets(sets){
   localStorage.setItem(STORE_KEY, JSON.stringify(sets));
+  _setsSynced = true;
   if(!isLocalMode()) return pushSetsToServer(sets);
   return Promise.resolve();
 }
@@ -46,11 +51,15 @@ function getCurrentUser(){
 function setAuth(token, username){
   localStorage.setItem(AUTH_TOKEN_KEY, token);
   localStorage.setItem(AUTH_USER_KEY, username);
+  _setsSynced = false;
+  _userProfileCache = null;
 }
 function clearAuth(){
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(STORE_KEY);
+  _setsSynced = false;
+  _userProfileCache = null;
 }
 // Helper untuk generate avatar unik per user tanpa request ke layanan eksternal.
 function getUserAvatarUrl(){
@@ -94,18 +103,44 @@ async function apiFetch(path, options={}){
 
 // Ambil data set milik akun dari server lalu simpan ke localStorage.
 // Dipanggil sekali di awal tiap halaman (setelah requireLogin) sebelum data dibaca.
-async function syncSetsFromServer(){
+async function syncSetsFromServer(options = {}){
   if(isLocalMode()) return getSets();
-  try{
-    const res = await apiFetch('/api/sets');
-    if(!res.ok) return getSets();
-    const data = await res.json();
-    localStorage.setItem(STORE_KEY, JSON.stringify(data.sets || []));
-    return data.sets || [];
-  }catch(e){
-    console.warn('Gagal sinkronisasi dari server, memakai data lokal sementara.', e);
-    return getSets();
-  }
+  if(_setsSynced && !options.force) return getSets();
+  if(_setsSyncPromise) return _setsSyncPromise;
+  _setsSyncPromise = (async () => {
+    try{
+      const res = await apiFetch('/api/sets');
+      if(!res.ok) return getSets();
+      const data = await res.json();
+      localStorage.setItem(STORE_KEY, JSON.stringify(data.sets || []));
+      _setsSynced = true;
+      return data.sets || [];
+    }catch(e){
+      console.warn('Gagal sinkronisasi dari server, memakai data lokal sementara.', e);
+      return getSets();
+    }finally{
+      _setsSyncPromise = null;
+    }
+  })();
+  return _setsSyncPromise;
+}
+
+async function getUserProfile(options = {}){
+  if(_userProfileCache && !options.force) return _userProfileCache;
+  if(_userProfilePromise) return _userProfilePromise;
+  _userProfilePromise = (async () => {
+    try{
+      const res = await apiFetch('/api/user');
+      if(!res.ok) return null;
+      _userProfileCache = await res.json();
+      return _userProfileCache;
+    }catch(e){
+      return null;
+    }finally{
+      _userProfilePromise = null;
+    }
+  })();
+  return _userProfilePromise;
 }
 
 // Kirim seluruh data set ke server (dipanggil otomatis tiap kali saveSets() dipanggil).
@@ -367,13 +402,51 @@ function updateReviewForTerm(setId, termId, quality){
       if(!response.ok) throw new Error(`Navigation failed: ${response.status}`);
       const html = await response.text();
       if(!/<html[\s>]/i.test(html)) throw new Error('Invalid HTML response');
+      const nextDocument = new DOMParser().parseFromString(html, 'text/html');
+      const nextBody = nextDocument.body;
+      if(!nextBody) throw new Error('Missing page body');
 
       if(options.replace) history.replaceState({}, '', target.href);
       else if(options.history !== false) history.pushState({}, '', target.href);
 
-      document.open();
-      document.write(html);
-      document.close();
+      if(typeof window.__pageCleanup === 'function') window.__pageCleanup();
+
+      const currentHeader = document.querySelector('body > .nh');
+      const nextHeader = nextBody.querySelector(':scope > .nh');
+      const keepHeader = currentHeader && nextHeader;
+      const nextNodes = [...nextBody.childNodes]
+        .filter(node => !(node.nodeType === Node.ELEMENT_NODE && node.tagName === 'SCRIPT'));
+
+      document.title = nextDocument.title;
+      document.body.className = nextBody.className;
+      document.body.style.cssText = nextBody.getAttribute('style') || '';
+      document.body.replaceChildren();
+
+      if(keepHeader){
+        currentHeader.className = nextHeader.className;
+        currentHeader.classList.add('nh-no-anim');
+        currentHeader.innerHTML = nextHeader.innerHTML;
+        document.body.appendChild(currentHeader);
+        updateActiveNav(target);
+      } else if(nextHeader){
+        nextHeader.classList.add('nh-no-anim');
+      }
+
+      nextNodes.forEach(node => {
+        if(keepHeader && node === nextHeader) return;
+        const clone = node.cloneNode(true);
+        clone.querySelectorAll?.('script').forEach(script => script.remove());
+        document.body.appendChild(clone);
+      });
+
+      await runPageScripts(nextBody.querySelectorAll('script'));
+      sessionStorage.removeItem('navInternal');
+      updateNavDot();
+      const pageContent = document.querySelector('main');
+      if(pageContent){
+        pageContent.classList.remove('spa-content-enter');
+        requestAnimationFrame(() => pageContent.classList.add('spa-content-enter'));
+      }
     }catch(error){
       console.warn('Soft navigation gagal, memuat ulang halaman.', error);
       location.href = target.href;
@@ -383,6 +456,27 @@ function updateReviewForTerm(setId, termId, quality){
   }
 
   window.navigateTo = navigateTo;
+
+  function updateActiveNav(target){
+    const currentFile = target.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('.nh .nh-link').forEach(link => {
+      const href = link.getAttribute('href');
+      if(!href || href.startsWith('#')) return;
+      const linkFile = new URL(href, target.href).pathname.split('/').pop() || 'index.html';
+      link.classList.toggle('active', linkFile === currentFile);
+    });
+  }
+
+  async function runPageScripts(scripts){
+    window.__pageCleanup = null;
+    for(const script of scripts){
+      const source = script.getAttribute('src');
+      if(source && source.split('/').pop().split('?')[0] === 'app.js') continue;
+      if(source) continue;
+      const run = new Function(script.textContent);
+      run.call(window);
+    }
+  }
 
   function updateNavDot(){
     const dot = document.getElementById('navDot');

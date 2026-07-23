@@ -716,7 +716,7 @@ document.getElementById('infoBtn').addEventListener('click', function(){
   document.getElementById('fcSidenav').classList.toggle('expanded');
 });
 
-document.addEventListener('keydown', (e) => {
+function handleFlashcardKeydown(e){
   const resultsVisible = document.getElementById('resultsScreen').style.display !== 'none';
   if(resultsVisible){
     if(e.code === 'Escape'){
@@ -735,7 +735,8 @@ document.addEventListener('keydown', (e) => {
   if(e.code === 'Space'){ e.preventDefault(); flip(); }
   else if(e.code === 'ArrowRight'){ goTo(idx+1); }
   else if(e.code === 'ArrowLeft'){ goTo(idx-1); }
-});
+}
+document.addEventListener('keydown', handleFlashcardKeydown);
 
   // Render avatar profil di sidebar
   function renderFcNavAvatar(){
@@ -745,6 +746,10 @@ document.addEventListener('keydown', (e) => {
     }
   }
   renderFcNavAvatar();
+
+  window.__flashcardCleanup = () => {
+    document.removeEventListener('keydown', handleFlashcardKeydown);
+  };
 
 render();
 })();
@@ -770,12 +775,19 @@ function navClick(e,el){
     navigate(e,el);
   }
 }
-document.addEventListener('click',function(e){
+function closeFlashcardNav(e){
   var nav = document.getElementById('fcSidenav');
   if(nav.classList.contains('expanded') && !nav.contains(e.target)){
     nav.classList.remove('expanded');
   }
-});
+}
+document.addEventListener('click', closeFlashcardNav);
+Object.assign(window, { navigate, toggleNav, navClick });
+window.__pageCleanup = () => {
+  if(typeof window.__flashcardCleanup === 'function') window.__flashcardCleanup();
+  document.removeEventListener('click', closeFlashcardNav);
+  delete window.__flashcardCleanup;
+};
 if(sessionStorage.getItem('navInternal')){
   sessionStorage.removeItem('navInternal');
 }
