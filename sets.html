@@ -134,24 +134,13 @@
     renderSets();
     
     // Render avatar profil di navbar
-    function renderNavAvatar(){
-      const btn = document.getElementById('navProfileBtn');
-      if(btn && typeof getUserAvatarUrl === 'function'){
-        btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar">`;
-      }
-    }
-    renderNavAvatar();
+    
   })();
   </script>
 <script>
 function toggleTheme(){
   document.body.classList.toggle('dark-theme');
   localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-}
-// If coming from internal nav, skip nav animation
-if(sessionStorage.getItem('navInternal')){
-  document.querySelector('.nh').classList.add('nh-no-anim');
-  sessionStorage.removeItem('navInternal');
 }
 </script>
 </body>

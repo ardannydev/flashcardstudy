@@ -37,8 +37,11 @@
     <textarea aria-label="Deskripsi set" class="cfield-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
 
     <div class="ctoolbar">
-      <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">+ Masukkan</button>
-      <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Buat</button>
+      <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import
+      </button>
+      <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Simpan</button>
     </div>
 
     <div class="cimport-box" id="importBox">
@@ -221,8 +224,12 @@ function renderRows(){
         <div class="crow-num">${i+1}</div>
         <div class="crow-tools">
           <span class="crow-handle" title="Seret untuk geser urutan"
-            ontouchstart="onTouchStart(event,this.closest('.crow').dataset.rowId)">⠿</span>
-          <button type="button" title="Hapus kartu" onclick="removeRow(this.closest('.crow').dataset.rowId)" aria-label="Hapus kartu ${i+1}">🗑</button>
+            ontouchstart="onTouchStart(event,this.closest('.crow').dataset.rowId)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+          </span>
+          <button type="button" title="Hapus kartu" onclick="removeRow(this.closest('.crow').dataset.rowId)" aria-label="Hapus kartu ${i+1}">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
         </div>
       </div>
       <div class="crow-body">
@@ -408,13 +415,7 @@ async function handleSave(andPractice){
   };
   
   // Render avatar profil di navbar
-  function renderNavAvatar(){
-    const btn = document.getElementById('navProfileBtn');
-    if(btn && typeof getUserAvatarUrl === 'function'){
-      btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar">`;
-    }
-  }
-  renderNavAvatar();
+  
 
   // Tampilkan cache lokal lebih dulu, lalu rapikan jika data server berubah.
   syncSetsFromServer().then(() => {
@@ -424,14 +425,6 @@ async function handleSave(andPractice){
     }
   });
 })();
-</script>
-<script>
-// Internal navigation — no loading, no nav animation
-// If coming from internal nav, skip nav animation
-if(sessionStorage.getItem('navInternal')){
-  document.querySelector('.nh').classList.add('nh-no-anim');
-  sessionStorage.removeItem('navInternal');
-}
 </script>
 </body>
 </html>

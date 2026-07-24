@@ -788,9 +788,6 @@ window.__pageCleanup = () => {
   document.removeEventListener('click', closeFlashcardNav);
   delete window.__flashcardCleanup;
 };
-if(sessionStorage.getItem('navInternal')){
-  sessionStorage.removeItem('navInternal');
-}
 </script>
 </body>
 </html>

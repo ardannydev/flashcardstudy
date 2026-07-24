@@ -36,7 +36,7 @@
     <div class="profile-card">
       <div class="profile-avatar" id="profileAvatar">
       </div>
-      <h1 class="profile-name" id="profileName">—</h1>
+      <h1 class="profile-name" id="profileName">— <span id="devBadge" class="dev-badge" style="display:none">DEV</span></h1>
       <p class="profile-joined" id="profileJoined">Terdaftar: —</p>
     </div>
 
@@ -61,8 +61,27 @@
 
     <div class="profile-actions">
       <button class="btn btn-outline" onclick="logout()">Keluar</button>
+      <button class="btn btn-report" id="reportBtn" onclick="openReportForm()">Laporkan</button>
     </div>
+
+    <div id="devDashboard" class="dev-wrap" style="display:none"></div>
   </main>
+
+  <div class="report-overlay" id="reportOverlay">
+    <div class="report-card">
+      <h3>Laporkan Masalah / Saran</h3>
+      <select id="reportType" class="report-select">
+        <option value="bug">Bug / Error</option>
+        <option value="feature">Saran Fitur</option>
+        <option value="other">Lainnya</option>
+      </select>
+      <textarea id="reportMessage" class="report-textarea" placeholder="Jelaskan masalah atau saran kamu..." rows="4"></textarea>
+      <div class="report-actions">
+        <button class="btn btn-ghost" onclick="closeReportForm()">Batal</button>
+        <button class="btn btn-primary" onclick="submitReport()">Kirim</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="site-footer">
     <p>FlashCardStudy &mdash; oleh <strong>Ardwanny</strong></p>
@@ -76,6 +95,7 @@
 
   const username = getCurrentUser() || 'Pengguna';
   document.getElementById('profileName').textContent = username;
+  if(isDevUser()) document.getElementById('devBadge').style.display = 'inline';
 
   // Profile data is cached in app.js during soft navigation.
   try {
@@ -121,12 +141,44 @@
     }
   }
   renderAvatars();
+
+  // Render dev dashboard if user is dev
+  if(isDevUser()) renderDevDashboard();
 })();
 </script>
 <script>
-if(sessionStorage.getItem('navInternal')){
-  document.querySelector('.nh').classList.add('nh-no-anim');
-  sessionStorage.removeItem('navInternal');
+function openReportForm(){
+  document.getElementById('reportOverlay').classList.add('visible');
+}
+function closeReportForm(){
+  document.getElementById('reportOverlay').classList.remove('visible');
+}
+function submitReport(){
+  const type = document.getElementById('reportType').value;
+  const message = document.getElementById('reportMessage').value.trim();
+  if(!message){ createNotification('Pesan tidak boleh kosong.', 'error'); return; }
+  addReport(type, message);
+  document.getElementById('reportMessage').value = '';
+  closeReportForm();
+  createNotification('Laporan berhasil dikirim. Terima kasih!', 'success');
+}
+function renderDevDashboard(){
+  const wrap = document.getElementById('devDashboard');
+  if(!wrap) return;
+  wrap.style.display = 'block';
+  const reports = getReports();
+  wrap.innerHTML = `
+    <div class="dev-header">
+      <h2>Dashboard Developer</h2>
+      <label class="dev-toggle"><input type="checkbox" ${isDevUser() ? 'checked' : ''} onchange="setDevUser(this.checked);if(!this.checked)document.getElementById('devDashboard').style.display='none'"> Mode Developer</label>
+    </div>
+    <div class="dev-stats">
+      <span>Total laporan: <strong>${reports.length}</strong></span>
+      <span>Pending: <strong>${reports.filter(r => r.status === 'pending').length}</strong></span>
+    </div>
+    <div class="dev-list">${reports.length === 0 ? '<p class="dev-empty">Belum ada laporan.</p>' : reports.map(function(r){
+      return '<div class="dev-item"><div class="dev-item-head"><span class="dev-type dev-type-'+r.type+'">'+(r.type==='bug'?'Bug':r.type==='feature'?'Saran':'Lain')+'</span><span class="dev-date">'+new Date(r.date).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})+'</span></div><div class="dev-msg">'+escapeHtml(r.message)+'</div><div class="dev-meta">'+escapeHtml(r.username)+' &middot; '+escapeHtml(r.device||'').slice(0,80)+'...</div></div>';
+    }).join('')}</div>`;
 }
 </script>
 </body>

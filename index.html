@@ -167,23 +167,8 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
   updateStats(getSets());
   
   // Render avatar profil
-  function renderNavAvatar(){
-    const btn = document.getElementById('navProfileBtn');
-    if(btn && typeof getUserAvatarUrl === 'function'){
-      btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar">`;
-    }
-  }
-  renderNavAvatar();
+  
 })();
-</script>
-<script>
-// Nav helpers
-
-// If coming from internal nav, skip nav animation
-if(sessionStorage.getItem('navInternal')){
-  document.querySelector('.nh').classList.add('nh-no-anim');
-  sessionStorage.removeItem('navInternal');
-}
 </script>
 </body>
 </html>

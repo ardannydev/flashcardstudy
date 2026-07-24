@@ -40,6 +40,12 @@ Aplikasi ini membantu pengguna mengulang kosakata, melihat progres belajar, dan 
 
 ### 24 Juli 2026
 
+- Navigasi desktop dapat digeser (drag horizontal) untuk berpindah halaman dengan cepat.
+- Menambahkan fitur laporan dan saran dari halaman profil.
+- Optimalisasi performa: minifikasi CSS, kompresi kode, dan caching aset statis (CSS, JS) hingga 1 tahun.
+- Memperbaiki foto profil yang hilang saat navigasi antar halaman.
+- Tampilan statistik dan progres di halaman utama lebih jelas dan responsif.
+- Halaman pembuatan set: layout form di tengah, tombol dengan ikon SVG, dan tata letak lebih rapi.
 - Memastikan elemen navbar tetap persisten saat navigasi sehingga animasi header hanya muncul ketika web pertama kali dibuka atau direfresh.
 - Menambahkan animasi perpindahan dot yang lebih halus dengan mempertahankan posisi dot sebelumnya.
 - Memperbaiki editor create set agar isi set langsung tampil dari cache lokal tanpa menunggu sinkronisasi server.

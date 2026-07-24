@@ -404,13 +404,7 @@ if(isRefresh && saved && saved.correctCount !== undefined){
 }
   
   // Render avatar profil di navbar
-  function renderNavAvatar(){
-    const btn = document.getElementById('navProfileBtn');
-    if(btn && typeof getUserAvatarUrl === 'function'){
-      btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar">`;
-    }
-  }
-  renderNavAvatar();
+  
 })();
 </script>
 </body>

@@ -1,4 +1,11 @@
-/* ---------- Global error handler ---------- */
+
+if(sessionStorage.getItem('navInternal')){
+  sessionStorage.removeItem('navInternal');
+  var _nh = document.querySelector('.nh');
+  if(_nh) _nh.classList.add('nh-no-anim');
+}
+
+
 window.onerror = function(msg, url, line, col, err) {
   console.error('[GlobalError]', msg, url, line, col, err);
   if (typeof createNotification === 'function') {
@@ -13,7 +20,7 @@ window.addEventListener('unhandledrejection', function(e) {
   }
 });
 
-/* ---------- penyimpanan data (localStorage) ---------- */
+
 const STORE_KEY = 'qz_sets_v1';
 const DB_VERSION_KEY = 'qz_db_version';
 const CURRENT_DB_VERSION = 1;
@@ -38,7 +45,7 @@ function saveSets(sets){
   return Promise.resolve();
 }
 
-/* ---------- Autentikasi & sinkronisasi akun (Vercel KV) ---------- */
+
 const AUTH_TOKEN_KEY = 'qz_auth_token';
 const AUTH_USER_KEY = 'qz_auth_user';
 
@@ -71,6 +78,13 @@ function getUserAvatarUrl(){
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl(${hue} 78% 58%)"/><stop offset="1" stop-color="hsl(${(hue + 55) % 360} 78% 52%)"/></linearGradient></defs><rect width="120" height="120" rx="24" fill="url(#g)"/><circle cx="60" cy="47" r="22" fill="#fff" fill-opacity=".9"/><path d="M24 106c4-24 18-36 36-36s32 12 36 36" fill="#fff" fill-opacity=".9"/><text x="60" y="116" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#fff">${initial}</text></svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
+function renderNavAvatar(){
+  var btn = document.getElementById('navProfileBtn');
+  if(btn && typeof getUserAvatarUrl === 'function'){
+    btn.innerHTML = '<img src="' + getUserAvatarUrl() + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">';
+  }
+}
+renderNavAvatar();
 // Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login.
 function requireLogin(){
   if(isLocalMode()){
@@ -304,15 +318,7 @@ function showConfirm(message, options = {}) {
   });
 }
 
-/* Spaced Repetition (SM-2) helpers
-   Each term will get a _review object stored on the term: {
-     reps: number,
-     ease: number,
-     interval: number (days),
-     last: timestamp,
-     due: timestamp
-   }
-*/
+
 function ensureReviewMeta(term){
   if(!term._review){
     const now = Date.now();
@@ -327,7 +333,7 @@ function ensureReviewMeta(term){
   return term._review;
 }
 
-/** Format due timestamp to human-readable Indonesian date */
+
 function formatDueDate(dueTs){
   if(!dueTs) return 'Sekarang';
   const now = Date.now();
@@ -377,7 +383,45 @@ function updateReviewForTerm(setId, termId, quality){
   upsertSet(set).catch(e => console.warn('Gagal menyimpan progres review ke server (tersimpan lokal).', e));
 }
 
-/* ---------- Navigasi tanpa reload ---------- */
+
+const REPORT_KEY = 'qz_reports';
+const DEV_USER_KEY = 'qz_dev_user';
+
+function getReports(){
+  try{ return JSON.parse(localStorage.getItem(REPORT_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveReports(reports){
+  localStorage.setItem(REPORT_KEY, JSON.stringify(reports));
+}
+function addReport(type, message){
+  const reports = getReports();
+  const report = {
+    id: uid('rpt'),
+    userId: getCurrentUser() || 'unknown',
+    username: getCurrentUser() || 'Pengguna',
+    type: type,
+    message: message,
+    date: new Date().toISOString(),
+    device: navigator.userAgent,
+    ip: '',
+    status: 'pending'
+  };
+  reports.unshift(report);
+  saveReports(reports);
+  return report;
+}
+function getDeviceInfo(){
+  return navigator.userAgent;
+}
+function isDevUser(){
+  return localStorage.getItem(DEV_USER_KEY) === 'true';
+}
+function setDevUser(v){
+  localStorage.setItem(DEV_USER_KEY, v ? 'true' : 'false');
+}
+
+
 (function(){
   const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html']);
   let navigationBusy = false;
@@ -431,6 +475,7 @@ function updateReviewForTerm(setId, termId, quality){
         if(currentDot && nextDot) nextDot.replaceWith(currentDot);
         document.body.appendChild(currentHeader);
         updateActiveNav(target);
+        renderNavAvatar();
       } else if(nextHeader){
         nextHeader.classList.add('nh-no-anim');
       }
@@ -510,4 +555,47 @@ function updateReviewForTerm(setId, termId, quality){
   window.addEventListener('popstate', function(){
     navigateTo(location.href, { history: false });
   });
+
+  
+  (function(){
+    var wrap = document.querySelector('.nh-skew-wrap');
+    if(!wrap) return;
+    var startX = 0, isDragging = false, dragDelta = 0;
+    var THRESHOLD = 60;
+
+    function getNextUrl(dir){
+      var links = Array.from(wrap.querySelectorAll('.nh-link'));
+      if(links.length < 2) return null;
+      var activeIdx = links.findIndex(function(l){ return l.classList.contains('active'); });
+      if(activeIdx < 0) activeIdx = 0;
+      var next = (activeIdx + dir + links.length) % links.length;
+      var href = links[next].getAttribute('href');
+      if(!href || href.startsWith('#')) return null;
+      return new URL(href, location.href).href;
+    }
+
+    wrap.addEventListener('mousedown', function(e){
+      if(e.button !== 0) return;
+      startX = e.clientX;
+      isDragging = false;
+      dragDelta = 0;
+    });
+
+    wrap.addEventListener('mousemove', function(e){
+      if(e.buttons !== 1) return;
+      dragDelta = e.clientX - startX;
+      if(Math.abs(dragDelta) > 10) isDragging = true;
+      if(isDragging) e.preventDefault();
+    });
+
+    wrap.addEventListener('mouseup', function(e){
+      if(!isDragging || Math.abs(dragDelta) < THRESHOLD) return;
+      var url = getNextUrl(dragDelta > 0 ? -1 : 1);
+      if(url) navigateTo(url);
+    });
+
+    wrap.addEventListener('mouseleave', function(){
+      isDragging = false;
+    });
+  })();
 })();

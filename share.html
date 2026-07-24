@@ -70,15 +70,5 @@
   }
 })();
   </script>
-<script>
-  // Render avatar profil di navbar
-  function renderNavAvatar(){
-    const btn = document.getElementById('navProfileBtn');
-    if(btn && typeof getUserAvatarUrl === 'function'){
-      btn.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
-    }
-  }
-  renderNavAvatar();
-</script>
 </body>
 </html>
