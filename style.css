@@ -197,13 +197,13 @@ body.dark-theme:has(.nh){padding-top:62px}}
 .dark-theme .site-footer a:hover{color:#00D9FF}
 @media(max-width:480px){.dark-theme .site-footer{padding:24px 16px 36px;margin-top:28px;font-size:11px}}
 .dark-theme .iset-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:18px}
-.dark-theme .iset-card{background:linear-gradient(160deg, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .02) 100%);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:24px;box-shadow:0 18px 60px rgba(0, 0, 0, .18);display:flex;flex-direction:column;gap:18px;min-height:180px;transition:border-color .2s ease, box-shadow .2s ease}
+.dark-theme .iset-card{background:linear-gradient(160deg, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .02) 100%);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:16px;box-shadow:0 18px 60px rgba(0, 0, 0, .18);display:flex;flex-direction:column;gap:12px;transition:border-color .2s ease, box-shadow .2s ease}
 .dark-theme .iset-card:hover{border-color:rgba(0, 217, 255, .25);box-shadow:0 24px 70px rgba(0, 0, 0, .22), 0 0 0 1px rgba(0, 217, 255, .06)}
-.dark-theme .iset-card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:nowrap}
-.dark-theme .set-number{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:rgba(0, 217, 255, .12);color:#00D9FF;font-size:13px;font-weight:700;flex-shrink:0}
-.dark-theme .iset-card h3{margin:0;font-size:19px;color:#fff}
-.dark-theme .iset-card p{margin:8px 0 0;color:#b3bee8;font-size:14px;min-height:42px}
-.dark-theme .iset-card-meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.dark-theme .iset-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap}
+.dark-theme .set-number{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(0, 217, 255, .12);color:#00D9FF;font-size:11px;font-weight:700;flex-shrink:0}
+.dark-theme .iset-card h3{margin:0;font-size:15px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dark-theme .iset-card p{margin:4px 0 0;color:#b3bee8;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dark-theme .iset-card-meta{display:flex;flex-wrap:nowrap;gap:6px;align-items:center;flex-shrink:0}
 .dark-theme .iterm-preview{display:flex;flex-wrap:wrap;gap:10px;line-height:1.5}
 .dark-theme .iterm-chip{background:rgba(255, 255, 255, .06);color:#d7dcff;font-size:13px;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.08)}
 .dark-theme .iterm-chip b{color:#fff}
@@ -730,13 +730,13 @@ to{opacity:1;transform:translateY(0)}}
 .dash-card span{font-size:11px}}
 .iset-grid{grid-template-columns:repeat(auto-fit, minmax(min(280px, 100%), 1fr))}
 @media(max-width:480px){.iset-grid{grid-template-columns:1fr;gap:10px}
-.iset-card{padding:16px;min-height:unset;gap:12px}
-.iset-card h3{font-size:15px}
-.iset-card p{font-size:12px;min-height:unset}
+.iset-card{padding:14px;gap:10px}
+.iset-card h3{font-size:14px}
+.iset-card p{font-size:11px}
 .iset-card-meta{gap:5px}
 .iset-count, .iset-badge{font-size:10px;padding:2px 7px}
 .iterm-chip{font-size:11px;padding:6px 8px;gap:4px;border-radius:10px}
-.set-number{width:26px;height:26px;font-size:11px}
+.set-number{width:24px;height:24px;font-size:10px}
 .iset-card-actions{gap:8px}
 .iset-card-actions .ibtn-card-primary, .iset-card-actions .ibtn-card-outline{padding:10px 18px;font-size:13px;gap:6px}
 .iset-card-actions .ibtn-icon{width:34px;height:34px}
@@ -960,9 +960,9 @@ textarea.cfield-box{min-height:38px}
 .icontainer{padding:0 10px 30px}
 .overview-row{gap:6px;grid-template-columns:1fr}
 .iset-grid{gap:8px}
-.iset-card{padding:12px;min-height:unset;gap:8px}
+.iset-card{padding:12px;gap:8px}
 .iset-card h3{font-size:13px}
-.iset-card p{font-size:10.5px;min-height:unset}
+.iset-card p{font-size:10.5px}
 .iset-card-meta{gap:4px}
 .iset-count, .iset-badge{font-size:9px;padding:2px 6px}
 .iterm-chip{font-size:10px;padding:4px 6px;gap:3px}
