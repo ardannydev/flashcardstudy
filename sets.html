@@ -76,7 +76,7 @@
     });
 
     function renderSets(){
-      const sets = getSets();
+      const sets = getSets().sort((a,b) => a.title.localeCompare(b.title, undefined, {sensitivity:'base'}));
       const grid = document.getElementById('setGrid');
       const empty = document.getElementById('emptyState');
       grid.innerHTML = '';
