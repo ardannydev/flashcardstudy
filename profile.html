@@ -91,7 +91,8 @@
 
   const username = getCurrentUser() || 'Pengguna';
   document.getElementById('profileName').textContent = username;
-  if(isDevUser()) document.getElementById('devBadge').style.display = 'inline';
+  const devBadge = document.getElementById('devBadge');
+  if(isDevUser() && devBadge) devBadge.style.display = 'inline';
 
   // Profile data is cached in app.js during soft navigation.
   try {

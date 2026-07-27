@@ -114,54 +114,60 @@ if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').cat
   if(!requireLogin()) return;
   await syncSetsFromServer();
 
-  function updateDashboard(sets){
-    const totalSets = sets.length;
-    const totalCards = sets.reduce((sum,set) => sum + set.terms.length, 0);
-    const totalDue = sets.reduce((sum,set) => sum + getDueCount(set), 0);
-    document.getElementById('totalSets').textContent = totalSets;
-    document.getElementById('totalCards').textContent = totalCards;
-    document.getElementById('totalDue').textContent = totalDue;
-  }
-
-  updateDashboard(getSets());
-
-  function updateStats(sets){
-    let mastered=0, learning=0, newCards=0;
-    sets.forEach(set=>{
-      set.terms.forEach(t=>{
+  function computeAllStats(sets){
+    let totalSets = sets.length;
+    let totalCards = 0, totalDue = 0;
+    let mastered = 0, learning = 0, newCards = 0;
+    const now = Date.now();
+    for(let si = 0; si < sets.length; si++){
+      const set = sets[si];
+      totalCards += set.terms.length;
+      for(let ti = 0; ti < set.terms.length; ti++){
+        const t = set.terms[ti];
         const r = t._review;
-        if(!r || r.reps===0){ newCards++; }
-        else if(r.interval >= 21){ mastered++; }
-        else { learning++; }
-      });
-    });
-    const totalCards = mastered+learning+newCards;
-
-    document.getElementById('statMastered').textContent = mastered;
-    document.getElementById('statLearning').textContent = learning;
-    document.getElementById('statNew').textContent = newCards;
-
-    const progressSection = document.getElementById('progressSection');
-    if(totalCards > 0) progressSection.style.display = '';
-
-    const updateBar = (id, value) => {
-      const bar = document.getElementById(id);
-      if(bar) bar.style.width = (totalCards > 0 ? (value / totalCards) * 100 : 0) + '%';
-    };
-    updateBar('progressMastered', mastered);
-    updateBar('progressLearning', learning);
-    updateBar('progressNew', newCards);
-
-    const updatePercent = (id, value) => {
-      const el = document.getElementById(id + 'Percent');
-      if(el && totalCards > 0) el.textContent = Math.round((value / totalCards) * 100) + '%';
-    };
-    updatePercent('statMastered', mastered);
-    updatePercent('statLearning', learning);
-    updatePercent('statNew', newCards);
+        if(!r || r.reps === 0){
+          newCards++;
+          totalDue++;
+        } else {
+          if(r.due <= now) totalDue++;
+          if(r.interval >= 21) mastered++;
+          else learning++;
+        }
+      }
+    }
+    const stats = {totalSets, totalCards, totalDue, mastered, learning, newCards};
+    return stats;
   }
 
-  updateStats(getSets());
+  const allData = getSets();
+  const s = computeAllStats(allData);
+  document.getElementById('totalSets').textContent = s.totalSets;
+  document.getElementById('totalCards').textContent = s.totalCards;
+  document.getElementById('totalDue').textContent = s.totalDue;
+
+  const totalCards = s.mastered + s.learning + s.newCards;
+  document.getElementById('statMastered').textContent = s.mastered;
+  document.getElementById('statLearning').textContent = s.learning;
+  document.getElementById('statNew').textContent = s.newCards;
+
+  const progressSection = document.getElementById('progressSection');
+  if(totalCards > 0) progressSection.style.display = '';
+
+  const updateBar = (id, value) => {
+    const bar = document.getElementById(id);
+    if(bar) bar.style.width = (totalCards > 0 ? (value / totalCards) * 100 : 0) + '%';
+  };
+  updateBar('progressMastered', s.mastered);
+  updateBar('progressLearning', s.learning);
+  updateBar('progressNew', s.newCards);
+
+  const updatePercent = (id, value) => {
+    const el = document.getElementById(id + 'Percent');
+    if(el && totalCards > 0) el.textContent = Math.round((value / totalCards) * 100) + '%';
+  };
+  updatePercent('statMastered', s.mastered);
+  updatePercent('statLearning', s.learning);
+  updatePercent('statNew', s.newCards);
   
   // Render avatar profil
   

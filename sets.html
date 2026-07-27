@@ -146,9 +146,9 @@
         return;
       }
       empty.style.display = 'none';
+      const allCats = getCategories();
       grid.innerHTML = sets.map((set,index) => {
         const dueCount = getDueCount(set);
-        const allCats = getCategories();
         const currentCat = getSetCategory(set);
         return `
           <div class="iset-card" data-id="${escapeHtml(set.id)}">
@@ -219,8 +219,10 @@
       }
     });
 
+    let filterTimer;
     document.getElementById('setFilterInput').addEventListener('input', e => {
-      renderSets(e.target.value);
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => renderSets(e.target.value), 200);
     });
 
     document.getElementById('setSortBtn').addEventListener('click', () => {

@@ -28,6 +28,10 @@ let _setsSynced = false;
 let _setsSyncPromise = null;
 let _userProfileCache = null;
 let _userProfilePromise = null;
+let _setsCache = null;
+function invalidateSetsCache(){ _setsCache = null; }
+let _catsCache = null;
+function invalidateCatsCache(){ _catsCache = null; }
 
 function isLocalMode(){
   const hostname = location.hostname;
@@ -35,10 +39,13 @@ function isLocalMode(){
 }
 
 function getSets(){
-  try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
-  catch(e){ return []; }
+  if(_setsCache) return _setsCache;
+  try{ _setsCache = JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+  catch(e){ _setsCache = []; }
+  return _setsCache;
 }
 function saveSets(sets){
+  _setsCache = sets;
   localStorage.setItem(STORE_KEY, JSON.stringify(sets));
   _setsSynced = true;
   if(!isLocalMode()) return pushSetsToServer(sets);
@@ -126,9 +133,10 @@ async function syncSetsFromServer(options = {}){
       const res = await apiFetch('/api/sets');
       if(!res.ok) return getSets();
       const data = await res.json();
-      localStorage.setItem(STORE_KEY, JSON.stringify(data.sets || []));
+      _setsCache = data.sets || [];
+      localStorage.setItem(STORE_KEY, JSON.stringify(_setsCache));
       _setsSynced = true;
-      return data.sets || [];
+      return _setsCache;
     }catch(e){
       console.warn('Gagal sinkronisasi dari server, memakai data lokal sementara.', e);
       return getSets();
@@ -203,10 +211,13 @@ function deleteSet(id){
 }
 const CATEGORY_KEY = 'qz_categories_v1';
 function getCategories(){
-  try{ return JSON.parse(localStorage.getItem(CATEGORY_KEY)) || ['Kotoba','Bunpo','Umum']; }
-  catch(e){ return ['Kotoba','Bunpo','Umum']; }
+  if(_catsCache) return _catsCache;
+  try{ _catsCache = JSON.parse(localStorage.getItem(CATEGORY_KEY)) || ['Kotoba','Bunpo','Umum']; }
+  catch(e){ _catsCache = ['Kotoba','Bunpo','Umum']; }
+  return _catsCache;
 }
 function saveCategories(cats){
+  _catsCache = cats;
   localStorage.setItem(CATEGORY_KEY, JSON.stringify(cats));
 }
 function addCategory(name){
