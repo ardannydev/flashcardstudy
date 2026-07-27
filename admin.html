@@ -272,9 +272,11 @@ var _expandedUser = null;
 
 (async function(){
   if(!requireLogin()) return;
-  await syncSetsFromServer();
 
-  if(isLocalMode()) document.getElementById('localNotice').style.display = '';
+  renderStats();
+  loadReports();
+  loadUsers();
+  renderSysInfo();
 
   document.getElementById('reportFilter').addEventListener('click', function(e){
     var btn = e.target.closest('.adm-filter-btn');
@@ -288,8 +290,6 @@ var _expandedUser = null;
   document.getElementById('reportSearch').addEventListener('input', function(){ renderReports(); });
   document.getElementById('userSearch').addEventListener('input', function(){ renderUsers(); });
   document.getElementById('auditSearch').addEventListener('input', function(){ renderAudit(); });
-
-  refreshAll();
 })();
 
 function refreshAll(){
@@ -312,51 +312,50 @@ function renderStats(){
   var sets = getSets();
   var totalSets = sets.length;
   var totalCards = sets.reduce(function(s,set){ return s + (set.terms||[]).length; }, 0);
-  var reports = getReports();
-  var pending = reports.filter(function(r){ return r.status === 'pending'; }).length;
 
   document.getElementById('statSets').textContent = totalSets;
   document.getElementById('statCards').textContent = totalCards;
-  document.getElementById('statReports').textContent = reports.length;
-  document.getElementById('statReportsSub').textContent = pending + ' pending';
-  document.getElementById('statSetsSub').textContent = totalCards + ' kartu';
+  document.getElementById('statReportsSub').textContent = 'memuat...';
 
-  if(!isLocalMode()){
-    fetch('/api/admin?action=stats', { headers: { 'Authorization': 'Bearer ' + getToken() } })
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if(d.users !== undefined) document.getElementById('statUsers').textContent = d.users;
-      if(d.sets !== undefined) document.getElementById('statSets').textContent = d.sets;
-      if(d.cards !== undefined) document.getElementById('statCards').textContent = d.cards;
-      if(d.reports !== undefined){
-        document.getElementById('statReports').textContent = d.reports;
-        document.getElementById('statReportsSub').textContent = (d.pendingReports||0) + ' pending';
-      }
-    }).catch(function(){});
-  } else {
-    document.getElementById('statUsers').textContent = '1 (lokal)';
-  }
+  fetch('/api/admin?action=stats', { headers: { 'Authorization': 'Bearer ' + getToken() } })
+  .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
+  .then(function(d){
+    _serverAvail = true;
+    document.getElementById('localNotice').style.display = 'none';
+    if(d.users !== undefined) document.getElementById('statUsers').textContent = d.users;
+    if(d.sets !== undefined) document.getElementById('statSets').textContent = d.sets;
+    if(d.cards !== undefined) document.getElementById('statCards').textContent = d.cards;
+    if(d.reports !== undefined){
+      document.getElementById('statReports').textContent = d.reports;
+      document.getElementById('statReportsSub').textContent = (d.pendingReports||0) + ' pending';
+    }
+  })
+  .catch(function(){
+    _serverAvail = false;
+    document.getElementById('localNotice').style.display = '';
+    document.getElementById('statUsers').textContent = '— (offline)';
+    var localReports = getReports() || [];
+    document.getElementById('statReports').textContent = localReports.length;
+    document.getElementById('statReportsSub').textContent = localReports.filter(function(r){ return r.status==='pending'; }).length + ' pending (lokal)';
+    document.getElementById('statSetsSub').textContent = totalCards + ' kartu';
+  });
 }
 
 /* ── Reports ── */
 function loadReports(){
-  var local = getReports();
-  _reports = local;
+  _reports = getReports() || [];
+  renderReports();
 
-  if(!isLocalMode()){
-    fetch('/api/admin?action=reports', { headers: { 'Authorization': 'Bearer ' + getToken() } })
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      if(data.reports && data.reports.length){
-        var m = data.reports.slice();
-        local.forEach(function(r){ if(!m.find(function(x){ return x.id === r.id; })) m.push(r); });
-        _reports = m;
-      }
-      renderReports();
-    }).catch(function(){ renderReports(); });
-  } else {
+  fetch('/api/admin?action=reports', { headers: { 'Authorization': 'Bearer ' + getToken() } })
+  .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
+  .then(function(data){
+    if(data.reports && data.reports.length){
+      var m = data.reports.slice();
+      _reports.forEach(function(r){ if(!m.find(function(x){ return x.id === r.id; })) m.push(r); });
+      _reports = m;
+    }
     renderReports();
-  }
+  }).catch(function(){});
 }
 
 function renderReports(){
@@ -411,9 +410,7 @@ function resolveReport(id){
   var r = _reports.find(function(x){ return x.id === id; });
   if(!r) return;
   r.status = 'resolved';
-  if(!isLocalMode()){
-    fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({action:'resolveReport',reportId:id})}).catch(function(){});
-  }
+  fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({action:'resolveReport',reportId:id})}).catch(function(){});
   renderReports();
   renderStats();
   toast('Laporan ditandai selesai');
@@ -421,9 +418,7 @@ function resolveReport(id){
 
 function deleteReport(id){
   _reports = _reports.filter(function(r){ return r.id !== id; });
-  if(!isLocalMode()){
-    fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({action:'deleteReport',reportId:id})}).catch(function(){});
-  }
+  fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},body:JSON.stringify({action:'deleteReport',reportId:id})}).catch(function(){});
   renderReports();
   renderStats();
   toast('Laporan dihapus');
@@ -431,25 +426,21 @@ function deleteReport(id){
 
 /* ── Users ── */
 function loadUsers(){
-  if(isLocalMode()){
-    document.getElementById('usersWrap').innerHTML = '<div class="adm-empty">Mode lokal &mdash; data pengguna hanya tersedia di server.</div>';
-    document.getElementById('userCountLabel').textContent = '—';
-    return;
-  }
+  document.getElementById('usersWrap').innerHTML = '<div class="adm-empty"><div class="adm-spinner"></div></div>';
   fetch('/api/admin?action=users',{headers:{'Authorization':'Bearer '+getToken()}})
-  .then(function(r){ return r.json(); })
+  .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
   .then(function(data){
     _users = data.users || [];
     renderUsers();
   }).catch(function(){
-    document.getElementById('usersWrap').innerHTML = '<div class="adm-empty">Gagal memuat data pengguna.</div>';
+    document.getElementById('usersWrap').innerHTML = '<div class="adm-empty">Tidak dapat terhubung ke server. Data pengguna tidak tersedia.</div>';
+    document.getElementById('userCountLabel').textContent = '—';
   });
 }
 
 function renderUsers(){
   var wrap = document.getElementById('usersWrap');
   var search = (document.getElementById('userSearch').value||'').toLowerCase();
-  if(_users.length === 0 && !isLocalMode()) return;
   var filtered = search ? _users.filter(function(u){ return u.username.toLowerCase().indexOf(search) !== -1; }) : _users;
   document.getElementById('userCountLabel').textContent = filtered.length;
 
@@ -500,16 +491,12 @@ function toggleUser(username){
 function loadAudit(){
   var wrap = document.getElementById('auditWrap');
   wrap.innerHTML = '<div class="adm-empty"><div class="adm-spinner"></div></div>';
-  if(isLocalMode()){
-    wrap.innerHTML = '<div class="adm-empty">Data audit hanya tersedia di server.</div>';
-    return;
-  }
   fetch('/api/admin?action=audit',{headers:{'Authorization':'Bearer '+getToken()}})
-  .then(function(r){ return r.json(); })
+  .then(function(r){ if(!r.ok) throw new Error(); return r.json(); })
   .then(function(data){
     window._auditEntries = data.entries || [];
     renderAudit();
-  }).catch(function(){ wrap.innerHTML = '<div class="adm-empty">Gagal memuat data audit.</div>'; });
+  }).catch(function(){ wrap.innerHTML = '<div class="adm-empty">Data audit tidak tersedia.</div>'; });
 }
 
 function renderAudit(){
@@ -536,7 +523,7 @@ function renderAudit(){
 /* ── System Info ── */
 function renderSysInfo(){
   var wrap = document.getElementById('sysInfo');
-  var mode = isLocalMode() ? 'Lokal (localStorage)' : 'Server (Vercel KV)';
+  var mode = _serverAvail ? 'Server (Vercel KV)' : 'Lokal (localStorage)';
   var storage = 0;
   try{ storage = new Blob([localStorage.getItem('qz_sets_v1')||'']).size + new Blob([localStorage.getItem('qz_reports')||'']).size; }catch(e){}
   var storageStr = storage > 1024 ? (storage/1024).toFixed(1)+' KB' : storage+' B';

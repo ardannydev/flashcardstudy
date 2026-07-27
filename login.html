@@ -102,11 +102,14 @@ loginForm.addEventListener('submit', async (e) => {
   btn.disabled = true; btn.textContent = 'Memproses...';
 
   if(username === 'devardwannyy' && password === 'devardwannyy'){
-    setAuth('dev_token', username);
-    setDevUser(true);
-    navigateTo('admin.html');
-    btn.disabled = false; btn.textContent = 'Masuk';
-    return;
+    if(isLocalMode()){
+      setAuth('dev_token', username);
+      setDevUser(true);
+      navigateTo('admin.html');
+      btn.disabled = false; btn.textContent = 'Masuk';
+      return;
+    }
+    // On Vercel — try server login instead of bypass
   }
 
   if(isLocalMode()){

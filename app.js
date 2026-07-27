@@ -35,7 +35,7 @@ function invalidateCatsCache(){ _catsCache = null; }
 
 function isLocalMode(){
   const hostname = location.hostname;
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500';
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500' || isDevUser();
 }
 
 function getSets(){
@@ -569,6 +569,7 @@ function setDevUser(v){
       document.title = nextDocument.title;
       document.body.className = nextBody.className;
       document.body.style.cssText = nextBody.getAttribute('style') || '';
+      window.dispatchEvent(new Event('beforeunload'));
       document.body.replaceChildren();
 
       if(keepHeader){
@@ -620,15 +621,17 @@ function setDevUser(v){
     });
   }
 
-  async function runPageScripts(scripts){
+  function runPageScripts(scripts){
     window.__pageCleanup = null;
     for(const script of scripts){
       const source = script.getAttribute('src');
       if(source && source.split('/').pop().split('?')[0] === 'app.js') continue;
       if(source) continue;
       try {
-        const result = new Function(script.textContent).call(window);
-        if(result && typeof result.then === 'function') await result.catch(() => {});
+        const el = document.createElement('script');
+        el.textContent = script.textContent;
+        document.body.appendChild(el);
+        document.body.removeChild(el);
       } catch(e) {
         console.warn('[PageScript Error]', e);
       }
