@@ -116,7 +116,7 @@ async function apiFetch(path, options={}){
   const res = await fetch(path, Object.assign({}, options, {headers}));
   if(res.status === 401){
     clearAuth();
-    navigateTo('login.html', { replace: true });
+    location.href = 'login.html';
     throw new Error('Unauthorized');
   }
   return res;
@@ -619,8 +619,12 @@ function setDevUser(v){
       const source = script.getAttribute('src');
       if(source && source.split('/').pop().split('?')[0] === 'app.js') continue;
       if(source) continue;
-      const run = new Function(script.textContent);
-      run.call(window);
+      try {
+        const result = new Function(script.textContent).call(window);
+        if(result && typeof result.then === 'function') await result.catch(() => {});
+      } catch(e) {
+        console.warn('[PageScript Error]', e);
+      }
     }
   }
 
