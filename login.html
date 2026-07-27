@@ -109,7 +109,22 @@ loginForm.addEventListener('submit', async (e) => {
       btn.disabled = false; btn.textContent = 'Masuk';
       return;
     }
-    // On Vercel — try server login instead of bypass
+    // On Vercel — try server login; if user doesn't exist, auto-register
+    btn.disabled = true; btn.textContent = 'Memproses...';
+    try{
+      var r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+      var d;
+      if(!r.ok){
+        r = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+        if(!r.ok){ showError('Gagal daftar. Coba langsung di Vercel.'); btn.disabled=false; btn.textContent='Masuk'; return; }
+      }
+      d = await r.json();
+      setAuth(d.token, d.username);
+      await syncSetsFromServer();
+      navigateTo('admin.html');
+    }catch(err){ showError('Tidak bisa terhubung ke server.'); }
+    finally{ btn.disabled = false; btn.textContent = 'Masuk'; }
+    return;
   }
 
   if(isLocalMode()){

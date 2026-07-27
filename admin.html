@@ -186,7 +186,8 @@ tr:hover .adm-cell-actions{opacity:1}
 
     <div id="localNotice" class="adm-notice" style="display:none">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>Mode lokal &mdash; data terbatas pada perangkat ini. Deploy ke Vercel untuk dashboard server penuh.</span>
+      <span>Mode lokal &mdash; data terbatas pada perangkat ini.</span>
+      <button class="adm-btn adm-btn-sm" onclick="clearAuth(); location.href='login.html'" style="margin-left:auto;flex-shrink:0">Login Ulang</button>
     </div>
 
     <div class="adm-stats" id="statsGrid">
@@ -269,6 +270,7 @@ var _reports = [];
 var _users = [];
 var _reportFilter = 'all';
 var _expandedUser = null;
+var _serverAvail = false;
 
 (async function(){
   if(!requireLogin()) return;
@@ -329,6 +331,7 @@ function renderStats(){
       document.getElementById('statReports').textContent = d.reports;
       document.getElementById('statReportsSub').textContent = (d.pendingReports||0) + ' pending';
     }
+    renderSysInfo();
   })
   .catch(function(){
     _serverAvail = false;
@@ -338,6 +341,7 @@ function renderStats(){
     document.getElementById('statReports').textContent = localReports.length;
     document.getElementById('statReportsSub').textContent = localReports.filter(function(r){ return r.status==='pending'; }).length + ' pending (lokal)';
     document.getElementById('statSetsSub').textContent = totalCards + ' kartu';
+    renderSysInfo();
   });
 }
 
