@@ -200,6 +200,44 @@ function upsertSet(set){
 function deleteSet(id){
   return saveSets(getSets().filter(s => s.id !== id));
 }
+const CATEGORY_KEY = 'qz_categories_v1';
+function getCategories(){
+  try{ return JSON.parse(localStorage.getItem(CATEGORY_KEY)) || ['Kotoba','Bunpo','Umum']; }
+  catch(e){ return ['Kotoba','Bunpo','Umum']; }
+}
+function saveCategories(cats){
+  localStorage.setItem(CATEGORY_KEY, JSON.stringify(cats));
+}
+function addCategory(name){
+  const cats = getCategories();
+  name = name.trim();
+  if(!name || cats.includes(name)) return;
+  cats.push(name);
+  saveCategories(cats);
+}
+function renameCategory(oldName, newName){
+  newName = newName.trim();
+  if(!newName) return;
+  const cats = getCategories();
+  const i = cats.indexOf(oldName);
+  if(i === -1) return;
+  cats[i] = newName;
+  saveCategories(cats);
+  const sets = getSets();
+  sets.forEach(s => { if(s.category === oldName) s.category = newName; });
+  saveSets(sets);
+}
+function deleteCategory(name){
+  const cats = getCategories().filter(c => c !== name);
+  saveCategories(cats);
+}
+function moveSetToCategory(setId, category){
+  const sets = getSets();
+  const set = sets.find(s => s.id === setId);
+  if(!set) return;
+  set.category = category;
+  saveSets(sets);
+}
 function uid(prefix='id'){
   return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
 }
@@ -318,6 +356,54 @@ function showConfirm(message, options = {}) {
   });
 }
 
+
+function showPrompt(message, defaultValue = '') {
+  return new Promise(resolve => {
+    let overlay = document.getElementById('confirmOverlay');
+    if(overlay) overlay.remove();
+    const prevFocus = document.activeElement;
+    overlay = document.createElement('div');
+    overlay.id = 'confirmOverlay';
+    overlay.className = 'confirm-overlay';
+
+    const safeMsg = message.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const safeVal = defaultValue.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    overlay.innerHTML = `
+      <div class="confirm-card" role="alertdialog" aria-modal="true">
+        <div class="confirm-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <p class="confirm-message">${safeMsg}</p>
+        <input type="text" class="prompt-input" value="${safeVal}" autocomplete="off" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:14px;font-family:inherit;outline:none;margin-bottom:18px;box-sizing:border-box">
+        <div class="confirm-actions">
+          <button type="button" class="btn confirm-cancel">Batal</button>
+          <button type="button" class="btn prompt-ok">Simpan</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+    const input = overlay.querySelector('.prompt-input');
+    const okBtn = overlay.querySelector('.prompt-ok');
+    const cancelBtn = overlay.querySelector('.confirm-cancel');
+    input.focus();
+    input.select();
+
+    const close = (result) => {
+      overlay.classList.remove('visible');
+      overlay.addEventListener('transitionend', () => overlay.remove(), {once:true});
+      if(prevFocus && prevFocus.focus) prevFocus.focus();
+      resolve(result);
+    };
+    cancelBtn.addEventListener('click', () => close(null));
+    okBtn.addEventListener('click', () => close(input.value));
+    input.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') close(input.value);
+      if(e.key === 'Escape') close(null);
+    });
+  });
+}
 
 function ensureReviewMeta(term){
   if(!term._review){

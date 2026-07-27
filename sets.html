@@ -27,7 +27,6 @@
           <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" id="navProfileBtn">
           </a>
         </div>
-
       </div>
     </div>
   </header>
@@ -37,14 +36,25 @@
       <h1 class="sets-title">Set kamu</h1>
       <p class="sets-desc">Kelola semua flashcard kamu di satu halaman.<br>Mulai belajar atau hapus set yang tidak dibutuhkan.</p>
     </div>
-    <div class="iset-filter-bar">
-      <svg class="iset-filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="setFilterInput" class="iset-filter-input" placeholder="Cari set..." autocomplete="off">
-      <button id="setSortBtn" class="iset-sort-btn" data-title="Urut A-Z">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="14" y2="6"/><line x1="4" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/><polyline points="16 18 20 14 20 10"/><line x1="18" y1="10" x2="20" y2="10"/></svg>
-        <span>A-Z</span>
-      </button>
+
+    <div class="scat-bar" id="categoryBar">
+      <div class="scat-scroll" id="categoryList"></div>
+      <button class="scat-add" id="addCategoryBtn" data-title="Tambah kategori">+</button>
     </div>
+
+    <div class="iset-toolbar">
+      <div class="iset-filter-wrap">
+        <svg class="iset-filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="setFilterInput" class="iset-filter-input" placeholder="Cari set..." autocomplete="off">
+      </div>
+      <div class="iset-toolbar-right">
+        <button id="setSortBtn" class="iset-sort-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="14" y2="6"/><line x1="4" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/><polyline points="16 18 20 14 20 10"/><line x1="18" y1="10" x2="20" y2="10"/></svg>
+          <span>A-Z</span>
+        </button>
+      </div>
+    </div>
+
     <div id="setGrid" class="iset-grid"></div>
     <div id="emptyState" class="iempty" style="display:none;max-width:1080px;margin:0 auto;padding:0 28px 60px;">
       <a href="create.html" class="ibtn ibtn-primary" style="display:inline-block;margin-top:14px;">+ Buat set baru</a>
@@ -61,41 +71,79 @@
     if(!requireLogin()) return;
     await syncSetsFromServer();
 
-    function handleDelete(id){
-      const set = getSet(id);
-      if(!set) return;
-      showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
-        .then(async confirmed => {
-          if(!confirmed) return;
-          try{
-            await deleteSet(id);
-            renderSets();
-            createNotification('Set berhasil dihapus.', 'success');
-          }catch(e){
-            renderSets();
-            createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
-          }
-        });
+    let activeCategory = 'Semua';
+    let sortAsc = true;
+    let sortMode = 'title';
+
+    function getSetCategory(set){
+      return set.category || 'Umum';
     }
 
-    document.getElementById('setGrid').addEventListener('click', (e) => {
-      const btn = e.target.closest('[data-delete-id]');
-      if(btn) handleDelete(btn.dataset.deleteId);
-    });
+    function renderCategories(){
+      const cats = getCategories();
+      const list = document.getElementById('categoryList');
+      list.innerHTML = '';
+      const all = document.createElement('button');
+      all.className = 'scat-pill' + (activeCategory === 'Semua' ? ' active' : '');
+      all.textContent = 'Semua';
+      all.dataset.cat = 'Semua';
+      all.addEventListener('click', () => { activeCategory = 'Semua'; renderCategories(); renderSets(); });
+      list.appendChild(all);
+      cats.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'scat-pill' + (activeCategory === c ? ' active' : '');
+        btn.textContent = c;
+        btn.dataset.cat = c;
+        btn.addEventListener('click', () => { activeCategory = c; renderCategories(); renderSets(); });
+        const ed = document.createElement('span');
+        ed.className = 'scat-edit';
+        ed.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+        ed.addEventListener('click', e => {
+          e.stopPropagation();
+          renameCategoryPrompt(c);
+        });
+        btn.appendChild(ed);
+        const del = document.createElement('span');
+        del.className = 'scat-del';
+        del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        del.addEventListener('click', async e => {
+          e.stopPropagation();
+          const ok = await showConfirm(`Hapus kategori "${c}"? Set di dalamnya akan pindah ke "Umum".`, {confirmText:'Hapus', cancelText:'Batal'});
+          if(!ok) return;
+          const sets = getSets();
+          sets.forEach(s => { if(getSetCategory(s) === c) s.category = 'Umum'; });
+          saveSets(sets);
+          deleteCategory(c);
+          if(activeCategory === c) activeCategory = 'Semua';
+          renderCategories();
+          renderSets();
+        });
+        btn.appendChild(del);
+        list.appendChild(btn);
+      });
+    }
 
-    let sortAsc = true;
+    async function renameCategoryPrompt(oldName){
+      const newName = await showPrompt('Ubah nama kategori:', oldName);
+      if(!newName || newName.trim() === oldName) return;
+      renameCategory(oldName, newName.trim());
+      if(activeCategory === oldName) activeCategory = newName.trim();
+      renderCategories();
+      renderSets();
+    }
 
     function renderSets(filter){
-      let sets = getSets();
-      sets.sort((a,b) => {
-        const cmp = a.title.localeCompare(b.title, undefined, {sensitivity:'base'});
-        return sortAsc ? cmp : -cmp;
-      });
+      let sets = getSets().slice();
+      if(activeCategory !== 'Semua') sets = sets.filter(s => getSetCategory(s) === activeCategory);
       if(filter) sets = sets.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
+      const cmp = (a,b) => {
+        const r = a.title.localeCompare(b.title, undefined, {sensitivity:'base'});
+        return sortAsc ? r : -r;
+      };
+      sets.sort(cmp);
       const grid = document.getElementById('setGrid');
       const empty = document.getElementById('emptyState');
       grid.innerHTML = '';
-
       if(sets.length === 0){
         empty.style.display = 'block';
         return;
@@ -103,13 +151,16 @@
       empty.style.display = 'none';
       grid.innerHTML = sets.map((set,index) => {
         const dueCount = getDueCount(set);
+        const allCats = getCategories();
+        const currentCat = getSetCategory(set);
         return `
-          <div class="iset-card">
+          <div class="iset-card" data-id="${escapeHtml(set.id)}">
             <div class="iset-card-head">
               <span class="set-number">${index + 1}</span>
-              <div style="flex:1;min-width:0;">
+              <div class="set-title-area">
                 <h3>${escapeHtml(set.title)}</h3>
                 ${set.desc ? `<p>${escapeHtml(set.desc)}</p>` : ''}
+                <span class="set-cat-badge">${escapeHtml(currentCat)}</span>
               </div>
               <div class="iset-card-meta">
                 <span class="iset-count">${set.terms.length} kotoba</span>
@@ -130,6 +181,16 @@
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                 Flashcard
               </a>
+              <div class="iset-catmove">
+                <button class="iset-catmove-btn" data-title="Pindah kategori">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
+                </button>
+                <div class="iset-catmove-drop">
+                  ${allCats.filter(c => c !== currentCat).map(c =>
+                    `<button class="iset-catmove-opt" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
+                  ).join('')}
+                </div>
+              </div>
               <div class="iset-card-actions-end">
                 <a class="ibtn ibtn-icon" href="create.html?id=${set.id}" draggable="false" data-title="Edit">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -146,6 +207,19 @@
       }).join('');
     }
 
+    document.getElementById('setGrid').addEventListener('click', e => {
+      const btn = e.target.closest('[data-delete-id]');
+      if(btn) handleDelete(btn.dataset.deleteId);
+      const catOpt = e.target.closest('.iset-catmove-opt');
+      if(catOpt){
+        const card = catOpt.closest('.iset-card');
+        const setId = card.dataset.id;
+        const cat = catOpt.dataset.cat;
+        moveSetToCategory(setId, cat);
+        renderSets(document.getElementById('setFilterInput').value);
+      }
+    });
+
     document.getElementById('setFilterInput').addEventListener('input', e => {
       renderSets(e.target.value);
     });
@@ -154,21 +228,38 @@
       sortAsc = !sortAsc;
       const btn = document.getElementById('setSortBtn');
       btn.querySelector('span').textContent = sortAsc ? 'A-Z' : 'Z-A';
-      btn.dataset.title = sortAsc ? 'Urut A-Z' : 'Urut Z-A';
       renderSets(document.getElementById('setFilterInput').value);
     });
 
+    document.getElementById('addCategoryBtn').addEventListener('click', async () => {
+      const name = await showPrompt('Nama kategori baru:');
+      if(!name || !name.trim()) return;
+      addCategory(name.trim());
+      activeCategory = name.trim();
+      renderCategories();
+      renderSets();
+    });
+
+    function handleDelete(id){
+      const set = getSet(id);
+      if(!set) return;
+      showConfirm(`Hapus set "${escapeHtml(set.title)}"? Tindakan ini tidak bisa dibatalkan.`)
+        .then(async confirmed => {
+          if(!confirmed) return;
+          try{
+            await deleteSet(id);
+            renderSets(document.getElementById('setFilterInput').value);
+            createNotification('Set berhasil dihapus.', 'success');
+          }catch(e){
+            renderSets(document.getElementById('setFilterInput').value);
+            createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
+          }
+        });
+    }
+
+    renderCategories();
     renderSets();
-    
-    // Render avatar profil di navbar
-    
   })();
   </script>
-<script>
-function toggleTheme(){
-  document.body.classList.toggle('dark-theme');
-  localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
-}
-</script>
 </body>
 </html>
