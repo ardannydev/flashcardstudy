@@ -31,7 +31,7 @@ let _userProfilePromise = null;
 
 function isLocalMode(){
   const hostname = location.hostname;
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500';
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500' || isDevUser();
 }
 
 function getSets(){
@@ -140,6 +140,7 @@ async function syncSetsFromServer(options = {}){
 }
 
 async function getUserProfile(options = {}){
+  if(isDevUser()) return null;
   if(_userProfileCache && !options.force) return _userProfileCache;
   if(_userProfilePromise) return _userProfilePromise;
   _userProfilePromise = (async () => {

@@ -38,6 +38,19 @@ Aplikasi ini membantu pengguna mengulang kosakata, melihat progres belajar, dan 
 
 ## Update Terbaru
 
+### 27 Juli 2026
+
+- Kategori buat ngelompokin set — bisa nambah, ganti nama, atau hapus kategori. Set juga bisa dipindah antar kategori lewat dropdown.
+- Halaman sets sekarang bisa filter berdasarkan kategori, nyari set berdasarkan judul, dan sorting A-Z / Z-A.
+- Tampilan halaman bikin set dirombak: input judul, deskripsi, sama kategori sekarang tetap di atas, sedangkan daftar kartu bisa discroll sendiri.
+- Kartu bisa diurutkan pake drag-and-drop, baik pake mouse maupun sentuhan.
+- Import kartu lewat teks — tinggal tulis `istilah → arti` enter, langsung jadi.
+- Kartu yang kehapus bisa diurungkan lewat notifikasi.
+- Ada tombol "Simpan & Belajar" langsung buat belajar setelah nyimpen set.
+- Pas import, halaman nggak auto-scroll ke bawah lagi.
+- Footer dihapus, konten utama jadi lebih lega.
+- Perbaikan kecil di konsistensi spacing dan padding di berbagai ukuran layar.
+
 ### 24 Juli 2026
 
 - Navigasi desktop dapat digeser (drag horizontal) untuk berpindah halaman dengan cepat.

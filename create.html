@@ -33,109 +33,224 @@
   </header>
 
   <main class="cwrap">
-    <input aria-label="Judul set" class="cfield-box" id="title" placeholder="Judul">
-    <textarea aria-label="Deskripsi set" class="cfield-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
+    <div class="cfixed-head">
+      <input aria-label="Judul set" class="cfield-box" id="title" placeholder="Judul set" autocomplete="off">
 
-    <div class="ctoolbar">
-      <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import
-      </button>
-      <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Simpan</button>
-    </div>
+      <div class="cmeta-row">
+        <textarea aria-label="Deskripsi set" class="cfield-box cdesc-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
+        <div class="cmeta-right">
+          <div class="cmeta-select-wrap">
+            <label class="cmeta-label">Kategori</label>
+            <select id="catSelect" class="cmeta-select">
+              <option value="Umum">Umum</option>
+              <option value="Kotoba">Kotoba</option>
+              <option value="Bunpo">Bunpo</option>
+            </select>
+            <svg class="cmeta-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+      </div>
 
-    <div class="cimport-box" id="importBox">
-      <div class="cimport-grid">
-        <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
-        <button class="cbtn cbtn-primary" onclick="parseBulk()">Proses</button>
+      <div class="ctoolbar">
+        <div class="ctoolbar-left">
+          <span class="ccount" id="cardCount">0 kartu</span>
+        </div>
+        <div class="ctoolbar-right">
+          <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import
+          </button>
+          <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Simpan</button>
+          <button type="button" class="ibtn ibtn-ghost" onclick="handleSave(true)" title="Simpan & lanjut belajar">Simpan & Belajar</button>
+        </div>
+      </div>
+
+      <div class="cimport-box" id="importBox">
+        <div class="cimport-grid">
+          <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
+          <button class="cbtn cbtn-primary" onclick="parseBulk()">Proses</button>
+        </div>
       </div>
     </div>
 
-    <div id="rows"></div>
-
-    <div class="caddcard-wrap">
-      <button type="button" class="caddcard-btn" onclick="addRow()" aria-label="Tambahkan kartu">Tambahkan kartu</button>
+    <div class="cscroll">
+      <div id="rows"></div>
+      <div class="caddcard-wrap">
+        <button type="button" class="caddcard-btn" onclick="addRow()" aria-label="Tambahkan kartu">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambahkan kartu
+        </button>
+      </div>
     </div>
   </main>
 
-  <footer class="site-footer">
-    <p>FlashCardStudy &mdash; oleh <strong>Ardwanny</strong></p>
-  </footer>
-
   <script src="app.js"></script>
 <script>
-let rows = []; // {id, term, def}
+let rows = [];
 let editingId = qs('id');
 let _saving = false;
+let _deletedStack = [];
 
 function addRow(term='', def=''){
   rows.push({id: uid('row'), term, def});
   renderRows();
-}
-function removeRow(rid){
-  rows = rows.filter(r => r.id !== rid);
-  window.rows = rows;
-  renderRows();
-}
-function moveRow(rid, dir){
-  const i = rows.findIndex(r => r.id === rid);
-  const j = i + dir;
-  if(j < 0 || j >= rows.length) return;
-  [rows[i], rows[j]] = [rows[j], rows[i]];
-  renderRows();
-}
-let dragRowId = null;
-function onDragStart(e, rid){
-  dragRowId = rid;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed = 'move';
-}
-function onDragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  document.querySelectorAll('.crow').forEach(el => el.classList.remove('drag-over'));
-  dragRowId = null;
-}
-function onDragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  e.currentTarget.classList.add('drag-over');
-}
-function onDragLeave(e){
-  e.currentTarget.classList.remove('drag-over');
-}
-function onDrop(e, targetRid){
-  e.preventDefault();
-  e.currentTarget.classList.remove('drag-over');
-  if(!dragRowId || dragRowId === targetRid) return;
-  const fromIdx = rows.findIndex(r => r.id === dragRowId);
-  const toIdx = rows.findIndex(r => r.id === targetRid);
-  const [moved] = rows.splice(fromIdx, 1);
-  rows.splice(toIdx, 0, moved);
-  renderRows();
+  setTimeout(() => {
+    const el = document.querySelector('.crow:last-child .cfield-term');
+    if(el) el.focus();
+  }, 50);
 }
 
-/* ---- Touch-based drag and drop for mobile ---- */
-let touchDrag = {
-  active: false,
-  rowId: null,
-  clone: null,
-  startY: 0,
-  startIdx: -1,
-  currentOverIdx: -1
-};
+function removeRow(rid){
+  const idx = rows.findIndex(r => r.id === rid);
+  if(idx === -1) return;
+  const removed = rows.splice(idx, 1)[0];
+  _deletedStack.push(removed);
+  renderRows();
+  const note = createNotification('Kartu dihapus.', 'info', 4000);
+  const undoBtn = document.createElement('button');
+  undoBtn.textContent = 'Urungkan';
+  undoBtn.className = 'notif-undo';
+  undoBtn.onclick = () => {
+    rows.splice(idx, 0, _deletedStack.pop());
+    renderRows();
+    if(note.parentNode) note.remove();
+  };
+  note.appendChild(undoBtn);
+  updateCardCount();
+}
+
+function updateCardCount(){
+  const el = document.getElementById('cardCount');
+  if(el) el.textContent = rows.filter(r => r.term.trim() || r.def.trim()).length + ' kartu';
+}
+
+function renderRows(){
+  const wrap = document.getElementById('rows');
+  if(rows.length === 0){
+    wrap.innerHTML = '';
+    updateCardCount();
+    return;
+  }
+  wrap.innerHTML = rows.map((r,i) => {
+    const rid = escapeHtml(r.id);
+    return `
+    <div class="crow" data-row-id="${rid}">
+      <div class="crow-head">
+        <span class="crow-handle"
+          ontouchstart="onTouchStart(event,'${rid}')"
+          onmousedown="onMouseDownStart(event,'${rid}')">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+        </span>
+        <span class="crow-num">${i+1}</span>
+      </div>
+      <div class="crow-body">
+        <div class="cinput-group">
+          <input class="cfield-term" aria-label="Istilah ${i+1}" placeholder="Istilah" value="${escapeHtml(r.term)}"
+            oninput="onFieldInput('${rid}','term',this.value)"
+            onkeydown="onFieldKeydown(event,'${rid}')">
+        </div>
+        <div class="cinput-group">
+          <input class="cfield-def" aria-label="Definisi ${i+1}" placeholder="Definisi" value="${escapeHtml(r.def)}"
+            oninput="onFieldInput('${rid}','def',this.value)"
+            onkeydown="onFieldKeydown(event,'${rid}')">
+        </div>
+      </div>
+      <button type="button" class="crow-del" onclick="removeRow('${rid}')" aria-label="Hapus kartu ${i+1}" title="Hapus">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+  updateCardCount();
+}
+
+function onFieldInput(rid, field, val){
+  const r = rows.find(x => x.id === rid);
+  if(r) r[field] = val;
+  updateCardCount();
+}
+
+function onFieldKeydown(e, rid){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    const idx = rows.findIndex(r => r.id === rid);
+    if(idx === rows.length - 1){
+      addRow();
+    } else {
+      const next = document.querySelector(`.crow[data-row-id="${escapeHtml(rows[idx+1].id)}"] .cfield-term`);
+      if(next) next.focus();
+    }
+  }
+  if(e.key === 'Tab' && !e.shiftKey){
+    const idx = rows.findIndex(r => r.id === rid);
+    if(idx === rows.length - 1){
+      const field = e.target.classList.contains('cfield-def') ? 'term' : 'def';
+      if(field === 'def'){
+        e.preventDefault();
+        addRow();
+      }
+    }
+  }
+}
+
+/* ---- Mouse drag-and-drop reorder ---- */
+let _dd = { active: false, rowId: null, startIdx: -1, currentOverIdx: -1 };
+
+function onMouseDownStart(e, rid){
+  if(e.button !== 0) return;
+  _dd.active = true;
+  _dd.rowId = rid;
+  _dd.startIdx = rows.findIndex(r => r.id === rid);
+  _dd.currentOverIdx = _dd.startIdx;
+  document.querySelector(`.crow[data-row-id="${rid}"]`).classList.add('dragging');
+  document.addEventListener('mousemove', onMouseMoveDrag);
+  document.addEventListener('mouseup', onMouseUpDrag);
+  e.preventDefault();
+}
+
+function onMouseMoveDrag(e){
+  if(!_dd.active) return;
+  const rowsEls = document.querySelectorAll('.crow');
+  rowsEls.forEach(el => el.classList.remove('drag-over'));
+  let overIdx = _dd.startIdx;
+  rowsEls.forEach((el, i) => {
+    const rect = el.getBoundingClientRect();
+    if(e.clientY > rect.top && e.clientY < rect.bottom){
+      overIdx = i;
+      if(i !== _dd.startIdx && el.dataset.rowId !== _dd.rowId) el.classList.add('drag-over');
+    }
+  });
+  _dd.currentOverIdx = overIdx;
+}
+
+function onMouseUpDrag(){
+  if(!_dd.active) return;
+  _dd.active = false;
+  document.querySelectorAll('.crow').forEach(el => {
+    el.classList.remove('dragging');
+    el.classList.remove('drag-over');
+  });
+  if(_dd.startIdx !== _dd.currentOverIdx && _dd.startIdx >= 0 && _dd.currentOverIdx >= 0){
+    const [moved] = rows.splice(_dd.startIdx, 1);
+    rows.splice(_dd.currentOverIdx, 0, moved);
+    renderRows();
+  }
+  document.removeEventListener('mousemove', onMouseMoveDrag);
+  document.removeEventListener('mouseup', onMouseUpDrag);
+}
+
+/* ---- Touch drag-and-drop ---- */
+let touchDrag = { active: false, rowId: null, clone: null, startY: 0, startIdx: -1, currentOverIdx: -1 };
 
 function onTouchStart(e, rid){
   const touch = e.touches[0];
   const row = e.currentTarget.closest('.crow');
   if(!row) return;
-
   const rect = row.getBoundingClientRect();
   touchDrag.active = true;
   touchDrag.rowId = rid;
   touchDrag.startY = touch.clientY;
   touchDrag.startIdx = rows.findIndex(r => r.id === rid);
   touchDrag.currentOverIdx = touchDrag.startIdx;
-
   const clone = row.cloneNode(true);
   clone.classList.add('crow-drag-clone');
   clone.style.position = 'fixed';
@@ -146,13 +261,9 @@ function onTouchStart(e, rid){
   clone.style.pointerEvents = 'none';
   clone.style.opacity = '0.92';
   clone.style.transform = 'scale(1.03)';
-  clone.style.boxShadow = '0 12px 40px rgba(80,108,255,.35)';
-  clone.style.transition = 'none';
   document.body.appendChild(clone);
   touchDrag.clone = clone;
-
   row.classList.add('dragging');
-  e.preventDefault();
 }
 
 function onTouchMove(e){
@@ -161,14 +272,11 @@ function onTouchMove(e){
   const dy = touch.clientY - touchDrag.startY;
   if(touchDrag.clone){
     const row = document.querySelector(`.crow[data-row-id="${touchDrag.rowId}"]`);
-    const rect = row.getBoundingClientRect();
-    touchDrag.clone.style.top = (rect.top + dy) + 'px';
+    if(row) touchDrag.clone.style.top = (row.getBoundingClientRect().top + dy) + 'px';
   }
-
-  const rows_els = document.querySelectorAll('.crow');
-  rows_els.forEach(el => el.classList.remove('drag-over'));
+  document.querySelectorAll('.crow').forEach(el => el.classList.remove('drag-over'));
   let overIdx = touchDrag.startIdx;
-  rows_els.forEach((el, i) => {
+  document.querySelectorAll('.crow').forEach((el, i) => {
     const rect = el.getBoundingClientRect();
     if(touch.clientY > rect.top && touch.clientY < rect.bottom){
       overIdx = i;
@@ -182,18 +290,14 @@ function onTouchMove(e){
 function onTouchEnd(){
   if(!touchDrag.active) return;
   touchDrag.active = false;
-
   if(touchDrag.clone) touchDrag.clone.remove();
   document.querySelectorAll('.crow').forEach(el => {
     el.classList.remove('dragging');
     el.classList.remove('drag-over');
   });
-
-  const fromIdx = touchDrag.startIdx;
-  const toIdx = touchDrag.currentOverIdx;
-  if(fromIdx !== toIdx && fromIdx >= 0 && toIdx >= 0){
-    const [moved] = rows.splice(fromIdx, 1);
-    rows.splice(toIdx, 0, moved);
+  if(touchDrag.startIdx !== touchDrag.currentOverIdx && touchDrag.startIdx >= 0 && touchDrag.currentOverIdx >= 0){
+    const [moved] = rows.splice(touchDrag.startIdx, 1);
+    rows.splice(touchDrag.currentOverIdx, 0, moved);
     renderRows();
   }
   touchDrag.rowId = null;
@@ -204,65 +308,19 @@ function onTouchEnd(){
 
 document.addEventListener('touchmove', onTouchMove, {passive:false});
 document.addEventListener('touchend', onTouchEnd);
-function renderRows(){
-  const wrap = document.getElementById('rows');
-  if(rows.length === 0){
-    wrap.innerHTML = '';
-    return;
-  }
-  wrap.innerHTML = rows.map((r,i) => {
-    const rid = escapeHtml(r.id);
-    return `
-    <div class="crow" draggable="true"
-      data-row-id="${rid}"
-      ondragstart="onDragStart(event,this.dataset.rowId)"
-      ondragend="onDragEnd(event)"
-      ondragover="onDragOver(event)"
-      ondragleave="onDragLeave(event)"
-      ondrop="onDrop(event,this.dataset.rowId)">
-      <div class="crow-top">
-        <div class="crow-num">${i+1}</div>
-        <div class="crow-tools">
-          <span class="crow-handle" title="Seret untuk geser urutan"
-            ontouchstart="onTouchStart(event,this.closest('.crow').dataset.rowId)">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="5" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-          </span>
-          <button type="button" title="Hapus kartu" onclick="removeRow(this.closest('.crow').dataset.rowId)" aria-label="Hapus kartu ${i+1}">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="crow-body">
-        <div class="crow-inputs">
-          <div class="cinput-group">
-            <input aria-label="Istilah ${i+1}" placeholder="" value="${escapeHtml(r.term)}"
-              oninput="rows.find(x=>x.id===this.closest('.crow').dataset.rowId).term=this.value">
-            <label>Istilah</label>
-          </div>
-          <div class="cinput-group">
-            <input aria-label="Definisi ${i+1}" placeholder="" value="${escapeHtml(r.def)}"
-              oninput="rows.find(x=>x.id===this.closest('.crow').dataset.rowId).def=this.value">
-            <label>Definisi</label>
-          </div>
-        </div>
-      </div>
-    </div>
-  `}).join('');
-}
 
-// Keep inline mobile handlers working when this page is loaded by the SPA router.
-window.rows = rows;
-Object.assign(window, { addRow, removeRow, moveRow, onDragStart, onDragEnd, onDragOver, onDragLeave, onDrop, onTouchStart, parseBulk, handleSave });
+// Auto-resize textarea
+document.getElementById('desc').addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.max(56, this.scrollHeight) + 'px';
+});
 
 const importToggle = document.getElementById('importToggle');
-if (importToggle) {
-  importToggle.addEventListener('click', () => {
-    const box = document.getElementById('importBox');
-    if (!box) return;
-    const open = box.classList.toggle('open');
-    importToggle.setAttribute('aria-expanded', String(open));
-  });
-}
+importToggle.addEventListener('click', () => {
+  const box = document.getElementById('importBox');
+  const open = box.classList.toggle('open');
+  importToggle.setAttribute('aria-expanded', String(open));
+});
 
 const HAS_JP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
 const JP_ONLY = /[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3005\u3006\u3007\u3031-\u303B\u30FC\u30FB\u3001\u3002\s]/g;
@@ -276,7 +334,6 @@ function parseCSV(text){
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const parsed = [];
   const failedLines = [];
-
   lines.forEach(line => {
     const idx = line.indexOf('→');
     if(idx === -1){ failedLines.push(line); return; }
@@ -287,81 +344,68 @@ function parseCSV(text){
     if(!term || !HAS_JP.test(term)){ failedLines.push(line); return; }
     parsed.push({id: uid('row'), term, def: def.replace(/\s+/g, ' ').trim()});
   });
-
   return { parsed, failedLines };
 }
 
 function parseBulk(){
   const raw = document.getElementById('bulkText').value;
   const { parsed, failedLines } = parseCSV(raw);
-
   if(parsed.length === 0){
-    createNotification('Tidak ada baris yang berhasil dibaca. Pastikan tiap baris berformat "kotoba [pemisah] arti" atau CSV/TSV.', 'error');
+    createNotification('Tidak ada baris yang berhasil dibaca. Pastikan tiap baris berformat "kotoba → arti"', 'error');
     return;
   }
-  // filter panjang
   const valid = [];
   const skipped = [];
   parsed.forEach(p => {
     if(p.term.length > 50 || p.def.length > 150) skipped.push(p);
     else valid.push(p);
   });
-
   rows = rows.filter(r => r.term.trim() || r.def.trim());
   rows = rows.concat(valid);
   document.getElementById('bulkText').value = '';
   renderRows();
-  setTimeout(() => {
-    const el = document.querySelector('.crow:last-child');
-    if(el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }, 50);
-
   const skipCount = skipped.length + failedLines.length;
   if(skipCount > 0 && valid.length > 0){
-    createNotification(`${valid.length} kotoba ditambahkan. ${skipCount} baris dilewati (tidak sesuai format).`, 'info');
+    createNotification(`${valid.length} kotoba ditambahkan. ${skipCount} baris dilewati.`, 'info');
   } else if(valid.length === 0){
-    createNotification('Tidak ada kotoba yang berhasil diproses. Format: "kotoba [→/-/:] arti"', 'error');
+    createNotification('Tidak ada kotoba yang berhasil diproses.', 'error');
   } else {
     createNotification(`${valid.length} kotoba berhasil ditambahkan.`, 'success');
   }
 }
 
+// Load categories into select
+function loadCategories(){
+  const sel = document.getElementById('catSelect');
+  if(!sel) return;
+  const cats = getCategories();
+  const current = sel.value;
+  sel.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  sel.value = current;
+}
+
 async function handleSave(andPractice){
   const title = document.getElementById('title').value.trim();
   const desc = document.getElementById('desc').value.trim();
+  const category = document.getElementById('catSelect').value;
   const cleanTerms = rows
     .map(r => ({id: r.id, term: r.term.trim(), def: r.def.trim()}))
     .filter(r => r.term && r.def);
 
   if(!title){ createNotification('Judul set wajib diisi.', 'error'); return; }
-  if(cleanTerms.length === 0){ createNotification('Tambahkan minimal 1 kotoba beserta artinya.', 'error'); return; }
+  if(cleanTerms.length === 0){ createNotification('Tambahkan minimal 1 kartu.', 'error'); return; }
 
   const setId = editingId || uid('set');
-
-  // initialize review metadata for each term (SM-2)
   const now = Date.now();
   const termsWithMeta = cleanTerms.map(t => ({
-    id: t.id,
-    term: t.term,
-    def: t.def,
-    _review: t._review || {
-      reps: 0,
-      ease: 2.5,
-      interval: 0,
-      last: null,
-      due: now
-    }
+    id: t.id, term: t.term, def: t.def,
+    _review: t._review || { reps: 0, ease: 2.5, interval: 0, last: null, due: now }
   }));
 
-  const set = {
-    id: setId,
-    title, desc,
-    terms: termsWithMeta,
-    updatedAt: Date.now()
-  };
+  const set = { id: setId, title, desc, category, terms: termsWithMeta, updatedAt: now };
 
   const saveBtn = document.querySelector('.ibtn-primary');
-  const originalLabel = saveBtn ? saveBtn.textContent : null;
+  const origLabel = saveBtn ? saveBtn.textContent : '';
   if(saveBtn){ saveBtn.disabled = true; saveBtn.textContent = 'Menyimpan...'; }
 
   try{
@@ -371,28 +415,36 @@ async function handleSave(andPractice){
     navigateTo(andPractice ? `learn.html?id=${set.id}` : 'sets.html');
   }catch(e){
     _saving = false;
-    createNotification('Gagal menyimpan set ke server. Coba lagi.', 'error');
-    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = originalLabel; }
+    createNotification('Gagal menyimpan. Coba lagi.', 'error');
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = origLabel; }
   }
 }
 
-// muat data jika mode edit
+// Init
 (async function init(){
   if(!requireLogin()) return;
+
+  loadCategories();
+
   function applyEditingSet(){
     if(!editingId) return;
     const set = getSet(editingId);
     if(set){
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
+      document.getElementById('catSelect').value = set.category || 'Umum';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
-      window.rows = rows;
     }
   }
   applyEditingSet();
   renderRows();
   if(rows.length === 0) addRow();
   const initialRows = JSON.stringify(rows);
+
+  // Auto-resize desc
+  const descEl = document.getElementById('desc');
+  descEl.style.height = 'auto';
+  descEl.style.height = Math.max(56, descEl.scrollHeight) + 'px';
 
   function hasUnsavedChanges(){
     if(_saving) return false;
@@ -404,8 +456,8 @@ async function handleSave(andPractice){
   const leaveHandler = async (e) => {
     if(!hasUnsavedChanges()) return;
     e.preventDefault();
-    const confirmed = await showConfirm('Perubahan belum disimpan. Keluar?', {confirmText: 'Keluar', cancelText: 'Batal'});
-    if(confirmed){ navigateTo('index.html'); }
+    const confirmed = await showConfirm('Perubahan belum disimpan. Keluar?', {confirmText:'Keluar', cancelText:'Batal'});
+    if(confirmed) navigateTo('index.html');
   };
   leaveBtn.addEventListener('click', leaveHandler);
   window.__pageCleanup = () => {
@@ -413,11 +465,7 @@ async function handleSave(andPractice){
     document.removeEventListener('touchmove', onTouchMove);
     document.removeEventListener('touchend', onTouchEnd);
   };
-  
-  // Render avatar profil di navbar
-  
 
-  // Tampilkan cache lokal lebih dulu, lalu rapikan jika data server berubah.
   syncSetsFromServer().then(() => {
     if(editingId && JSON.stringify(rows) === initialRows){
       applyEditingSet();
