@@ -35,7 +35,7 @@ function invalidateCatsCache(){ _catsCache = null; }
 
 function isLocalMode(){
   const hostname = location.hostname;
-  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500' || isDevUser();
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || location.port === '5500';
 }
 
 function getSets(){
