@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Panel admin FlashCardStudy.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B1426">
+<title>Admin — FlashCardStudy</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.adm-wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+.adm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.adm-header-left{display:flex;align-items:center;gap:12px}
+.adm-header-left h1{font-size:20px;font-weight:700;margin:0}
+.adm-badge{font-size:11px;font-weight:600;background:#f59e0b;color:#000;padding:2px 10px;border-radius:20px;text-transform:uppercase}
+.adm-header-actions{display:flex;gap:8px}
+.adm-btn-sm{padding:6px 14px;font-size:12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;cursor:pointer;transition:.15s;font-family:inherit}
+.adm-btn-sm:hover{background:rgba(255,255,255,.1)}
+.adm-btn-primary{border-color:#3b82f6;background:rgba(59,130,246,.15);color:#60a5fa}
+.adm-btn-primary:hover{background:rgba(59,130,246,.25)}
+.adm-btn-danger{border-color:#ef4444;background:rgba(239,68,68,.15);color:#ef4444}
+.adm-btn-danger:hover{background:rgba(239,68,68,.25)}
+.adm-btn-success{border-color:#22c55e;background:rgba(34,197,94,.15);color:#22c55e}
+.adm-btn-success:hover{background:rgba(34,197,94,.25)}
+
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.adm-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:16px;position:relative}
+.adm-stat-num{font-size:28px;font-weight:700;display:block;line-height:1.2}
+.adm-stat-label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.adm-stat-sub{font-size:11px;color:rgba(255,255,255,.25);margin-top:2px}
+.adm-stat-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.adm-stat-dot-green{background:#22c55e}
+.adm-stat-dot-yellow{background:#f59e0b}
+
+.adm-section{margin-bottom:28px}
+.adm-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.adm-section-header h2{font-size:15px;font-weight:600;margin:0;color:rgba(255,255,255,.85)}
+.adm-section-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.adm-search{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:6px 12px;color:#fff;font-size:13px;font-family:inherit;outline:none;width:160px;transition:.15s}
+.adm-search:focus{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.08)}
+.adm-search::placeholder{color:rgba(255,255,255,.25)}
+.adm-filter{display:flex;gap:4px}
+.adm-filter-btn{padding:4px 12px;font-size:11px;border-radius:6px;border:1px solid rgba(255,255,255,.08);background:transparent;color:rgba(255,255,255,.4);cursor:pointer;transition:.15s;font-family:inherit}
+.adm-filter-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.adm-filter-btn.active{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.15)}
+
+.adm-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.06)}
+.adm-table{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+.adm-table th{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.35);font-weight:500;font-size:10px;text-transform:uppercase;letter-spacing:.6px;background:rgba(255,255,255,.02);white-space:nowrap;position:sticky;top:0}
+.adm-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+.adm-table tr:hover td{background:rgba(255,255,255,.02)}
+.adm-table tr:last-child td{border-bottom:none}
+
+.adm-type{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px}
+.adm-type-bug{background:rgba(239,68,68,.15);color:#ef4444}
+.adm-type-feature{background:rgba(59,130,246,.15);color:#60a5fa}
+.adm-type-other{background:rgba(168,85,247,.15);color:#c084fc}
+.adm-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;text-transform:uppercase}
+.adm-status-pending{background:rgba(245,158,11,.15);color:#f59e0b}
+.adm-status-resolved{background:rgba(34,197,94,.15);color:#22c55e}
+.adm-msg-cell{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.adm-msg-cell:hover{overflow:visible;white-space:normal;position:relative;z-index:2;background:rgba(11,20,38,.95);padding:6px 8px;margin:-6px -8px;border-radius:6px;max-width:none}
+.adm-device-cell{font-size:11px;color:rgba(255,255,255,.25);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-ip-cell{font-size:11px;color:rgba(255,255,255,.25)}
+.adm-actions-cell{display:flex;gap:4px}
+.adm-icon-btn{background:none;border:none;color:rgba(255,255,255,.35);cursor:pointer;padding:4px;border-radius:6px;display:inline-flex;transition:.15s;font-family:inherit}
+.adm-icon-btn:hover{color:#fff;background:rgba(255,255,255,.06)}
+.adm-icon-btn.resolve:hover{color:#22c55e}
+.adm-icon-btn.delete:hover{color:#ef4444}
+
+.adm-empty{text-align:center;padding:40px 16px;color:rgba(255,255,255,.2);font-size:13px}
+.adm-local-notice{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:10px;padding:10px 14px;font-size:12px;color:#f59e0b;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+
+.adm-user-row{cursor:pointer}
+.adm-user-expand td{padding:0}
+.adm-user-expand-inner{padding:10px 12px 14px 24px;background:rgba(255,255,255,.015);border-bottom:1px solid rgba(255,255,255,.04)}
+.adm-user-expand-inner h4{font-size:12px;font-weight:600;margin:0 0 6px;color:rgba(255,255,255,.4)}
+.adm-audit-list{font-size:12px;display:flex;flex-direction:column;gap:4px}
+.adm-audit-item{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.5)}
+.adm-audit-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.adm-audit-ok{background:#22c55e}
+.adm-audit-fail{background:#ef4444}
+.adm-audit-ts{font-size:11px;color:rgba(255,255,255,.25);white-space:nowrap}
+.adm-audit-ip{font-size:11px;color:rgba(255,255,255,.3)}
+
+.adm-sysinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.adm-sysinfo-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:10px;padding:12px 14px}
+.adm-sysinfo-label{font-size:10px;text-transform:uppercase;color:rgba(255,255,255,.3);letter-spacing:.4px;margin-bottom:4px}
+.adm-sysinfo-value{font-size:13px;font-weight:500;word-break:break-all}
+.adm-sysinfo-value small{font-weight:400;color:rgba(255,255,255,.3)}
+
+.adm-toast{position:fixed;bottom:20px;right:20px;background:rgba(11,20,38,.95);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 16px;font-size:13px;color:#fff;z-index:999;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.adm-toast.show{opacity:1;transform:translateY(0)}.adm-toast.ok{border-color:#22c55e}.adm-toast.err{border-color:#ef4444}
+
+@media(max-width:640px){
+  .adm-stats{grid-template-columns:repeat(2,1fr)}
+  .adm-section-tools{flex-direction:column;align-items:stretch}
+  .adm-search{width:auto}
+  .adm-table{font-size:12px}
+  .adm-msg-cell{max-width:120px}
+}
+</style>
+</head>
+<body class="dark-theme">
+
+  <header class="nh nh-nav-always">
+    <div class="nh-inner">
+      <div class="nh-bar">
+        <a href="admin.html" class="nh-logo">FlashCardStudy</a>
+        <nav class="nh-nav-desktop">
+          <div class="nh-skew-wrap">
+            <a href="admin.html" class="nh-link active" draggable="false">Admin</a>
+            <span class="nh-nav-dot" id="navDot"></span>
+          </div>
+        </nav>
+        <div class="nh-actions">
+          <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" id="navProfileBtn"></a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="adm-wrap">
+    <div class="adm-header">
+      <div class="adm-header-left">
+        <h1>Panel Admin</h1>
+        <span class="adm-badge">ADMIN</span>
+      </div>
+      <div class="adm-header-actions">
+        <button class="adm-btn-sm" onclick="exportReports()">Ekspor Laporan</button>
+        <button class="adm-btn-sm adm-btn-primary" onclick="refreshAll()">Segarkan</button>
+      </div>
+    </div>
+
+    <div id="localNotice" class="adm-local-notice" style="display:none">
+      <span>&#9888;&#65039;</span>
+      <span>Mode lokal — data terbatas pada perangkat ini. Deploy ke Vercel untuk dashboard server penuh.</span>
+    </div>
+
+    <div class="adm-stats" id="statsGrid">
+      <div class="adm-stat"><span class="adm-stat-num" id="statUsers">—</span><span class="adm-stat-label">Pengguna</span></div>
+      <div class="adm-stat"><span class="adm-stat-num" id="statSets">—</span><span class="adm-stat-label">Total Set</span><span class="adm-stat-sub" id="statSetsSub"></span></div>
+      <div class="adm-stat"><span class="adm-stat-num" id="statCards">—</span><span class="adm-stat-label">Total Kartu</span></div>
+      <div class="adm-stat"><span class="adm-stat-num" id="statReports">—</span><span class="adm-stat-label">Laporan</span><span class="adm-stat-sub" id="statReportsSub"></span></div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header">
+        <h2>Laporan Pengguna</h2>
+        <div class="adm-section-tools">
+          <div class="adm-filter" id="reportFilter">
+            <button class="adm-filter-btn active" data-filter="all">Semua</button>
+            <button class="adm-filter-btn" data-filter="bug">Bug</button>
+            <button class="adm-filter-btn" data-filter="feature">Saran</button>
+            <button class="adm-filter-btn" data-filter="other">Lain</button>
+            <button class="adm-filter-btn" data-filter="pending">Pending</button>
+            <button class="adm-filter-btn" data-filter="resolved">Selesai</button>
+          </div>
+          <input class="adm-search" id="reportSearch" placeholder="Cari laporan..." autocomplete="off">
+        </div>
+      </div>
+      <div class="adm-table-wrap" id="reportsWrap">
+        <p class="adm-empty">Memuat...</p>
+      </div>
+    </div>
+
+    <div class="adm-section" id="usersSection">
+      <div class="adm-section-header">
+        <h2>Daftar Pengguna</h2>
+        <div class="adm-section-tools">
+          <input class="adm-search" id="userSearch" placeholder="Cari pengguna..." autocomplete="off">
+        </div>
+      </div>
+      <div class="adm-table-wrap" id="usersWrap">
+        <p class="adm-empty">Memuat...</p>
+      </div>
+    </div>
+
+    <div class="adm-section" id="auditSection">
+      <div class="adm-section-header">
+        <h2>Aktivitas Login</h2>
+        <div class="adm-section-tools">
+          <input class="adm-search" id="auditSearch" placeholder="Cari user/IP..." autocomplete="off">
+          <button class="adm-btn-sm adm-btn-primary" onclick="loadAudit()">Muat</button>
+        </div>
+      </div>
+      <div class="adm-table-wrap" id="auditWrap">
+        <p class="adm-empty">Klik "Muat" untuk melihat aktivitas login.</p>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header">
+        <h2>Sistem</h2>
+      </div>
+      <div class="adm-sysinfo" id="sysInfo"></div>
+    </div>
+  </main>
+
+  <div class="adm-toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+var _reports = [];
+var _users = [];
+var _reportFilter = 'all';
+var _expandedUser = null;
+
+(async function(){
+  if(!requireLogin()) return;
+  await syncSetsFromServer();
+
+  if(isLocalMode()){
+    document.getElementById('localNotice').style.display = '';
+  }
+
+  document.getElementById('reportFilter').addEventListener('click', function(e){
+    var btn = e.target.closest('.adm-filter-btn');
+    if(!btn) return;
+    document.querySelectorAll('#reportFilter .adm-filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    _reportFilter = btn.dataset.filter;
+    renderReports();
+  });
+
+  document.getElementById('reportSearch').addEventListener('input', function(){
+    renderReports();
+  });
+
+  document.getElementById('userSearch').addEventListener('input', function(){
+    renderUsers();
+  });
+
+  document.getElementById('auditSearch').addEventListener('input', function(){
+    renderAudit();
+  });
+
+  refreshAll();
+})();
+
+function refreshAll(){
+  renderStats();
+  loadReports();
+  loadUsers();
+  renderSysInfo();
+}
+
+function toast(msg, type){
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'adm-toast show ' + (type || 'ok');
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.classList.remove('show'); }, 2500);
+}
+
+function renderStats(){
+  var sets = getSets();
+  var totalSets = sets.length;
+  var totalCards = sets.reduce(function(s,set){ return s + (set.terms||[]).length; }, 0);
+  var reports = getReports();
+  var pending = reports.filter(function(r){ return r.status === 'pending'; }).length;
+
+  document.getElementById('statSets').textContent = totalSets;
+  document.getElementById('statCards').textContent = totalCards;
+  document.getElementById('statReports').textContent = reports.length;
+  document.getElementById('statReportsSub').textContent = pending + ' pending';
+  document.getElementById('statSetsSub').textContent = totalCards + ' kartu';
+
+  if(!isLocalMode()){
+    fetch('/api/admin?action=stats', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if(data.users !== undefined) document.getElementById('statUsers').textContent = data.users;
+      if(data.sets !== undefined) document.getElementById('statSets').textContent = data.sets;
+      if(data.cards !== undefined) document.getElementById('statCards').textContent = data.cards;
+      if(data.reports !== undefined){
+        document.getElementById('statReports').textContent = data.reports;
+        document.getElementById('statReportsSub').textContent = (data.pendingReports || 0) + ' pending';
+      }
+    }).catch(function(){});
+  } else {
+    document.getElementById('statUsers').textContent = '1 (lokal)';
+  }
+}
+
+function loadReports(){
+  var local = getReports();
+  _reports = local;
+
+  if(!isLocalMode()){
+    fetch('/api/admin?action=reports', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    }).then(function(r){ return r.json(); }).then(function(data){
+      if(data.reports && data.reports.length){
+        var merged = data.reports.slice();
+        local.forEach(function(r){
+          if(!merged.find(function(m){ return m.id === r.id; })) merged.push(r);
+        });
+        _reports = merged;
+      }
+      renderReports();
+    }).catch(function(){
+      renderReports();
+    });
+  } else {
+    renderReports();
+  }
+}
+
+function renderReports(){
+  var wrap = document.getElementById('reportsWrap');
+  var search = (document.getElementById('reportSearch').value || '').toLowerCase();
+  var filtered = _reports.filter(function(r){
+    if(_reportFilter !== 'all' && _reportFilter !== 'pending' && _reportFilter !== 'resolved'){
+      if((r.type || 'other') !== _reportFilter) return false;
+    }
+    if(_reportFilter === 'pending' && r.status !== 'pending') return false;
+    if(_reportFilter === 'resolved' && r.status !== 'resolved') return false;
+    if(search && (r.message||'').toLowerCase().indexOf(search) === -1 && (r.username||'').toLowerCase().indexOf(search) === -1) return false;
+    return true;
+  });
+
+  if(filtered.length === 0){
+    wrap.innerHTML = '<p class="adm-empty">Tidak ada laporan.</p>';
+    return;
+  }
+
+  var html = '<table class="adm-table"><thead><tr><th>Tipe</th><th>Pesan</th><th>Pengguna</th><th>Device / IP</th><th>Status</th><th>Tanggal</th><th></th></tr></thead><tbody>';
+  filtered.slice(0, 200).forEach(function(r){
+    var date = r.date ? new Date(r.date).toLocaleDateString('id-ID', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    var typeCls = 'adm-type adm-type-' + (r.type || 'other');
+    var typeLabel = r.type === 'bug' ? 'Bug' : r.type === 'feature' ? 'Saran' : 'Lain';
+    var statusCls = 'adm-status adm-status-' + (r.status || 'pending');
+    var statusLabel = r.status === 'resolved' ? 'Selesai' : 'Pending';
+    var device = (r.device || '').slice(0, 100) || '—';
+    var ip = r.ip || '';
+    var rid = escapeHtml(r.id);
+    html += '<tr><td><span class="' + typeCls + '">' + typeLabel + '</span></td>';
+    html += '<td><span class="adm-msg-cell" title="' + escapeHtml(r.message) + '">' + escapeHtml(r.message) + '</span></td>';
+    html += '<td>' + escapeHtml(r.username || r.userId || '—') + '</td>';
+    html += '<td><div class="adm-device-cell" title="' + escapeHtml(device) + '">' + escapeHtml(device) + '</div>' + (ip ? '<div class="adm-ip-cell">' + escapeHtml(ip) + '</div>' : '') + '</td>';
+    html += '<td><span class="' + statusCls + '">' + statusLabel + '</span></td>';
+    html += '<td style="white-space:nowrap;font-size:11px;color:rgba(255,255,255,.35)">' + date + '</td>';
+    html += '<td><div class="adm-actions-cell">';
+    if(r.status !== 'resolved'){
+      html += '<button class="adm-icon-btn resolve" onclick="resolveReport(\'' + rid + '\')" title="Tandai selesai"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>';
+    }
+    html += '<button class="adm-icon-btn delete" onclick="deleteReport(\'' + rid + '\')" title="Hapus"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    html += '</div></td></tr>';
+  });
+  html += '</tbody></table>';
+  if(filtered.length > 200) html += '<p style="text-align:center;padding:10px;font-size:12px;color:rgba(255,255,255,.2)">Menampilkan 200 dari ' + filtered.length + ' laporan</p>';
+  wrap.innerHTML = html;
+}
+
+function resolveReport(id){
+  var r = _reports.find(function(x){ return x.id === id; });
+  if(!r) return;
+  r.status = 'resolved';
+  if(!isLocalMode()){
+    fetch('/api/admin', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer ' + getToken()},
+      body: JSON.stringify({ action: 'resolveReport', reportId: id })
+    }).catch(function(){});
+  }
+  renderReports();
+  renderStats();
+  toast('Laporan ditandai selesai');
+}
+
+function deleteReport(id){
+  _reports = _reports.filter(function(r){ return r.id !== id; });
+  if(!isLocalMode()){
+    fetch('/api/admin', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer ' + getToken()},
+      body: JSON.stringify({ action: 'deleteReport', reportId: id })
+    }).catch(function(){});
+  }
+  renderReports();
+  renderStats();
+  toast('Laporan dihapus');
+}
+
+function loadUsers(){
+  if(isLocalMode()){
+    document.getElementById('usersWrap').innerHTML = '<p class="adm-empty">Mode lokal — data pengguna hanya tersedia di server.</p>';
+    return;
+  }
+
+  fetch('/api/admin?action=users', {
+    headers: { 'Authorization': 'Bearer ' + getToken() }
+  }).then(function(r){ return r.json(); }).then(function(data){
+    _users = data.users || [];
+    renderUsers();
+  }).catch(function(){
+    document.getElementById('usersWrap').innerHTML = '<p class="adm-empty">Gagal memuat data pengguna.</p>';
+  });
+}
+
+function renderUsers(){
+  var wrap = document.getElementById('usersWrap');
+  var search = (document.getElementById('userSearch').value || '').toLowerCase();
+
+  if(_users.length === 0 && !isLocalMode()){
+    wrap.innerHTML = '<p class="adm-empty">Memuat...</p>';
+    return;
+  }
+
+  var filtered = _users;
+  if(search) filtered = _users.filter(function(u){ return u.username.toLowerCase().indexOf(search) !== -1; });
+
+  if(filtered.length === 0){
+    wrap.innerHTML = '<p class="adm-empty">Tidak ada pengguna.</p>';
+    return;
+  }
+
+  var html = '<table class="adm-table"><thead><tr><th>Username</th><th>Set</th><th>Kartu</th><th>Terdaftar</th><th>Login Terakhir</th><th>IP</th></tr></thead><tbody>';
+  filtered.forEach(function(u){
+    var created = u.createdAt ? new Date(u.createdAt).toLocaleDateString('id-ID', {year:'numeric',month:'short',day:'numeric'}) : '—';
+    var lastLogin = u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('id-ID', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    var isExpanded = _expandedUser === u.username;
+    var uname = escapeHtml(u.username);
+    html += '<tr class="adm-user-row" onclick="toggleUser(\'' + uname + '\')"><td><strong>' + uname + '</strong></td>';
+    html += '<td>' + (u.setCount || 0) + '</td>';
+    html += '<td>' + (u.cardCount || 0) + '</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.35)">' + created + '</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.35)">' + lastLogin + '</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.35)">' + (u.lastIp || '—') + '</td></tr>';
+
+    if(isExpanded){
+      html += '<tr class="adm-user-expand"><td colspan="6"><div class="adm-user-expand-inner">';
+      if(u.audit && u.audit.length){
+        html += '<h4>Aktivitas Login Terbaru</h4><div class="adm-audit-list">';
+        u.audit.forEach(function(a){
+          var ts = a.ts ? new Date(a.ts).toLocaleDateString('id-ID', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+          var ok = a.type === 'login_ok';
+          html += '<div class="adm-audit-item"><span class="adm-audit-dot ' + (ok ? 'adm-audit-ok' : 'adm-audit-fail') + '"></span>';
+          html += '<span>' + (ok ? 'Berhasil' : 'Gagal') + '</span>';
+          html += '<span class="adm-audit-ts">' + ts + '</span>';
+          html += '<span class="adm-audit-ip">' + (a.ip || '—') + '</span></div>';
+        });
+        html += '</div>';
+      } else {
+        html += '<p style="color:rgba(255,255,255,.2);font-size:12px;margin:0">Tidak ada data audit.</p>';
+      }
+      html += '</div></td></tr>';
+    }
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+function toggleUser(username){
+  _expandedUser = _expandedUser === username ? null : username;
+  renderUsers();
+}
+
+function loadAudit(){
+  var wrap = document.getElementById('auditWrap');
+  wrap.innerHTML = '<p class="adm-empty">Memuat...</p>';
+
+  if(isLocalMode()){
+    wrap.innerHTML = '<p class="adm-empty">Data audit hanya tersedia di server.</p>';
+    return;
+  }
+
+  fetch('/api/admin?action=audit', {
+    headers: { 'Authorization': 'Bearer ' + getToken() }
+  }).then(function(r){ return r.json(); }).then(function(data){
+    window._auditEntries = data.entries || [];
+    renderAudit();
+  }).catch(function(){
+    wrap.innerHTML = '<p class="adm-empty">Gagal memuat data audit.</p>';
+  });
+}
+
+function renderAudit(){
+  var wrap = document.getElementById('auditWrap');
+  var entries = window._auditEntries || [];
+  var search = (document.getElementById('auditSearch').value || '').toLowerCase();
+
+  if(entries.length === 0){
+    wrap.innerHTML = '<p class="adm-empty">Tidak ada data audit.</p>';
+    return;
+  }
+
+  var filtered = entries;
+  if(search) filtered = entries.filter(function(e){
+    return (e.user||'').toLowerCase().indexOf(search) !== -1 || (e.ip||'').toLowerCase().indexOf(search) !== -1;
+  });
+
+  var html = '<table class="adm-table"><thead><tr><th>User</th><th>Status</th><th>IP</th><th>Waktu</th></tr></thead><tbody>';
+  filtered.slice(0, 150).forEach(function(e){
+    var ts = e.ts ? new Date(e.ts).toLocaleDateString('id-ID', {year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+    var ok = e.type === 'login_ok';
+    html += '<tr><td>' + escapeHtml(e.user || '—') + '</td>';
+    html += '<td><span class="' + (ok ? 'adm-status adm-status-resolved' : 'adm-status adm-status-pending') + '">' + (ok ? 'Berhasil' : 'Gagal') + '</span></td>';
+    html += '<td class="adm-ip-cell">' + escapeHtml(e.ip || '—') + '</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.35);white-space:nowrap">' + ts + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  if(filtered.length > 150) html += '<p style="text-align:center;padding:10px;font-size:12px;color:rgba(255,255,255,.2)">Menampilkan 150 dari ' + filtered.length + ' entri</p>';
+  wrap.innerHTML = html;
+}
+
+function renderSysInfo(){
+  var wrap = document.getElementById('sysInfo');
+  var mode = isLocalMode() ? 'Lokal (localStorage)' : 'Server (Vercel KV)';
+  var storage = 0;
+  try { storage = new Blob([localStorage.getItem('qz_sets_v1') || '']).size + new Blob([localStorage.getItem('qz_reports') || '']).size; } catch(e){}
+  var storageStr = storage > 1024 ? (storage / 1024).toFixed(1) + ' KB' : storage + ' B';
+  var now = new Date().toLocaleString('id-ID');
+
+  wrap.innerHTML =
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Mode</div><div class="adm-sysinfo-value">' + mode + '</div></div>' +
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Penyimpanan Lokal</div><div class="adm-sysinfo-value">' + storageStr + '</div></div>' +
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">User Saat Ini</div><div class="adm-sysinfo-value">' + escapeHtml(getCurrentUser() || '—') + '</div></div>' +
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Terakhir Segarkan</div><div class="adm-sysinfo-value"><small>' + now + '</small></div></div>';
+}
+
+function exportReports(){
+  var data = JSON.stringify(_reports, null, 2);
+  var blob = new Blob([data], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'laporan_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Laporan diekspor');
+}
+
+</script>
+</body>
+</html>

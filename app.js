@@ -507,6 +507,13 @@ function addReport(type, message){
   };
   reports.unshift(report);
   saveReports(reports);
+  if(!isLocalMode()){
+    fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer ' + getToken()},
+      body: JSON.stringify({ type, message })
+    }).catch(() => {});
+  }
   return report;
 }
 function getDeviceInfo(){
@@ -521,7 +528,7 @@ function setDevUser(v){
 
 
 (function(){
-  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html']);
+  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html','admin.html']);
   let navigationBusy = false;
 
   function isSpaUrl(url){
