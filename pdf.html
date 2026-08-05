@@ -64,10 +64,12 @@
   if(!requireLogin()) return;
 
   const setId = qs('id');
-  const set = getSet(setId);
   const view = document.getElementById('pdfView');
 
-  if(!set || !set.pdf){
+  await syncSetsFromServer();
+  const set = await getSetWithPdf(setId);
+
+  if(!set || !set.pdf || !set.pdf.data){
     view.innerHTML = '<div class="pdf-error"><h2>PDF tidak ditemukan</h2><p>Dokumen ini mungkin sudah dihapus atau belum dilampirkan.</p><a class="ibtn ibtn-primary" href="sets.html">Kembali ke Set</a></div>';
     return;
   }

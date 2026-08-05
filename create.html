@@ -478,6 +478,7 @@ async function handleSave(andPractice){
 
   try{
     _saving = true;
+    if(!_pdfFile && editingId && getSet(editingId)?.pdf) await deletePdfForSet(setId);
     await upsertSet(set);
     sessionStorage.setItem('navInternal','1');
     if(andPractice){
@@ -500,21 +501,22 @@ async function handleSave(andPractice){
 (async function init(){
   if(!requireLogin()) return;
 
-  function applyEditingSet(){
+  async function applyEditingSet(){
     if(!editingId) return;
-    const set = getSet(editingId);
+    const set = await getSetWithPdf(editingId);
     if(set){
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
-      if(set.pdf) _pdfFile = set.pdf;
+      if(set.pdf && set.pdf.data) _pdfFile = set.pdf;
+      else if(set.pdf) _pdfFile = await loadPdfForSet(editingId);
     }
   }
-  applyEditingSet();
+  await syncSetsFromServer();
+  await applyEditingSet();
   renderPdfAttach();
   renderRows();
   if(rows.length === 0) addRow();
-  const initialRows = JSON.stringify(rows);
 
   // Auto-resize desc
   const descEl = document.getElementById('desc');
@@ -541,12 +543,6 @@ async function handleSave(andPractice){
     document.removeEventListener('touchend', onTouchEnd);
   };
 
-  syncSetsFromServer().then(() => {
-    if(editingId && JSON.stringify(rows) === initialRows){
-      applyEditingSet();
-      renderRows();
-    }
-  });
 })();
 
 Object.assign(window, {

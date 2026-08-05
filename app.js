@@ -24,12 +24,124 @@ window.addEventListener('unhandledrejection', function(e) {
 const STORE_KEY = 'qz_sets_v1';
 const DB_VERSION_KEY = 'qz_db_version';
 const CURRENT_DB_VERSION = 1;
+const PDF_DB_NAME = 'qz_pdf_v1';
+const PDF_STORE_NAME = 'files';
 let _setsSynced = false;
 let _setsSyncPromise = null;
 let _userProfileCache = null;
 let _userProfilePromise = null;
 let _setsCache = null;
+let _pdfDbPromise = null;
+let _pdfMigrationDone = false;
 function invalidateSetsCache(){ _setsCache = null; }
+
+function openPdfDb(){
+  if(_pdfDbPromise) return _pdfDbPromise;
+  _pdfDbPromise = new Promise((resolve, reject) => {
+    const req = indexedDB.open(PDF_DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(PDF_STORE_NAME);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+  return _pdfDbPromise;
+}
+
+function pdfDbRequest(store, mode, fn){
+  return openPdfDb().then(db => new Promise((resolve, reject) => {
+    const tx = db.transaction(PDF_STORE_NAME, mode);
+    const req = fn(tx.objectStore(PDF_STORE_NAME));
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  }));
+}
+
+function pdfMetaOnly(pdf){
+  if(!pdf) return undefined;
+  return { name: pdf.name, size: pdf.size };
+}
+
+function stripPdfData(set){
+  if(!set) return set;
+  const next = Object.assign({}, set);
+  if(next.pdf){
+    const meta = pdfMetaOnly(next.pdf);
+    next.pdf = meta && meta.name ? meta : undefined;
+  }
+  return next;
+}
+
+function setsForStorage(sets){
+  return sets.map(stripPdfData);
+}
+
+async function pdfDbGet(setId){
+  return pdfDbRequest(PDF_STORE_NAME, 'readonly', store => store.get(setId));
+}
+
+async function pdfDbPut(setId, pdf){
+  return pdfDbRequest(PDF_STORE_NAME, 'readwrite', store => store.put(pdf, setId));
+}
+
+async function pdfDbDelete(setId){
+  return pdfDbRequest(PDF_STORE_NAME, 'readwrite', store => store.delete(setId));
+}
+
+async function savePdfForSet(setId, pdf){
+  if(!pdf || !pdf.data) return;
+  await pdfDbPut(setId, { name: pdf.name, size: pdf.size, data: pdf.data });
+  if(isLocalMode() || !getToken()) return;
+  const res = await apiFetch('/api/pdf', {
+    method: 'PUT',
+    body: JSON.stringify({ setId, pdf: { name: pdf.name, size: pdf.size, data: pdf.data } })
+  });
+  if(!res.ok) throw new Error('PDF upload failed');
+}
+
+async function loadPdfForSet(setId){
+  let pdf = await pdfDbGet(setId);
+  if(pdf && pdf.data) return pdf;
+  if(isLocalMode() || !getToken()) return null;
+  try{
+    const res = await apiFetch('/api/pdf?setId=' + encodeURIComponent(setId));
+    if(!res.ok) return null;
+    const data = await res.json();
+    pdf = data.pdf;
+    if(pdf && pdf.data){
+      await pdfDbPut(setId, pdf);
+      return pdf;
+    }
+  }catch(e){
+    console.warn('Gagal memuat PDF dari server:', e);
+  }
+  return null;
+}
+
+async function deletePdfForSet(setId){
+  await pdfDbDelete(setId);
+  if(isLocalMode() || !getToken()) return;
+  try{
+    await apiFetch('/api/pdf?setId=' + encodeURIComponent(setId), { method: 'DELETE' });
+  }catch(e){
+    console.warn('Gagal hapus PDF di server:', e);
+  }
+}
+
+async function migrateEmbeddedPdfs(){
+  if(_pdfMigrationDone) return;
+  _pdfMigrationDone = true;
+  const sets = getSets();
+  let changed = false;
+  for(const set of sets){
+    if(set.pdf && set.pdf.data){
+      await pdfDbPut(set.id, set.pdf);
+      changed = true;
+    }
+  }
+  if(changed){
+    _setsCache = setsForStorage(sets);
+    localStorage.setItem(STORE_KEY, JSON.stringify(_setsCache));
+  }
+}
 
 
 function isLocalMode(){
@@ -43,12 +155,14 @@ function getSets(){
   catch(e){ _setsCache = []; }
   return _setsCache;
 }
-function saveSets(sets){
+function saveSets(sets, options = {}){
   _setsCache = sets;
-  localStorage.setItem(STORE_KEY, JSON.stringify(sets));
+  localStorage.setItem(STORE_KEY, JSON.stringify(setsForStorage(sets)));
   _setsSynced = true;
-  if(!isLocalMode()) return pushSetsToServer(sets);
-  return Promise.resolve();
+  if(isLocalMode()) return Promise.resolve();
+  const payload = setsForStorage(sets);
+  if(options.immediate) return pushSetsToServerNow(payload);
+  return pushSetsToServer(payload);
 }
 
 
@@ -124,15 +238,21 @@ async function apiFetch(path, options={}){
 // Ambil data set milik akun dari server lalu simpan ke localStorage.
 // Dipanggil sekali di awal tiap halaman (setelah requireLogin) sebelum data dibaca.
 async function syncSetsFromServer(options = {}){
-  if(isLocalMode()) return getSets();
+  if(isLocalMode()){
+    await migrateEmbeddedPdfs();
+    _setsCache = await enrichSetsWithPdfMeta(getSets());
+    localStorage.setItem(STORE_KEY, JSON.stringify(_setsCache));
+    return _setsCache;
+  }
   if(_setsSynced && !options.force) return getSets();
   if(_setsSyncPromise) return _setsSyncPromise;
   _setsSyncPromise = (async () => {
     try{
+      await migrateEmbeddedPdfs();
       const res = await apiFetch('/api/sets');
       if(!res.ok) return getSets();
       const data = await res.json();
-      _setsCache = data.sets || [];
+      _setsCache = await enrichSetsWithPdfMeta(data.sets || []);
       localStorage.setItem(STORE_KEY, JSON.stringify(_setsCache));
       _setsSynced = true;
       return _setsCache;
@@ -168,19 +288,33 @@ async function getUserProfile(options = {}){
 // Kirim seluruh data set ke server (dipanggil otomatis tiap kali saveSets() dipanggil).
 let _pushTimer = null;
 let _pendingSets = null;
+let _pushPromise = null;
+
+async function pushSetsToServerNow(sets){
+  if(isLocalMode() || !getToken()) return;
+  if(_pushTimer){
+    clearTimeout(_pushTimer);
+    _pushTimer = null;
+  }
+  _pendingSets = null;
+  const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets }) });
+  if(!res.ok) throw new Error('Server error ' + res.status);
+}
+
 function pushSetsToServer(sets){
   if(isLocalMode()) return Promise.resolve();
   if(!getToken()) return Promise.resolve();
   _pendingSets = sets;
-  if(_pushTimer) return;
-  return new Promise((resolve, reject) => {
+  if(_pushPromise) return _pushPromise;
+  _pushPromise = new Promise((resolve, reject) => {
+    if(_pushTimer) clearTimeout(_pushTimer);
     _pushTimer = setTimeout(async () => {
       _pushTimer = null;
       const toPush = _pendingSets;
       _pendingSets = null;
+      _pushPromise = null;
       try{
-        const res = await apiFetch('/api/sets', { method:'PUT', body: JSON.stringify({ sets: toPush }) });
-        if(!res.ok) throw new Error('Server error ' + res.status);
+        await pushSetsToServerNow(toPush);
         resolve();
       }catch(e){
         console.warn('Gagal push ke server:', e.message);
@@ -188,9 +322,42 @@ function pushSetsToServer(sets){
       }
     }, 500);
   });
+  return _pushPromise;
 }
+
+async function enrichSetsWithPdfMeta(sets){
+  let localSets = [];
+  try{ localSets = JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); }catch(e){}
+  const localMap = new Map(localSets.map(s => [s.id, s]));
+  const out = [];
+  for(const s of sets){
+    let pdf = s.pdf && s.pdf.name ? pdfMetaOnly(s.pdf) : null;
+    if(!pdf){
+      const local = localMap.get(s.id);
+      if(local && local.pdf && local.pdf.name) pdf = pdfMetaOnly(local.pdf);
+    }
+    if(!pdf){
+      try{
+        const stored = await pdfDbGet(s.id);
+        if(stored && stored.name) pdf = pdfMetaOnly(stored);
+      }catch(e){}
+    }
+    out.push(pdf ? Object.assign({}, s, { pdf }) : s);
+  }
+  return out;
+}
+
 function getSet(id){
   return getSets().find(s => s.id === id);
+}
+
+async function getSetWithPdf(id){
+  const set = getSet(id);
+  if(!set) return null;
+  if(set.pdf && set.pdf.data) return set;
+  const pdf = await loadPdfForSet(id);
+  if(pdf) return Object.assign({}, set, { pdf });
+  return set;
 }
 function getDueCount(set){
   const now = Date.now();
@@ -199,14 +366,24 @@ function getDueCount(set){
     return t._review.due <= now;
   }).length;
 }
-function upsertSet(set){
+async function upsertSet(set){
   const sets = getSets();
   const i = sets.findIndex(s => s.id === set.id);
-  if(i >= 0) sets[i] = set; else sets.unshift(set);
-  return saveSets(sets);
+  const pdfFull = set.pdf && set.pdf.data ? set.pdf : null;
+  const stored = stripPdfData(set);
+  if(i >= 0) sets[i] = Object.assign({}, sets[i], stored);
+  else sets.unshift(stored);
+  const idx = i >= 0 ? i : 0;
+  if(pdfFull){
+    sets[idx].pdf = pdfMetaOnly(pdfFull);
+    await savePdfForSet(set.id, pdfFull);
+  }
+  return saveSets(sets, { immediate: !!pdfFull || !!(stored.pdf && stored.pdf.name) });
 }
-function deleteSet(id){
-  return saveSets(getSets().filter(s => s.id !== id));
+async function deleteSet(id){
+  await deletePdfForSet(id);
+  const next = getSets().filter(s => s.id !== id);
+  return saveSets(next, { immediate: true });
 }
 const GROUP_NUMBER_PATTERNS = [
   /(.*?)\s*(?:BAB|CHAPTER|CH|BAGIAN|PART|LEVEL|UNIT|MODUL|MODULE|LATIHAN|KOYUU|KOTOBANOMORI)\s*(\d+(?:\.\d+)?)\s*$/i,

@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     }
     let sets = (body && body.sets) || [];
     if(!Array.isArray(sets)) sets = [];
-    sets = sets.filter(s => s && typeof s === 'object' && s.id && s.title && Array.isArray(s.terms)).slice(0, 200);
+    sets = sets.filter(s => s && typeof s === 'object' && s.id && s.title && Array.isArray(s.terms) && (s.terms.length > 0 || (s.pdf && s.pdf.name))).slice(0, 200);
     sets = sets.map(s => ({
       id: String(s.id).slice(0, 64),
       title: String(s.title).slice(0, 200),
@@ -43,6 +43,10 @@ module.exports = async (req, res) => {
           due: Number(t._review.due) || null
         } : undefined
       })),
+      pdf: s.pdf && s.pdf.name ? {
+        name: String(s.pdf.name).slice(0, 200),
+        size: Math.min(Number(s.pdf.size) || 0, 3 * 1024 * 1024)
+      } : undefined,
       updatedAt: Number(s.updatedAt) || Date.now()
     }));
     await kv.set(key, sets);
