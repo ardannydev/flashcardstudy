@@ -64,9 +64,13 @@
 
 <script src="app.js"></script>
 <script>
-// kalau sudah login, langsung ke beranda
+// kalau sudah login, alihkan ke admin atau beranda
 if(getToken()){
-  navigateTo('index.html', { replace: true });
+  if(isDevUser()){
+    navigateTo('admin', { replace: true });
+  } else {
+    navigateTo('index', { replace: true });
+  }
 }
 
 const tabLogin = document.getElementById('tabLogin');
@@ -105,7 +109,7 @@ loginForm.addEventListener('submit', async (e) => {
     if(isLocalMode()){
       setAuth('dev_token', username);
       setDevUser(true);
-      navigateTo('admin.html');
+      navigateTo('admin');
       btn.disabled = false; btn.textContent = 'Masuk';
       return;
     }
@@ -120,8 +124,9 @@ loginForm.addEventListener('submit', async (e) => {
       }
       d = await r.json();
       setAuth(d.token, d.username);
+      setDevUser(true);
       await syncSetsFromServer();
-      navigateTo('admin.html');
+      navigateTo('admin');
     }catch(err){ showError('Tidak bisa terhubung ke server.'); }
     finally{ btn.disabled = false; btn.textContent = 'Masuk'; }
     return;
@@ -129,7 +134,7 @@ loginForm.addEventListener('submit', async (e) => {
 
   if(isLocalMode()){
     setAuth('local_dev_token', username);
-    navigateTo('index.html');
+    navigateTo('index');
     btn.disabled = false; btn.textContent = 'Masuk';
     return;
   }
@@ -144,7 +149,7 @@ loginForm.addEventListener('submit', async (e) => {
     if(!res.ok){ showError(data.error || 'Gagal masuk.'); return; }
     setAuth(data.token, data.username);
     await syncSetsFromServer();
-    navigateTo('index.html');
+    navigateTo('index');
   }catch(err){
     showError('Tidak bisa terhubung ke server. Coba lagi.');
   }finally{
@@ -166,7 +171,7 @@ registerForm.addEventListener('submit', async (e) => {
 
   if(isLocalMode()){
     setAuth('local_dev_token', username);
-    navigateTo('index.html');
+    navigateTo('index');
     btn.disabled = false; btn.textContent = 'Daftar';
     return;
   }
@@ -180,7 +185,7 @@ registerForm.addEventListener('submit', async (e) => {
     const data = await res.json();
     if(!res.ok){ showError(data.error || 'Gagal mendaftar.'); return; }
     setAuth(data.token, data.username);
-    navigateTo('index.html');
+    navigateTo('index');
   }catch(err){
     showError('Tidak bisa terhubung ke server. Coba lagi.');
   }finally{

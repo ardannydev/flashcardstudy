@@ -7,144 +7,351 @@
 <meta name="description" content="Panel admin FlashCardStudy.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1426">
-<title>Admin — FlashCardStudy</title>
+<title>Dashboard Admin — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
 <style>
-/* ── Layout ── */
-.adm-wrap{max-width:1000px;margin:0 auto;padding:16px 16px 48px}
-.adm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;padding:4px 0}
-.adm-header-left{display:flex;align-items:center;gap:10px}
-.adm-header-left h1{font-size:18px;font-weight:700;margin:0;letter-spacing:-.3px;background:linear-gradient(135deg,#fff 60%,rgba(255,255,255,.5));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.adm-badge{font-size:10px;font-weight:600;background:linear-gradient(135deg,#f59e0b,#d97706);color:#000;padding:3px 12px 3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;border:1px solid rgba(245,158,11,.3)}
-.adm-header-actions{display:flex;gap:6px}
-
-/* ── Buttons ── */
-.adm-btn{padding:7px 16px;font-size:12px;font-weight:500;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:rgba(255,255,255,.8);cursor:pointer;transition:all .15s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;line-height:1}
-.adm-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.15)}
-.adm-btn-primary{border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.1);color:#60a5fa}
-.adm-btn-primary:hover{background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.5)}
-.adm-btn-success{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.1);color:#4ade80}
-.adm-btn-success:hover{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5)}
-.adm-btn-danger{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.1);color:#f87171}
-.adm-btn-danger:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.5)}
-.adm-btn-sm{padding:5px 12px;font-size:11px}
-.adm-btn-icon{width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center}
-.adm-btn:disabled{opacity:.4;pointer-events:none}
-
-/* ── Notice ── */
-.adm-notice{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.12);border-radius:10px;padding:9px 14px;font-size:12px;color:#fbbf24;margin-bottom:20px;display:flex;align-items:center;gap:8px;line-height:1.4}
-.adm-notice svg{flex-shrink:0}
-
-/* ── Stats ── */
-.adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:24px}
-.adm-stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden;transition:border-color .2s}
-.adm-stat:hover{border-color:rgba(255,255,255,.12)}
-.adm-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0}
-.adm-stat-blue::before{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
-.adm-stat-green::before{background:linear-gradient(90deg,#22c55e,#4ade80)}
-.adm-stat-purple::before{background:linear-gradient(90deg,#a855f7,#c084fc)}
-.adm-stat-orange::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
-.adm-stat-num{font-size:26px;font-weight:700;display:block;line-height:1.2;letter-spacing:-.5px}
-.adm-stat-blue .adm-stat-num{color:#60a5fa}
-.adm-stat-green .adm-stat-num{color:#4ade80}
-.adm-stat-purple .adm-stat-num{color:#c084fc}
-.adm-stat-orange .adm-stat-num{color:#fbbf24}
-.adm-stat-label{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;font-weight:500}
-.adm-stat-sub{font-size:11px;color:rgba(255,255,255,.2);margin-top:1px;display:block}
-
-/* ── Sections ── */
-.adm-section{margin-bottom:24px}
-.adm-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
-.adm-section-hdr h2{font-size:14px;font-weight:600;margin:0;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px}
-.adm-section-hdr h2 span{font-size:11px;font-weight:400;color:rgba(255,255,255,.25);background:rgba(255,255,255,.05);padding:1px 8px;border-radius:6px}
-.adm-section-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-
-.adm-search{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:6px 10px;color:#fff;font-size:12px;font-family:inherit;outline:none;width:150px;transition:all .15s}
-.adm-search:focus{border-color:rgba(255,255,255,.15);background:rgba(255,255,255,.07);width:180px}
-.adm-search::placeholder{color:rgba(255,255,255,.18)}
-
-.adm-filter{display:flex;gap:3px;background:rgba(255,255,255,.03);padding:3px;border-radius:8px;border:1px solid rgba(255,255,255,.04)}
-.adm-filter-btn{padding:4px 10px;font-size:10px;font-weight:500;border-radius:6px;border:none;background:transparent;color:rgba(255,255,255,.3);cursor:pointer;transition:all .12s;font-family:inherit;letter-spacing:.2px}
-.adm-filter-btn:hover{color:rgba(255,255,255,.6)}
-.adm-filter-btn.active{background:rgba(255,255,255,.08);color:#fff}
-
-/* ── Tables ── */
-.adm-table-scroll{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
-.adm-table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:580px}
-.adm-table th{text-align:left;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.3);font-weight:500;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;background:rgba(0,0,0,.15);white-space:nowrap;position:sticky;top:0;z-index:1}
-.adm-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;color:rgba(255,255,255,.75)}
-.adm-table tbody tr{transition:background .1s}
-.adm-table tbody tr:hover td{background:rgba(255,255,255,.03)}
-.adm-table tbody tr:last-child td{border-bottom:none}
-
-.adm-type{display:inline-block;font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:6px;text-transform:uppercase;letter-spacing:.3px}
-.adm-type-bug{background:rgba(239,68,68,.12);color:#f87171}
-.adm-type-feature{background:rgba(59,130,246,.12);color:#60a5fa}
-.adm-type-other{background:rgba(168,85,247,.12);color:#c084fc}
-
-.adm-status{display:inline-block;font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:6px;text-transform:uppercase}
-.adm-status-pending{background:rgba(245,158,11,.1);color:#fbbf24;position:relative}
-.adm-status-pending::after{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:#fbbf24;margin-left:5px;animation:pulse-dot 1.5s ease-in-out infinite;vertical-align:middle}
-.adm-status-resolved{background:rgba(34,197,94,.1);color:#4ade80}
-@keyframes pulse-dot{0%,100%{opacity:.4}50%{opacity:1}}
-
-.adm-msg{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default;display:block}
-.adm-msg:hover{overflow:visible;white-space:normal;background:rgba(11,20,38,.96);padding:5px 8px;margin:-5px -8px;border-radius:5px;max-width:none;position:relative;z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.adm-device{font-size:10.5px;color:rgba(255,255,255,.2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
-.adm-ip{font-size:10.5px;color:rgba(255,255,255,.18)}
-.adm-cell-actions{display:flex;gap:2px;opacity:.3;transition:opacity .15s}
-tr:hover .adm-cell-actions{opacity:1}
-.adm-cell-btn{background:none;border:none;color:rgba(255,255,255,.25);cursor:pointer;padding:3px;border-radius:5px;display:inline-flex;transition:all .12s;font-family:inherit;line-height:0}
-.adm-cell-btn:hover{background:rgba(255,255,255,.06);color:#fff}
-.adm-cell-btn.ok:hover{color:#4ade80}
-.adm-cell-btn.del:hover{color:#f87171}
-
-/* ── Empty / Loading ── */
-.adm-empty{padding:48px 16px;text-align:center;color:rgba(255,255,255,.15);font-size:13px}
-.adm-spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.06);border-top-color:rgba(255,255,255,.3);border-radius:50%;animation:spin .6s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── Users ── */
-.adm-user-row{cursor:pointer}
-.adm-user-expand td{padding:0!important;border-bottom:1px solid rgba(255,255,255,.04)}
-.adm-user-expand-inner{padding:10px 12px 14px 28px;background:rgba(255,255,255,.01)}
-.adm-user-expand-inner h4{font-size:11px;font-weight:600;margin:0 0 8px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.4px}
-.adm-audit{display:flex;flex-direction:column;gap:3px}
-.adm-audit-item{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4);padding:2px 0}
-.adm-audit-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.adm-audit-ok{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,.3)}
-.adm-audit-fail{background:#f87171;box-shadow:0 0 6px rgba(248,113,113,.3)}
-.adm-audit-ts{color:rgba(255,255,255,.2);font-size:11px;white-space:nowrap}
-
-/* ── System Info ── */
-.adm-sysinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
-.adm-sysinfo-item{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:11px 14px}
-.adm-sysinfo-label{font-size:9.5px;text-transform:uppercase;color:rgba(255,255,255,.25);letter-spacing:.5px;margin-bottom:3px}
-.adm-sysinfo-value{font-size:12.5px;font-weight:500;word-break:break-all;color:rgba(255,255,255,.7)}
-.adm-sysinfo-value small{font-weight:400;color:rgba(255,255,255,.2)}
-
-/* ── Toast ── */
-.adm-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(11,20,38,.95);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 20px;font-size:13px;color:#fff;z-index:999;opacity:0;transition:all .25s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px}
-.adm-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.adm-toast-ok{border-color:rgba(34,197,94,.3)}
-.adm-toast-ok::before{content:'';width:6px;height:6px;border-radius:50%;background:#4ade80;flex-shrink:0}
-.adm-toast-err{border-color:rgba(239,68,68,.3)}
-.adm-toast-err::before{content:'';width:6px;height:6px;border-radius:50%;background:#f87171;flex-shrink:0}
-
-/* ── Responsive ── */
-@media(max-width:700px){
-  .adm-stats{grid-template-columns:repeat(2,1fr)}
-  .adm-section-tools{flex-direction:column;align-items:stretch}
-  .adm-search{width:auto}
-  .adm-search:focus{width:auto}
-  .adm-msg{max-width:130px}
+/* ── NEW ADMIN DASHBOARD DESIGN ── */
+.adm-layout {
+  min-height: calc(100vh - 92px);
+  background: var(--gbg);
+  padding: 32px 24px 60px;
+  position: relative;
 }
-@media(max-width:420px){
-  .adm-stats{grid-template-columns:1fr}
-  .adm-header{flex-direction:column;align-items:flex-start}
-  .adm-header-actions{align-self:stretch}
-  .adm-header-actions .adm-btn{flex:1;justify-content:center}
+@media(max-width: 767px) {
+  .adm-layout { min-height: calc(100vh - 76px); padding: 20px 16px 40px; }
 }
+
+.adm-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Hero Banner ── */
+.adm-hero {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+.adm-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #00D9FF, #8B5CF6, #EC4899);
+}
+
+.adm-hero-info { display: flex; flex-direction: column; gap: 8px; }
+.adm-hero-title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.adm-hero-title {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.adm-super-badge {
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+.adm-hero-sub {
+  font-size: 14px;
+  color: #8892b5;
+  margin: 0;
+}
+
+.adm-hero-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* Buttons */
+.adm-btn {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+.adm-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+.adm-btn-primary {
+  background: linear-gradient(135deg, #00D9FF, #8B5CF6);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 217, 255, 0.25);
+}
+.adm-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+  transform: translateY(-2px);
+}
+.adm-btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+.adm-btn-danger:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fff;
+}
+.adm-btn-sm { padding: 8px 14px; font-size: 12px; }
+
+/* Notice */
+.adm-notice {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 16px;
+  padding: 14px 20px;
+  font-size: 13px;
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Stats Grid ── */
+.adm-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media(max-width: 900px) { .adm-stats { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width: 480px) { .adm-stats { grid-template-columns: 1fr; } }
+
+.adm-stat {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.adm-stat:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+.adm-stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.adm-stat-icon svg { width: 24px; height: 24px; }
+
+.adm-stat-blue .adm-stat-icon { background: rgba(0, 217, 255, 0.1); color: #00D9FF; }
+.adm-stat-green .adm-stat-icon { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.adm-stat-purple .adm-stat-icon { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+.adm-stat-orange .adm-stat-icon { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+
+.adm-stat-info { display: flex; flex-direction: column; gap: 4px; }
+.adm-stat-num { font-size: 30px; font-weight: 800; color: #fff; line-height: 1; }
+.adm-stat-label { font-size: 12px; color: #8892b5; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.adm-stat-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+/* ── Section Cards ── */
+.adm-card {
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+}
+
+.adm-section-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.adm-section-hdr h2 {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.adm-section-hdr h2 span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00D9FF;
+  background: rgba(0, 217, 255, 0.1);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+.adm-section-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.adm-search {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  width: 180px;
+  transition: all 0.2s ease;
+}
+.adm-search:focus {
+  border-color: #00D9FF;
+  background: rgba(255, 255, 255, 0.08);
+  width: 220px;
+  box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.15);
+}
+.adm-search::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.adm-filter {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.adm-filter-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #8892b5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.adm-filter-btn:hover { color: #fff; }
+.adm-filter-btn.active { background: linear-gradient(135deg, #00D9FF, #8B5CF6); color: #fff; box-shadow: 0 2px 8px rgba(0, 217, 255, 0.2); }
+
+/* Tables */
+.adm-table-scroll {
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.15);
+}
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 600px;
+}
+.adm-table th {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: #8892b5;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+.adm-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+  color: rgba(255, 255, 255, 0.85);
+}
+.adm-table tbody tr { transition: background 0.15s ease; }
+.adm-table tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
+.adm-table tbody tr:last-child td { border-bottom: none; }
+
+.adm-type { display: inline-block; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 8px; text-transform: uppercase; }
+.adm-type-bug { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+.adm-type-feature { background: rgba(0, 217, 255, 0.15); color: #00D9FF; border: 1px solid rgba(0, 217, 255, 0.3); }
+.adm-type-other { background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.3); }
+
+.adm-status { display: inline-block; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 8px; text-transform: uppercase; }
+.adm-status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.adm-status-resolved { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+.adm-msg { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; font-weight: 500; }
+.adm-device { font-size: 11px; color: #8892b5; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+.adm-ip { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+.adm-cell-actions { display: flex; gap: 6px; }
+.adm-cell-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #8892b5; cursor: pointer; padding: 6px; border-radius: 8px; display: inline-flex; transition: all 0.2s ease; }
+.adm-cell-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.adm-cell-btn.ok:hover { background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
+.adm-cell-btn.del:hover { background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+
+.adm-empty { padding: 48px 16px; text-align: center; color: #8892b5; font-size: 14px; font-weight: 500; }
+.adm-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #00D9FF; border-radius: 50%; animation: spin 0.6s linear infinite; }
+
+/* Users Expand */
+.adm-user-row { cursor: pointer; }
+.adm-user-expand td { padding: 0 !important; }
+.adm-user-expand-inner { padding: 16px 20px; background: rgba(0, 0, 0, 0.2); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.adm-audit-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,0.7); padding: 4px 0; }
+.adm-audit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.adm-audit-ok { background: #34d399; box-shadow: 0 0 8px rgba(52, 211, 153, 0.4); }
+.adm-audit-fail { background: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
+
+/* System Info Grid */
+.adm-sysinfo { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.adm-sysinfo-item { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 16px 20px; }
+.adm-sysinfo-label { font-size: 11px; text-transform: uppercase; color: #8892b5; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 700; }
+.adm-sysinfo-value { font-size: 15px; font-weight: 700; color: #fff; word-break: break-all; }
+
+/* Toast */
+.adm-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 217, 255, 0.3); border-radius: 14px; padding: 12px 24px;
+  font-size: 14px; font-weight: 700; color: #fff; z-index: 999; opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+.adm-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body class="dark-theme">
@@ -152,113 +359,151 @@ tr:hover .adm-cell-actions{opacity:1}
   <header class="nh nh-nav-always">
     <div class="nh-inner">
       <div class="nh-bar">
-        <a href="admin.html" class="nh-logo">FlashCardStudy</a>
+        <a href="admin" class="nh-logo">FlashCardStudy</a>
         <nav class="nh-nav-desktop">
           <div class="nh-skew-wrap">
-            <a href="admin.html" class="nh-link active" draggable="false">Admin</a>
-            <span class="nh-nav-dot" id="navDot"></span>
+            <span class="nh-link active">Admin Dashboard</span>
           </div>
         </nav>
-        <div class="nh-actions">
-          <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" id="navProfileBtn"></a>
+        <div class="nh-actions" style="display:flex;align-items:center;gap:12px">
+          <button class="adm-btn adm-btn-danger adm-btn-sm" onclick="logout()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Keluar
+          </button>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="adm-wrap">
-    <div class="adm-header">
-      <div class="adm-header-left">
-        <h1>Panel Admin</h1>
-        <span class="adm-badge">ADMIN</span>
-      </div>
-      <div class="adm-header-actions">
-        <button class="adm-btn adm-btn-sm" onclick="exportReports()" id="exportBtn">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Ekspor
-        </button>
-        <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="refreshAll()" id="refreshBtn">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          Segarkan
-        </button>
-      </div>
-    </div>
-
-    <div id="localNotice" class="adm-notice" style="display:none">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>Mode lokal &mdash; data terbatas pada perangkat ini.</span>
-      <button class="adm-btn adm-btn-sm" onclick="clearAuth(); location.href='login.html'" style="margin-left:auto;flex-shrink:0">Login Ulang</button>
-    </div>
-
-    <div class="adm-stats" id="statsGrid">
-      <div class="adm-stat adm-stat-blue">
-        <span class="adm-stat-num" id="statUsers">—</span>
-        <span class="adm-stat-label">Pengguna</span>
-      </div>
-      <div class="adm-stat adm-stat-green">
-        <span class="adm-stat-num" id="statSets">—</span>
-        <span class="adm-stat-label">Total Set</span>
-        <span class="adm-stat-sub" id="statSetsSub"></span>
-      </div>
-      <div class="adm-stat adm-stat-purple">
-        <span class="adm-stat-num" id="statCards">—</span>
-        <span class="adm-stat-label">Total Kartu</span>
-      </div>
-      <div class="adm-stat adm-stat-orange">
-        <span class="adm-stat-num" id="statReports">—</span>
-        <span class="adm-stat-label">Laporan</span>
-        <span class="adm-stat-sub" id="statReportsSub"></span>
-      </div>
-    </div>
-
-    <div class="adm-section">
-      <div class="adm-section-hdr">
-        <h2>Laporan <span id="reportCountLabel">0</span></h2>
-        <div class="adm-section-tools">
-          <div class="adm-filter" id="reportFilter">
-            <button class="adm-filter-btn active" data-filter="all">Semua</button>
-            <button class="adm-filter-btn" data-filter="bug">Bug</button>
-            <button class="adm-filter-btn" data-filter="feature">Saran</button>
-            <button class="adm-filter-btn" data-filter="other">Lain</button>
-            <button class="adm-filter-btn" data-filter="pending">Pending</button>
-            <button class="adm-filter-btn" data-filter="resolved">Selesai</button>
+  <main class="adm-layout">
+    <div class="adm-container">
+      
+      <!-- Hero Banner -->
+      <div class="adm-hero">
+        <div class="adm-hero-info">
+          <div class="adm-hero-title-row">
+            <h1 class="adm-hero-title">Panel Kontrol Admin</h1>
+            <span class="adm-super-badge">SUPER ADMIN</span>
           </div>
-          <input class="adm-search" id="reportSearch" placeholder="Cari laporan..." autocomplete="off">
+          <p class="adm-hero-sub">Kelola pengguna, pantau aktivitas real-time, dan atur laporan sistem.</p>
+        </div>
+        <div class="adm-hero-actions">
+          <button class="adm-btn" onclick="exportReports()" id="exportBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            Ekspor Data
+          </button>
+          <button class="adm-btn adm-btn-primary" onclick="refreshAll()" id="refreshBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Segarkan
+          </button>
         </div>
       </div>
-      <div class="adm-table-scroll" id="reportsWrap">
-        <div class="adm-empty"><div class="adm-spinner"></div></div>
-      </div>
-    </div>
 
-    <div class="adm-section" id="usersSection">
-      <div class="adm-section-hdr">
-        <h2>Pengguna <span id="userCountLabel">0</span></h2>
-        <div class="adm-section-tools">
-          <input class="adm-search" id="userSearch" placeholder="Cari pengguna..." autocomplete="off">
+      <div id="localNotice" class="adm-notice" style="display:none">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Mode lokal — data terbatas pada penyimpanan perangkat ini.</span>
+        <button class="adm-btn adm-btn-sm" onclick="clearAuth(); location.href='login'" style="margin-left:auto;flex-shrink:0">Login Ulang</button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="adm-stats" id="statsGrid">
+        <div class="adm-stat adm-stat-blue">
+          <div class="adm-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          </div>
+          <div class="adm-stat-info">
+            <span class="adm-stat-num" id="statUsers">—</span>
+            <span class="adm-stat-label">Total Pengguna</span>
+          </div>
+        </div>
+        
+        <div class="adm-stat adm-stat-green">
+          <div class="adm-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          </div>
+          <div class="adm-stat-info">
+            <span class="adm-stat-num" id="statSets">—</span>
+            <span class="adm-stat-label">Total Set</span>
+            <span class="adm-stat-sub" id="statSetsSub"></span>
+          </div>
+        </div>
+
+        <div class="adm-stat adm-stat-purple">
+          <div class="adm-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+          </div>
+          <div class="adm-stat-info">
+            <span class="adm-stat-num" id="statCards">—</span>
+            <span class="adm-stat-label">Total Kartu</span>
+          </div>
+        </div>
+
+        <div class="adm-stat adm-stat-orange">
+          <div class="adm-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <div class="adm-stat-info">
+            <span class="adm-stat-num" id="statReports">—</span>
+            <span class="adm-stat-label">Laporan Masalah</span>
+            <span class="adm-stat-sub" id="statReportsSub"></span>
+          </div>
         </div>
       </div>
-      <div class="adm-table-scroll" id="usersWrap">
-        <div class="adm-empty"><div class="adm-spinner"></div></div>
-      </div>
-    </div>
 
-    <div class="adm-section">
-      <div class="adm-section-hdr">
-        <h2>Aktivitas Login</h2>
-        <div class="adm-section-tools">
-          <input class="adm-search" id="auditSearch" placeholder="Cari user / IP..." autocomplete="off">
-          <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="loadAudit()">Muat</button>
+      <!-- Section: Reports -->
+      <div class="adm-card">
+        <div class="adm-section-hdr">
+          <h2>Laporan & Feedback <span id="reportCountLabel">0</span></h2>
+          <div class="adm-section-tools">
+            <div class="adm-filter" id="reportFilter">
+              <button class="adm-filter-btn active" data-filter="all">Semua</button>
+              <button class="adm-filter-btn" data-filter="bug">Bug</button>
+              <button class="adm-filter-btn" data-filter="feature">Saran</button>
+              <button class="adm-filter-btn" data-filter="other">Lainnya</button>
+              <button class="adm-filter-btn" data-filter="pending">Pending</button>
+              <button class="adm-filter-btn" data-filter="resolved">Selesai</button>
+            </div>
+            <input class="adm-search" id="reportSearch" placeholder="Cari laporan..." autocomplete="off">
+          </div>
+        </div>
+        <div class="adm-table-scroll" id="reportsWrap">
+          <div class="adm-empty"><div class="adm-spinner"></div></div>
         </div>
       </div>
-      <div class="adm-table-scroll" id="auditWrap">
-        <div class="adm-empty">Klik &ldquo;Muat&rdquo; untuk melihat aktivitas login.</div>
-      </div>
-    </div>
 
-    <div class="adm-section">
-      <div class="adm-section-hdr"><h2>Sistem</h2></div>
-      <div class="adm-sysinfo" id="sysInfo"></div>
+      <!-- Section: Users -->
+      <div class="adm-card" id="usersSection">
+        <div class="adm-section-hdr">
+          <h2>Daftar Pengguna <span id="userCountLabel">0</span></h2>
+          <div class="adm-section-tools">
+            <input class="adm-search" id="userSearch" placeholder="Cari username..." autocomplete="off">
+          </div>
+        </div>
+        <div class="adm-table-scroll" id="usersWrap">
+          <div class="adm-empty"><div class="adm-spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- Section: Audit -->
+      <div class="adm-card">
+        <div class="adm-section-hdr">
+          <h2>Aktivitas Login</h2>
+          <div class="adm-section-tools">
+            <input class="adm-search" id="auditSearch" placeholder="Cari IP / User..." autocomplete="off">
+            <button class="adm-btn adm-btn-sm adm-btn-primary" onclick="loadAudit()">Muat Data Audit</button>
+          </div>
+        </div>
+        <div class="adm-table-scroll" id="auditWrap">
+          <div class="adm-empty">Klik "Muat Data Audit" untuk melihat log login terkini.</div>
+        </div>
+      </div>
+
+      <!-- Section: System -->
+      <div class="adm-card">
+        <div class="adm-section-hdr"><h2>Informasi Sistem</h2></div>
+        <div class="adm-sysinfo" id="sysInfo"></div>
+      </div>
+
     </div>
   </main>
 
@@ -382,7 +627,7 @@ function renderReports(){
     return;
   }
 
-  var html = '<table class="adm-table"><thead><tr><th>Tipe</th><th>Pesan</th><th>Pengguna</th><th>Device / IP</th><th>Status</th><th>Tanggal</th><th></th></tr></thead><tbody>';
+  var html = '<table class="adm-table"><thead><tr><th>Tipe</th><th>Pesan</th><th>Pengguna</th><th>Device / IP</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody>';
   filtered.slice(0, 200).forEach(function(r){
     var date = r.date ? new Date(r.date).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     var tc = 'adm-type adm-type-' + (r.type||'other');
@@ -394,15 +639,15 @@ function renderReports(){
     var rid = escapeHtml(r.id);
     html += '<tr><td><span class="'+tc+'">'+tl+'</span></td>';
     html += '<td><span class="adm-msg" title="'+escapeHtml(r.message)+'">'+escapeHtml(r.message)+'</span></td>';
-    html += '<td>'+escapeHtml(r.username||r.userId||'—')+'</td>';
+    html += '<td><strong>'+escapeHtml(r.username||r.userId||'—')+'</strong></td>';
     html += '<td><span class="adm-device" title="'+escapeHtml(device)+'">'+escapeHtml(device)+'</span>'+(ip?'<span class="adm-ip">'+escapeHtml(ip)+'</span>':'')+'</td>';
     html += '<td><span class="'+sc+'">'+sl+'</span></td>';
-    html += '<td style="white-space:nowrap;font-size:11px;color:rgba(255,255,255,.25)">'+date+'</td>';
+    html += '<td style="white-space:nowrap;font-size:11px;color:rgba(255,255,255,0.4)">'+date+'</td>';
     html += '<td><div class="adm-cell-actions">';
     if(r.status !== 'resolved'){
-      html += '<button class="adm-cell-btn ok" onclick="resolveReport(\''+rid+'\')" title="Tandai selesai"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>';
+      html += '<button class="adm-cell-btn ok" onclick="resolveReport(\''+rid+'\')" title="Tandai selesai"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>';
     }
-    html += '<button class="adm-cell-btn del" onclick="deleteReport(\''+rid+'\')" title="Hapus"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+    html += '<button class="adm-cell-btn del" onclick="deleteReport(\''+rid+'\')" title="Hapus"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
     html += '</div></td></tr>';
   });
   html += '</tbody></table>';
@@ -437,7 +682,7 @@ function loadUsers(){
     _users = data.users || [];
     renderUsers();
   }).catch(function(){
-    document.getElementById('usersWrap').innerHTML = '<div class="adm-empty">Tidak dapat terhubung ke server. Data pengguna tidak tersedia.</div>';
+    document.getElementById('usersWrap').innerHTML = '<div class="adm-empty">Data pengguna server tidak tersedia saat ini.</div>';
     document.getElementById('userCountLabel').textContent = '—';
   });
 }
@@ -453,7 +698,7 @@ function renderUsers(){
     return;
   }
 
-  var html = '<table class="adm-table"><thead><tr><th>Username</th><th>Set</th><th>Kartu</th><th>Terdaftar</th><th>Login Terakhir</th><th>IP</th></tr></thead><tbody>';
+  var html = '<table class="adm-table"><thead><tr><th>Username</th><th>Total Set</th><th>Total Kartu</th><th>Terdaftar</th><th>Login Terakhir</th><th>IP Address</th></tr></thead><tbody>';
   filtered.forEach(function(u){
     var created = u.createdAt ? new Date(u.createdAt).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric'}) : '—';
     var last = u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
@@ -461,23 +706,23 @@ function renderUsers(){
     var un = escapeHtml(u.username);
     html += '<tr class="adm-user-row" onclick="toggleUser(\''+un+'\')"><td><strong>'+un+'</strong></td>';
     html += '<td>'+ (u.setCount||0) +'</td><td>'+ (u.cardCount||0) +'</td>';
-    html += '<td style="font-size:11px;color:rgba(255,255,255,.3)">'+created+'</td>';
-    html += '<td style="font-size:11px;color:rgba(255,255,255,.3)">'+last+'</td>';
-    html += '<td style="font-size:11px;color:rgba(255,255,255,.3)">'+ (u.lastIp||'—') +'</td></tr>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.4)">'+created+'</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.4)">'+last+'</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.4)">'+ (u.lastIp||'—') +'</td></tr>';
     if(ex){
       html += '<tr class="adm-user-expand"><td colspan="6"><div class="adm-user-expand-inner">';
       if(u.audit && u.audit.length){
-        html += '<h4>Aktivitas Login</h4><div class="adm-audit">';
+        html += '<h4 style="margin:0 0 8px;font-size:11px;color:#8892b5;text-transform:uppercase">Aktivitas Login Terbaru</h4><div class="adm-audit">';
         u.audit.forEach(function(a){
           var ts = a.ts ? new Date(a.ts).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
           html += '<div class="adm-audit-item"><span class="adm-audit-dot '+(a.type==='login_ok'?'adm-audit-ok':'adm-audit-fail')+'"></span>';
           html += '<span>'+(a.type==='login_ok'?'Berhasil':'Gagal')+'</span>';
-          html += '<span class="adm-audit-ts">'+ts+'</span>';
-          html += '<span style="color:rgba(255,255,255,.2);font-size:10.5px">'+(a.ip||'—')+'</span></div>';
+          html += '<span style="color:rgba(255,255,255,.3);font-size:11px">'+ts+'</span>';
+          html += '<span style="color:rgba(255,255,255,.3);font-size:11px">'+(a.ip||'—')+'</span></div>';
         });
         html += '</div>';
       } else {
-        html += '<p style="color:rgba(255,255,255,.15);font-size:12px;margin:0">Tidak ada data audit.</p>';
+        html += '<p style="color:rgba(255,255,255,.3);font-size:12px;margin:0">Tidak ada data audit untuk pengguna ini.</p>';
       }
       html += '</div></td></tr>';
     }
@@ -500,7 +745,7 @@ function loadAudit(){
   .then(function(data){
     window._auditEntries = data.entries || [];
     renderAudit();
-  }).catch(function(){ wrap.innerHTML = '<div class="adm-empty">Data audit tidak tersedia.</div>'; });
+  }).catch(function(){ wrap.innerHTML = '<div class="adm-empty">Data audit server tidak tersedia.</div>'; });
 }
 
 function renderAudit(){
@@ -510,14 +755,14 @@ function renderAudit(){
   if(entries.length === 0){ wrap.innerHTML = '<div class="adm-empty">Tidak ada data audit.</div>'; return; }
   var filtered = search ? entries.filter(function(e){ return (e.user||'').toLowerCase().indexOf(search)!==-1||(e.ip||'').toLowerCase().indexOf(search)!==-1; }) : entries;
 
-  var html = '<table class="adm-table"><thead><tr><th>User</th><th>Status</th><th>IP</th><th>Waktu</th></tr></thead><tbody>';
+  var html = '<table class="adm-table"><thead><tr><th>User</th><th>Status Login</th><th>IP Address</th><th>Waktu</th></tr></thead><tbody>';
   filtered.slice(0,150).forEach(function(e){
     var ts = e.ts ? new Date(e.ts).toLocaleDateString('id-ID',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
     var ok = e.type === 'login_ok';
-    html += '<tr><td>'+escapeHtml(e.user||'—')+'</td>';
+    html += '<tr><td><strong>'+escapeHtml(e.user||'—')+'</strong></td>';
     html += '<td><span class="'+(ok?'adm-status adm-status-resolved':'adm-status adm-status-pending')+'">'+(ok?'Berhasil':'Gagal')+'</span></td>';
-    html += '<td style="font-size:11px;color:rgba(255,255,255,.3)">'+escapeHtml(e.ip||'—')+'</td>';
-    html += '<td style="font-size:11px;color:rgba(255,255,255,.25);white-space:nowrap">'+ts+'</td></tr>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.4)">'+escapeHtml(e.ip||'—')+'</td>';
+    html += '<td style="font-size:11px;color:rgba(255,255,255,.4);white-space:nowrap">'+ts+'</td></tr>';
   });
   html += '</tbody></table>';
   if(filtered.length > 150) html += '<p style="text-align:center;padding:8px;font-size:11px;color:rgba(255,255,255,.15)">Menampilkan 150 dari '+filtered.length+' entri</p>';
@@ -527,16 +772,16 @@ function renderAudit(){
 /* ── System Info ── */
 function renderSysInfo(){
   var wrap = document.getElementById('sysInfo');
-  var mode = _serverAvail ? 'Server (Vercel KV)' : 'Lokal (localStorage)';
+  var mode = _serverAvail ? 'Server (Vercel KV / Cloud)' : 'Lokal (localStorage)';
   var storage = 0;
   try{ storage = new Blob([localStorage.getItem('qz_sets_v1')||'']).size + new Blob([localStorage.getItem('qz_reports')||'']).size; }catch(e){}
   var storageStr = storage > 1024 ? (storage/1024).toFixed(1)+' KB' : storage+' B';
   var now = new Date().toLocaleString('id-ID');
   wrap.innerHTML =
-    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Mode</div><div class="adm-sysinfo-value">'+mode+'</div></div>'+
-    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Penyimpanan Lokal</div><div class="adm-sysinfo-value">'+storageStr+'</div></div>'+
-    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">User Saat Ini</div><div class="adm-sysinfo-value">'+escapeHtml(getCurrentUser()||'—')+'</div></div>'+
-    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Terakhir Segarkan</div><div class="adm-sysinfo-value"><small>'+now+'</small></div></div>';
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Mode Penyimpanan</div><div class="adm-sysinfo-value">'+mode+'</div></div>'+
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Ukuran Memori Lokal</div><div class="adm-sysinfo-value">'+storageStr+'</div></div>'+
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Akun Admin Aktif</div><div class="adm-sysinfo-value">'+escapeHtml(getCurrentUser()||'—')+'</div></div>'+
+    '<div class="adm-sysinfo-item"><div class="adm-sysinfo-label">Terakhir Diperbarui</div><div class="adm-sysinfo-value" style="font-size:13px"><small>'+now+'</small></div></div>';
 }
 
 function exportReports(){
@@ -550,7 +795,7 @@ function exportReports(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  toast('Laporan diekspor');
+  toast('Data laporan berhasil diekspor');
 }
 </script>
 </body>

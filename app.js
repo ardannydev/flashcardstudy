@@ -205,19 +205,34 @@ function renderNavAvatar(){
   }
 }
 renderNavAvatar();
-// Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login.
+// Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login & membatasi admin ke admin.html.
 function requireLogin(){
-  if(isLocalMode()){
-    if(!getToken()) setAuth('local_dev_token', 'dev');
-    return true;
-  }
   if(!getToken()){
-    navigateTo('login.html', { replace: true });
+    if(isLocalMode()){
+      setAuth('local_dev_token', 'dev');
+      setDevUser(true);
+    } else {
+      navigateTo('login.html', { replace: true });
+      return false;
+    }
+  }
+  
+  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  const isAdmin = isDevUser();
+
+  if(isAdmin && page !== 'admin.html'){
+    navigateTo('admin.html', { replace: true });
     return false;
   }
+  if(!isAdmin && page === 'admin.html'){
+    navigateTo('index.html', { replace: true });
+    return false;
+  }
+
   return true;
 }
 function logout(){
+  setDevUser(false);
   clearAuth();
   navigateTo('login.html', { replace: true });
 }
@@ -707,19 +722,78 @@ function getDeviceInfo(){
   return navigator.userAgent;
 }
 function isDevUser(){
-  return localStorage.getItem(DEV_USER_KEY) === 'true';
+  const user = getCurrentUser();
+  return localStorage.getItem(DEV_USER_KEY) === 'true' || user === 'devardwannyy' || user === 'admin';
 }
 function setDevUser(v){
   localStorage.setItem(DEV_USER_KEY, v ? 'true' : 'false');
 }
 
+function getPageName(pathname){
+  let name = (pathname.split('/').pop() || 'index').toLowerCase();
+  if(name.endsWith('.html')) name = name.slice(0, -5);
+  return name || 'index';
+}
+
+function getCleanDisplayUrl(target){
+  const t = new URL(target, location.href);
+  const name = getPageName(t.pathname);
+  const base = t.pathname.substring(0, t.pathname.lastIndexOf('/') + 1) || '/';
+  t.pathname = name === 'index' ? base : base + name;
+  return t.href;
+}
+
+function getFetchUrl(target){
+  const t = new URL(target, location.href);
+  const name = getPageName(t.pathname);
+  const base = t.pathname.substring(0, t.pathname.lastIndexOf('/') + 1) || '/';
+  t.pathname = base + name + '.html';
+  return t.href;
+}
+
+// Clean address bar on load
+if(location.pathname.endsWith('.html')){
+  history.replaceState({}, '', getCleanDisplayUrl(location));
+}
+
+// Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login jika belum login & membatasi admin ke admin.
+function requireLogin(){
+  if(!getToken()){
+    if(isLocalMode()){
+      setAuth('local_dev_token', 'dev');
+      setDevUser(true);
+    } else {
+      navigateTo('login', { replace: true });
+      return false;
+    }
+  }
+  
+  const page = getPageName(location.pathname);
+  const isAdmin = isDevUser();
+
+  if(isAdmin && page !== 'admin'){
+    navigateTo('admin', { replace: true });
+    return false;
+  }
+  if(!isAdmin && page === 'admin'){
+    navigateTo('index', { replace: true });
+    return false;
+  }
+
+  return true;
+}
+function logout(){
+  setDevUser(false);
+  clearAuth();
+  navigateTo('login', { replace: true });
+}
 
 (function(){
-  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html','admin.html','pdf.html']);
+  const spaPages = new Set(['index','sets','create','learn','profile','flashcard','share','login','admin','pdf']);
   let navigationBusy = false;
 
   function isSpaUrl(url){
-    return url.origin === location.origin && spaPages.has(url.pathname.split('/').pop() || 'index.html');
+    return url.origin === location.origin && spaPages.has(getPageName(url.pathname));
   }
 
   async function navigateTo(url, options = {}){
@@ -728,15 +802,18 @@ function setDevUser(v){
       location.href = target.href;
       return;
     }
+    const cleanUrl = getCleanDisplayUrl(target);
+    const fetchUrl = getFetchUrl(target);
+
     if(navigationBusy) return;
-    if(target.href === location.href && options.history !== false) return;
+    if(cleanUrl === location.href && options.history !== false) return;
 
     navigationBusy = true;
     document.documentElement.classList.add('spa-loading');
     document.documentElement.style.overflow = 'hidden';
     window.scrollTo(0, 0);
     try{
-      const response = await fetch(target.href, { headers: { 'X-SPA-Navigation': '1' } });
+      const response = await fetch(fetchUrl, { headers: { 'X-SPA-Navigation': '1' } });
       if(!response.ok) throw new Error(`Navigation failed: ${response.status}`);
       const html = await response.text();
       if(!/<html[\s>]/i.test(html)) throw new Error('Invalid HTML response');
@@ -744,8 +821,8 @@ function setDevUser(v){
       const nextBody = nextDocument.body;
       if(!nextBody) throw new Error('Missing page body');
 
-      if(options.replace) history.replaceState({}, '', target.href);
-      else if(options.history !== false) history.pushState({}, '', target.href);
+      if(options.replace) history.replaceState({}, '', cleanUrl);
+      else if(options.history !== false) history.pushState({}, '', cleanUrl);
 
       if(typeof window.__pageCleanup === 'function') window.__pageCleanup();
 
@@ -802,7 +879,7 @@ function setDevUser(v){
       }
     }catch(error){
       console.warn('Soft navigation gagal, memuat ulang halaman.', error);
-      location.href = target.href;
+      location.href = cleanUrl;
     }finally{
       navigationBusy = false;
       document.documentElement.classList.remove('spa-loading');
@@ -814,13 +891,13 @@ function setDevUser(v){
   window.navigateTo = navigateTo;
 
   function updateActiveNav(target){
-    const currentFile = target.pathname.split('/').pop() || 'index.html';
-    const navMap = { 'pdf.html': 'sets.html', 'share.html': 'sets.html' };
+    const currentFile = getPageName(target.pathname);
+    const navMap = { 'pdf': 'sets', 'share': 'sets' };
     const mappedFile = navMap[currentFile] || currentFile;
     document.querySelectorAll('.nh .nh-link').forEach(link => {
       const href = link.getAttribute('href');
       if(!href || href.startsWith('#')) return;
-      const linkFile = new URL(href, target.href).pathname.split('/').pop() || 'index.html';
+      const linkFile = getPageName(new URL(href, target.href).pathname);
       link.classList.toggle('active', linkFile === mappedFile);
     });
   }
