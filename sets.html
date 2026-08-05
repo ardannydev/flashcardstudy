@@ -209,16 +209,14 @@
             <div class="iset-card-head">
               <span class="set-number" aria-hidden="true">${isPdf ? 'PDF' : initial}</span>
               <div class="set-title-area">
-                <div class="set-title-row">
-                  <h3>${escapeHtml(set.title)}</h3>
+                <h3 class="set-title">${escapeHtml(set.title)}</h3>
+                <div class="set-meta-row">
                   <div class="iset-card-meta">
                     ${isPdf ? `<span class="iset-count">PDF${hasTerms ? ' + ' + total + ' kartu' : ''}</span>` : `<span class="iset-count">${total} kotoba</span>`}
                     ${dueCount > 0 ? `<span class="iset-badge">${dueCount} jatuh tempo</span>` : ''}
                   </div>
-                </div>
-                <div class="set-sub-row">
-                  ${set.desc ? `<p>${escapeHtml(set.desc)}</p>` : ''}
                   <span class="set-cat-badge"><span class="set-cat-dot"></span>${escapeHtml(currentCat)}</span>
+                  ${set.desc ? `<p class="set-desc">${escapeHtml(set.desc)}</p>` : ''}
                 </div>
               </div>
             </div>
