@@ -860,7 +860,6 @@ function setDevUser(v){
     if(e.target.closest && e.target.closest('.fc-sidenav')) return;
     const link = e.target.closest('a[href]');
     if(!link || link.target === '_blank' || link.hasAttribute('download')) return;
-    if(link.id === 'leaveBtn') return;
     const href = link.getAttribute('href');
     if(!href || href.startsWith('#')) return;
     const target = new URL(href, location.href);

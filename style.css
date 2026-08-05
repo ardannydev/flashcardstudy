@@ -686,8 +686,8 @@ to{opacity:1;transform:translateY(0)}}
 .hm-btn{font-size:12px;padding:10px 14px}
 .hm-glow{width:250px;height:150px;top:-30px}}
 .dark-theme .cwrap{max-width:720px;margin:0 auto;flex:1;width:100%;display:flex;flex-direction:column;overflow:hidden;min-height:0;padding-top:16px}
-.dark-theme .cfixed-head{flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:20px 0 0;overflow-y:visible;width:100%;max-width:600px;align-self:center}
-.dark-theme .cscroll{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:12px 0 24px;scrollbar-width:none;min-height:0;width:100%;max-width:600px;align-self:center}
+.dark-theme .cfixed-head{flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:20px 20px 0;overflow-y:visible;width:100%;max-width:600px;align-self:center;background:linear-gradient(180deg, rgba(255,255,255,.02) 0%, transparent 100%);border-radius:0 0 16px 16px}
+.dark-theme .cscroll{flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;align-items:center;padding:16px 0 24px;scrollbar-width:none;min-height:0;width:100%;max-width:600px;align-self:center}
 .dark-theme .cscroll::-webkit-scrollbar{display:none}
 @media(min-width:2048px){.dark-theme .cwrap{max-width:900px}}
 @media(min-width:2560px){.dark-theme .cwrap{max-width:1100px}}
@@ -698,13 +698,13 @@ to{opacity:1;transform:translateY(0)}}
 .dark-theme textarea.cfield-box::-webkit-scrollbar{display:none}
 .dark-theme .cmeta-row{display:flex;align-items:flex-start;gap:12px;width:100%;max-width:600px;margin-bottom:4px}
 .dark-theme .cmeta-row .cfield-box{margin-bottom:0;flex:1}
-.dark-theme .ctoolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 16px;flex-wrap:wrap;width:100%;max-width:600px}
-.dark-theme .ctoolbar-left{display:flex;align-items:center}
-.dark-theme .ccount{color:#9aa0c7;font-size:13px;font-weight:700}
-.dark-theme .ctoolbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dark-theme .ctoolbar{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 14px;flex-wrap:wrap;width:100%;max-width:600px}
+.dark-theme .ctoolbar-left{display:flex;align-items:center;gap:8px}
+.dark-theme .ctoolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center}
+.dark-theme .ctoolbar-right .ibtn{padding:9px 16px;font-size:13px;border-radius:10px}
 .dark-theme .ibtn-ghost{background:transparent;color:#8b9eff;border:1px solid rgba(139,158,255,.2);border-radius:999px;padding:9px 16px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s;font-family:inherit}
 .dark-theme .ibtn-ghost:hover{background:rgba(139,158,255,.08);border-color:rgba(139,158,255,.4);color:#00D9FF}
-.dark-theme .cimport-box{display:none;width:100%;max-width:600px;background:linear-gradient(160deg, var(--gbg2) 0%, rgba(255, 255, 255, .01) 100%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(0, 217, 255, .1);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 8px 32px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .06)}
+.dark-theme .cimport-box{display:none;width:100%;max-width:600px;background:linear-gradient(160deg, var(--gbg2) 0%, rgba(255, 255, 255, .01) 100%);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(0, 217, 255, .1);border-radius:16px;padding:16px;margin:0 auto 16px;box-shadow:0 8px 32px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .06)}
 .dark-theme .cimport-box.open{display:block}
 .dark-theme .cpdf-box{border-color:rgba(255, 95, 109, .18);background:linear-gradient(160deg, rgba(255, 95, 109, .06) 0%, rgba(255, 255, 255, .01) 100%)}
 .dark-theme .cpdf-drop{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:10px 0 6px}
@@ -763,7 +763,7 @@ to{opacity:1;transform:translateY(0)}}
 .dark-theme .crow-head{gap:4px}
 .dark-theme .crow-num{font-size:12px;min-width:14px}
 .dark-theme .crow-del{width:28px;height:28px}
-.dark-theme .ctoolbar{flex-direction:column;align-items:stretch;gap:10px}
+.dark-theme .ctoolbar{flex-direction:column;align-items:center;gap:10px}
 .dark-theme .ctoolbar-right{justify-content:center}
 .dark-theme .ibtn-ghost{font-size:11px;padding:8px 14px}}
 .choice{cursor:pointer;display:flex;align-items:center}
