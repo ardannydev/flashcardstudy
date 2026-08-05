@@ -99,6 +99,7 @@
 
   <script src="app.js"></script>
 <script>
+(function(){
 let rows = [];
 let editingId = qs('id');
 let _saving = false;
@@ -546,6 +547,12 @@ async function handleSave(andPractice){
       renderRows();
     }
   });
+})();
+
+Object.assign(window, {
+  addRow, removeRow, handleSave, parseBulk,
+  onFieldInput, onFieldKeydown, onTouchStart, onMouseDownStart
+});
 })();
 </script>
 </body>
