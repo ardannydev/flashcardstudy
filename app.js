@@ -374,11 +374,9 @@ async function upsertSet(set){
   if(i >= 0) sets[i] = Object.assign({}, sets[i], stored);
   else sets.unshift(stored);
   const idx = i >= 0 ? i : 0;
-  if(pdfFull){
-    sets[idx].pdf = pdfMetaOnly(pdfFull);
-    await savePdfForSet(set.id, pdfFull);
-  }
-  return saveSets(sets, { immediate: !!pdfFull || !!(stored.pdf && stored.pdf.name) });
+  if(pdfFull) sets[idx].pdf = pdfMetaOnly(pdfFull);
+  await saveSets(sets, { immediate: true });
+  if(pdfFull) await savePdfForSet(set.id, pdfFull);
 }
 async function deleteSet(id){
   await deletePdfForSet(id);
