@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fcs-v2';
+const CACHE_NAME = 'fcs-v3';
 const PRECACHE = [
   '/',
   '/index.html',
@@ -8,6 +8,9 @@ const PRECACHE = [
   '/create.html',
   '/login.html',
   '/pdf.html',
+  '/pdf-viewer.js',
+  '/vendor/pdfjs/pdf.min.mjs',
+  '/vendor/pdfjs/pdf.worker.min.mjs',
   '/admin.html',
   '/style.css',
   '/app.js',

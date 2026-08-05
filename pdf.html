@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Baca dokumen PDF langsung di dalam FlashCardStudy.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1426">
@@ -44,9 +44,10 @@
         </div>
       </div>
       <div class="pdf-toolbar-right">
+        <span class="pdf-page-indicator" id="pdfPageIndicator" hidden></span>
         <a class="ibtn ibtn-primary" href="#" id="pdfDownloadBtn" download draggable="false">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Unduh
+          <span class="pdf-btn-label">Unduh</span>
         </a>
       </div>
     </div>
@@ -59,12 +60,15 @@
   </main>
 
 <script src="app.js"></script>
-<script>
+<script type="module">
+import { renderPdfViewer } from './pdf-viewer.js';
+
 (async function(){
   if(!requireLogin()) return;
 
   const setId = qs('id');
   const view = document.getElementById('pdfView');
+  const pageIndicator = document.getElementById('pdfPageIndicator');
 
   await syncSetsFromServer();
   const set = await getSetWithPdf(setId);
@@ -78,27 +82,31 @@
   document.getElementById('pdfTitle').textContent = set.title;
   document.getElementById('pdfFileName').textContent = set.pdf.name || 'Dokumen.pdf';
 
-  let blobUrl = null;
   try{
     const binary = atob(set.pdf.data);
     const bytes = new Uint8Array(binary.length);
     for(let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const blob = new Blob([bytes], { type: 'application/pdf' });
-    blobUrl = URL.createObjectURL(blob);
+    const blobUrl = URL.createObjectURL(blob);
 
     const downloadBtn = document.getElementById('pdfDownloadBtn');
     downloadBtn.href = blobUrl;
     downloadBtn.download = set.pdf.name || 'dokumen.pdf';
 
-    view.innerHTML = '';
-    const iframe = document.createElement('iframe');
-    iframe.className = 'pdf-iframe';
-    iframe.title = set.title;
-    iframe.src = blobUrl;
-    view.appendChild(iframe);
+    view.innerHTML = '<div class="pdf-loading"><div class="adm-spinner"></div><span>Menyiapkan halaman...</span></div>';
+
+    await renderPdfViewer(view, bytes, {
+      onReady(total){
+        pageIndicator.hidden = false;
+        pageIndicator.textContent = '1 / ' + total;
+      },
+      onScroll(current, total){
+        pageIndicator.textContent = current + ' / ' + total;
+      }
+    });
   }catch(err){
     console.warn('Gagal memuat PDF:', err);
-    view.innerHTML = '<div class="pdf-error"><h2>Gagal memuat PDF</h2><p>File mungkin rusak atau tidak didukung browser.</p><a class="ibtn ibtn-primary" href="sets.html">Kembali ke Set</a></div>';
+    view.innerHTML = '<div class="pdf-error"><h2>Gagal memuat PDF</h2><p>File mungkin rusak atau tidak didukung perangkat ini. Coba unduh file lalu buka di aplikasi PDF.</p><a class="ibtn ibtn-primary" href="sets.html">Kembali ke Set</a></div>';
   }
 })();
 </script>
