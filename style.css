@@ -163,8 +163,8 @@ body.dark-theme:has(.nh){padding-top:62px}}
 .nh.nh-learn .nh-bar{justify-content:center}}
 .nh.nh-nav-always .nh-nav-desktop{display:flex}
 @media(max-width:767px){.nh.nh-nav-always .nh-logo{display:none}
-.nh.nh-nav-always .nh-profile-btn{display:none}
-.nh.nh-nav-always .nh-bar{justify-content:center}}
+.nh.nh-nav-always .nh-bar{justify-content:center}
+.nh.nh-nav-always .nh-actions{position:absolute;right:14px;top:50%;transform:translateY(-50%);z-index:2}}
 .dark-theme .ibtn{border:none;border-radius:999px;padding:11px 20px;font-weight:700;font-size:13px;cursor:pointer;transition:transform .12s ease, background .15s ease, color .15s ease;white-space:nowrap}
 .dark-theme .ibtn:active{transform:scale(.97)}
 .dark-theme .ibtn-primary{background:linear-gradient(135deg, #00D9FF, #8B5CF6);color:#fff;box-shadow:0 2px 16px rgba(0, 217, 255, .3)}
@@ -1293,3 +1293,11 @@ body.dark-theme:has(.nh){padding-top:52px}}
 .pdf-error p{margin:0;font-size:13px}
 .pdf-error .ibtn{margin-top:8px}
 @media(max-width:640px){.pdf-toolbar{padding:8px 0}.pdf-title{font-size:14px}.pdf-wrap{padding:0 8px 8px}}
+
+/* ===== Flashcard mobile back (sidenav hidden on small screens) ===== */
+.fc-back-btn{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:10px;display:none;align-items:center;justify-content:center;background:rgba(0, 217, 255, .08);border:1px solid rgba(0, 217, 255, .2);color:#00D9FF;text-decoration:none;font-size:18px;line-height:1;z-index:3;-webkit-tap-highlight-color:transparent}
+.fc-back-btn:active{transform:translateY(-50%) scale(.92)}
+@media(max-width:767px){.fc-back-btn{display:flex}
+.dark-theme .qtitle-bar-label{visibility:hidden}}
+@media(max-width:480px){.fc-back-btn{left:10px;width:30px;height:30px;font-size:16px}}
+@media(max-width:280px){.fc-back-btn{left:6px;width:26px;height:26px;font-size:14px}}

@@ -499,7 +499,11 @@ async function handleSave(andPractice){
     _saving = true;
     await upsertSet(set);
     sessionStorage.setItem('navInternal','1');
-    navigateTo(andPractice ? `learn.html?id=${set.id}` : 'sets.html');
+    if(andPractice){
+      navigateTo(cleanTerms.length > 0 ? `learn.html?id=${set.id}` : (set.pdf ? `pdf.html?id=${set.id}` : 'sets.html'));
+    } else {
+      navigateTo('sets.html');
+    }
   }catch(e){
     _saving = false;
     if(_pdfFile && (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'))){

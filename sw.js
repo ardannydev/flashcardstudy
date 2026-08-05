@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fcs-v1';
+const CACHE_NAME = 'fcs-v2';
 const PRECACHE = [
   '/',
   '/index.html',
@@ -7,6 +7,8 @@ const PRECACHE = [
   '/sets.html',
   '/create.html',
   '/login.html',
+  '/pdf.html',
+  '/admin.html',
   '/style.css',
   '/app.js',
   '/manifest.json',

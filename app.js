@@ -655,6 +655,7 @@ function setDevUser(v){
 
   document.addEventListener('click', function(e){
     if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if(e.target.closest && e.target.closest('.fc-sidenav')) return;
     const link = e.target.closest('a[href]');
     if(!link || link.target === '_blank' || link.hasAttribute('download')) return;
     if(link.id === 'leaveBtn') return;

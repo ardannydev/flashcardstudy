@@ -383,8 +383,11 @@ document.getElementById('retryMissedBtn').addEventListener('click', () => retryM
 }
 
 // detect if this is a refresh vs fresh navigation
-const navEntries = performance.getEntriesByType('navigation');
-const isRefresh = navEntries.length > 0 && navEntries[0].type === 'reload';
+let isRefresh = false;
+if(typeof performance !== 'undefined' && typeof performance.getEntriesByType === 'function'){
+  const navEntries = performance.getEntriesByType('navigation');
+  isRefresh = Array.isArray(navEntries) && navEntries.length > 0 && navEntries[0].type === 'reload';
+}
 
 // restore summary state on refresh only
 const saved = loadSessionState();

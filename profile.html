@@ -102,19 +102,18 @@
     }
   } catch(e) { /* server not available */ }
 
-  // Calculate stats from local sets
+  // Calculate stats from local sets (mirrors computeAllStats in index.html)
   const sets = getSets();
   let totalCards = 0, mastered = 0, learning = 0;
-  const now = Date.now();
 
   sets.forEach(set => {
     if(set.terms) {
       set.terms.forEach(term => {
         totalCards++;
-        if(term._review) {
-          if(term._review.due && term._review.due <= now) learning++;
-          else if(term._review.reps >= 3) mastered++;
-          else if(term._review.reps > 0) learning++;
+        const r = term._review;
+        if(r && r.reps > 0){
+          if(r.interval >= 21) mastered++;
+          else learning++;
         }
       });
     }
