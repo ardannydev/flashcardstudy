@@ -83,6 +83,26 @@
       return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
+    function setHue(id){
+      let h = 0;
+      const s = String(id || '');
+      for(let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+      return Math.abs(h) % 360;
+    }
+
+    function masteredCount(set){
+      let n = 0;
+      (set.terms || []).forEach(t => {
+        const r = t._review;
+        if(r && r.reps > 0 && r.interval >= 21) n++;
+      });
+      return n;
+    }
+
+    function setInitial(title){
+      return (String(title || '?').trim().charAt(0) || '?').toUpperCase();
+    }
+
     function renderCategories(){
       const cats = getCategories();
       const list = document.getElementById('categoryList');
@@ -153,25 +173,28 @@
         return;
       }
       empty.style.display = 'none';
-      const allCats = getCategories();
+            const allCats = getCategories();
       grid.innerHTML = sets.map((set,index) => {
         const dueCount = getDueCount(set);
         const currentCat = getSetCategory(set);
         const isPdf = !!set.pdf;
         const hasTerms = !!set.terms.length;
-        if(isPdf) return `
-          <div class="iset-card iset-card-pdf" data-id="${escapeHtml(set.id)}">
-            <div class="iset-card-head">
-              <span class="set-number">${index + 1}</span>
-              <div class="set-title-area">
-                <h3>${escapeHtml(set.title)}</h3>
-                ${set.desc ? `<p>${escapeHtml(set.desc)}</p>` : ''}
-                <span class="set-cat-badge">${escapeHtml(currentCat)}</span>
-              </div>
-              <div class="iset-card-meta">
-                <span class="iset-count"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF${hasTerms ? ' + ' + set.terms.length + ' kartu' : ''}</span>
-              </div>
-            </div>
+        const total = set.terms.length;
+        const hue = isPdf ? 0 : setHue(set.id);
+        const mast = masteredCount(set);
+        const pct = total ? Math.round(mast / total * 100) : 0;
+        const initial = setInitial(set.title);
+        const previewChips = hasTerms
+          ? set.terms.slice(0, 2).map(term =>
+              `<span class="iterm-chip"><b>${escapeHtml(term.term)}</b> - ${escapeHtml(term.def)}</span>`
+            ).join('') + (total > 2 ? `<span class="iterm-chip iterm-more">+${total - 2} lainnya</span>` : '')
+          : '';
+        const progress = hasTerms ? `
+            <div class="iset-progress">
+              <div class="iset-progress-track"><div class="iset-progress-fill" style="width:${pct}%"></div></div>
+              <span class="iset-progress-num">${mast}/${total} dikuasai</span>
+            </div>` : '';
+        const pdfPreview = isPdf ? `
             <div class="ipdf-preview">
               <div class="ipdf-file">
                 <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
@@ -180,64 +203,41 @@
                   <span class="ipdf-file-size">${formatFileSize(set.pdf.size)}</span>
                 </div>
               </div>
-            </div>
-            <div class="iset-card-actions">
-              <div class="iset-card-actions-start">
-                <a class="ibtn ibtn-card-pdf" href="pdf.html?id=${set.id}" draggable="false">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                  Baca PDF
-                </a>
-                ${hasTerms ? `<a class="ibtn ibtn-card-outline" href="learn.html?id=${set.id}" draggable="false">Pelajari</a>` : ''}
-              </div>
-              <div class="iset-card-actions-end">
-                <div class="iset-catmove">
-                  <button class="iset-catmove-btn" data-title="Pindah kategori">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
-                  </button>
-                  <div class="iset-catmove-drop">
-                    ${allCats.filter(c => c !== currentCat).map(c =>
-                      `<button class="iset-catmove-opt" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
-                    ).join('')}
-                  </div>
-                </div>
-                <a class="ibtn ibtn-icon" href="create.html?id=${set.id}" draggable="false" data-title="Edit">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </a>
-                <button class="ibtn ibtn-icon ibtn-icon-danger" type="button" data-delete-id="${escapeHtml(set.id)}" data-title="Hapus">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>`;
+            </div>` : '';
         return `
-          <div class="iset-card" data-id="${escapeHtml(set.id)}">
+          <div class="iset-card${isPdf ? ' iset-card-pdf' : ''}" data-id="${escapeHtml(set.id)}" style="--set-h:${hue}">
             <div class="iset-card-head">
-              <span class="set-number">${index + 1}</span>
+              <span class="set-number" aria-hidden="true">${isPdf ? 'PDF' : initial}</span>
               <div class="set-title-area">
                 <h3>${escapeHtml(set.title)}</h3>
                 ${set.desc ? `<p>${escapeHtml(set.desc)}</p>` : ''}
-                <span class="set-cat-badge">${escapeHtml(currentCat)}</span>
+                <span class="set-cat-badge"><span class="set-cat-dot"></span>${escapeHtml(currentCat)}</span>
               </div>
               <div class="iset-card-meta">
-                <span class="iset-count">${set.terms.length} kotoba</span>
+                ${isPdf ? `<span class="iset-count">PDF${hasTerms ? ' + ' + total + ' kartu' : ''}</span>` : `<span class="iset-count">${total} kotoba</span>`}
                 ${dueCount > 0 ? `<span class="iset-badge">${dueCount} jatuh tempo</span>` : ''}
               </div>
             </div>
-            <div class="iterm-preview">
-              ${set.terms.slice(0, 3).map(term =>
-                `<span class="iterm-chip"><b>${escapeHtml(term.term)}</b> - ${escapeHtml(term.def)}</span>`
-              ).join('')}
-            </div>
+            ${pdfPreview}
+            ${previewChips ? `<div class="iterm-preview">${previewChips}</div>` : ''}
+            ${progress}
             <div class="iset-card-actions">
               <div class="iset-card-actions-start">
-                <a class="ibtn ibtn-card-primary" href="learn.html?id=${set.id}" draggable="false">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                  Pelajari
-                </a>
-                <a class="ibtn ibtn-card-outline" href="flashcard.html?id=${set.id}" draggable="false">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                  Flashcard
-                </a>
+                ${isPdf ? `
+                  <a class="ibtn ibtn-card-pdf" href="pdf.html?id=${set.id}" draggable="false">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Baca PDF
+                  </a>
+                  ${hasTerms ? `<a class="ibtn ibtn-card-outline" href="learn.html?id=${set.id}" draggable="false">Pelajari</a>` : ''}`
+                : `
+                  <a class="ibtn ibtn-card-primary" href="learn.html?id=${set.id}" draggable="false">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    Pelajari
+                  </a>
+                  <a class="ibtn ibtn-card-outline" href="flashcard.html?id=${set.id}" draggable="false">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Flashcard
+                  </a>`}
               </div>
               <div class="iset-card-actions-end">
                 <div class="iset-catmove">
@@ -263,6 +263,7 @@
             </div>
           </div>`;
       }).join('');
+
     }
 
     document.getElementById('setGrid').addEventListener('click', e => {

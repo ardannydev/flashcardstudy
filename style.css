@@ -191,10 +191,18 @@ body.dark-theme:has(.nh){padding-top:62px}}
 .dark-theme .section-header h2{margin:0;color:#fff;font-size:24px}
 .dark-theme .section-sub{margin:6px 0 0;color:#8f9ad7;font-size:14px;line-height:1.6}
 .dark-theme .iset-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px}
-.dark-theme .iset-card{background:linear-gradient(160deg, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .02) 100%);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:0 18px 60px rgba(0, 0, 0, .18);display:flex;flex-direction:column;gap:14px;transition:border-color .2s ease, box-shadow .2s ease}
+.dark-theme .iset-card{background:linear-gradient(160deg, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .02) 100%);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:0 18px 60px rgba(0, 0, 0, .18);display:flex;flex-direction:column;gap:14px;transition:border-color .2s ease, box-shadow .2s ease;position:relative}
+.dark-theme .iset-card::before{content:'';position:absolute;top:1px;left:1px;right:1px;height:6px;border-radius:17px 17px 0 0;background:linear-gradient(90deg, hsl(var(--set-h, 190) 82% 58%), hsl(calc(var(--set-h, 190) + 45) 82% 50%));pointer-events:none}
 .dark-theme .iset-card:hover{border-color:rgba(0, 217, 255, .25);box-shadow:0 24px 70px rgba(0, 0, 0, .22), 0 0 0 1px rgba(0, 217, 255, .06)}
 .dark-theme .iset-card-head{display:flex;align-items:flex-start;gap:12px}
-.dark-theme .set-number{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:rgba(0, 217, 255, .1);color:#00D9FF;font-size:12px;font-weight:700;flex-shrink:0;margin-top:1px}
+.dark-theme .set-number{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg, hsl(var(--set-h, 190) 82% 58%), hsl(calc(var(--set-h, 190) + 45) 82% 50%));color:#fff;font-size:17px;font-weight:800;flex-shrink:0;margin-top:1px;box-shadow:0 8px 24px hsla(var(--set-h, 190) 80% 50% / .35);letter-spacing:.02em}
+.dark-theme .iset-card .ibtn-card-primary{background:linear-gradient(135deg, hsl(var(--set-h, 190) 82% 56%), hsl(calc(var(--set-h, 190) + 45) 82% 48%));box-shadow:0 2px 16px hsla(var(--set-h, 190) 80% 50% / .35)}
+.dark-theme .set-cat-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:5px;vertical-align:middle}
+.dark-theme .iset-progress{display:flex;align-items:center;gap:10px;margin-top:2px}
+.dark-theme .iset-progress-track{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+.dark-theme .iset-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg, hsl(var(--set-h, 190) 82% 58%), hsl(calc(var(--set-h, 190) + 45) 82% 50%));transition:width .4s ease}
+.dark-theme .iset-progress-num{font-size:11px;font-weight:800;color:#8a93b0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dark-theme .iterm-more{color:#8a93b0;border-style:dashed}
 .dark-theme .iset-card h3{margin:0;font-size:16px;color:#fff;line-height:1.4}
 .dark-theme .iset-card p{margin:4px 0 0;color:#b3bee8;font-size:12px;line-height:1.5}
 .dark-theme .iset-card-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex-shrink:0;margin-left:auto}
@@ -794,7 +802,7 @@ to{opacity:1;transform:translateY(0)}}
 @media(max-width:480px){.iset-grid{gap:10px}
 .iset-card{padding:16px;gap:12px;border-radius:16px}
 .iset-card-head{gap:10px}
-.set-number{width:26px;height:26px;font-size:11px}
+.set-number{width:38px;height:38px;font-size:15px;border-radius:12px}
 .iset-card h3{font-size:15px}
 .iset-card p{font-size:11px}
 .iset-card-meta{gap:4px}
@@ -810,7 +818,7 @@ to{opacity:1;transform:translateY(0)}}
 .iset-card-meta{gap:5px}
 .iset-count, .iset-badge{font-size:10px;padding:2px 7px}
 .iterm-chip{font-size:11px;padding:6px 8px;gap:4px;border-radius:10px}
-.set-number{width:24px;height:24px;font-size:10px}
+.set-number{width:34px;height:34px;font-size:14px;border-radius:11px}
 .iset-card-actions{gap:8px}
 .iset-card-actions-start{gap:6px}
 .iset-card-actions .ibtn-card-primary, .iset-card-actions .ibtn-card-outline, .iset-card-actions .ibtn-card-pdf{padding:9px 14px;font-size:12px;gap:5px}
@@ -827,7 +835,7 @@ to{opacity:1;transform:translateY(0)}}
 .iset-catmove-btn{width:32px;height:32px}}
 @media(max-width:360px){.iset-card{padding:14px;gap:10px;border-radius:14px}
 .iset-card-head{gap:8px}
-.set-number{width:24px;height:24px;font-size:10px}
+.set-number{width:34px;height:34px;font-size:14px;border-radius:11px}
 .iset-card h3{font-size:14px}
 .iset-card-actions{gap:6px}
 .iset-card-actions-start{gap:4px}
@@ -1059,7 +1067,7 @@ to{opacity:1;transform:translateY(0)}}
 .iset-card-meta{gap:4px}
 .iset-count, .iset-badge{font-size:9px;padding:2px 6px}
 .iterm-chip{font-size:10px;padding:4px 6px;gap:3px}
-.set-number{width:22px;height:22px;font-size:9px}
+.set-number{width:34px;height:34px;font-size:14px;border-radius:11px}
 .iset-card-actions{gap:6px}
 .iset-card-actions .ibtn-card-primary, .iset-card-actions .ibtn-card-outline, .iset-card-actions .ibtn-card-pdf{padding:9px 14px;font-size:12px;border-radius:999px;gap:5px}
 .iset-card-actions .ibtn-icon{width:30px;height:30px}
@@ -1132,7 +1140,7 @@ to{opacity:1;transform:translateY(0)}}
 .iset-card-actions-end{margin-left:auto;gap:3px}
 .iterm-chip{font-size:9px;padding:3px 5px}
 .iset-count, .iset-badge{font-size:8px;padding:2px 5px}
-.set-number{width:20px;height:20px;font-size:8px}
+.set-number{width:30px;height:30px;font-size:13px;border-radius:10px}
 .dark-theme .cfixed-head{padding:14px 0 0}
 .dark-theme .cscroll{padding:6px 0 10px}
 .cfield-box{font-size:12px !important;padding:8px 10px !important}
@@ -1181,7 +1189,7 @@ to{opacity:1;transform:translateY(0)}}
 .iset-card p{font-size:9px}
 .iset-count, .iset-badge{font-size:7px;padding:2px 4px}
 .iterm-chip{font-size:8px;padding:3px 4px;border-radius:6px}
-.set-number{width:16px;height:16px;font-size:7px}
+.set-number{width:28px;height:28px;font-size:12px;border-radius:10px}
 .iset-card-actions{gap:5px}
 .iset-card-actions .ibtn-card-primary, .iset-card-actions .ibtn-card-outline, .iset-card-actions .ibtn-card-pdf{font-size:10px;padding:7px 11px;border-radius:999px;gap:4px}
 .iset-card-actions .ibtn-icon{width:26px;height:26px}
