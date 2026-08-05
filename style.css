@@ -1284,10 +1284,10 @@ body.dark-theme:has(.nh){padding-top:52px}}
 .dark-theme .qtitle-bar-label{visibility:hidden}}
 @media(max-width:480px){.fc-back-btn{left:10px;width:30px;height:30px;font-size:16px}}
 
-/* ===== SPA page transition — prevent FOUC during soft navigation ===== */
+/* ===== SPA page transition — smooth swap without splash flash ===== */
 html.spa-loading,
-html.spa-loading body{visibility:hidden;opacity:0;transition:opacity .08s ease}
-html.spa-loading::after{content:'';position:fixed;inset:0;z-index:99999;background:#0B1426;background-image:linear-gradient(135deg, #0B1426 0%, #4C1D95 50%, #0B1426 100%);visibility:visible;opacity:1}
-html:not(.spa-loading),
-html:not(.spa-loading) body{visibility:visible;opacity:1;transition:opacity .12s ease}
-html.spa-loading .nh{display:none}
+html.spa-loading body{overflow:hidden !important}
+html.spa-loading body > main,
+html.spa-loading body > .qcontainer{opacity:0;pointer-events:none}
+html:not(.spa-loading) body > main,
+html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease}

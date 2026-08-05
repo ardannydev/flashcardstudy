@@ -558,6 +558,8 @@ function setDevUser(v){
 
     navigationBusy = true;
     document.documentElement.classList.add('spa-loading');
+    document.documentElement.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
     try{
       const response = await fetch(target.href, { headers: { 'X-SPA-Navigation': '1' } });
       if(!response.ok) throw new Error(`Navigation failed: ${response.status}`);
@@ -617,6 +619,7 @@ function setDevUser(v){
       await runPageScripts(nextBody.querySelectorAll('script'));
       sessionStorage.removeItem('navInternal');
       updateNavDot();
+      window.scrollTo(0, 0);
       const pageContent = document.querySelector('main');
       if(pageContent){
         pageContent.classList.remove('spa-content-enter');
@@ -628,6 +631,8 @@ function setDevUser(v){
     }finally{
       navigationBusy = false;
       document.documentElement.classList.remove('spa-loading');
+      document.documentElement.style.overflow = '';
+      window.scrollTo(0, 0);
     }
   }
 
