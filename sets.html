@@ -273,43 +273,52 @@
       grid.innerHTML = parts.join('');
     }
 
-    document.getElementById('setGrid').addEventListener('click', e => {
-      const btn = e.target.closest('[data-delete-id]');
-      if(btn){ handleDelete(btn.dataset.deleteId); return; }
-      const tog = e.target.closest('[data-grp-toggle]');
-      if(tog){
-        const key = tog.dataset.grpToggle;
-        toggleGroup(key);
-        renderSets(document.getElementById('setFilterInput').value);
-      }
-    });
+    const gridEl = document.getElementById('setGrid');
+    if(gridEl){
+      gridEl.addEventListener('click', e => {
+        const btn = e.target.closest('[data-delete-id]');
+        if(btn){ handleDelete(btn.dataset.deleteId); return; }
+        const tog = e.target.closest('[data-grp-toggle]');
+        if(tog){
+          const key = tog.dataset.grpToggle;
+          toggleGroup(key);
+          renderSets(document.getElementById('setFilterInput').value);
+        }
+      });
+    }
 
     let filterTimer;
-    document.getElementById('setFilterInput').addEventListener('input', e => {
-      clearTimeout(filterTimer);
-      filterTimer = setTimeout(() => renderSets(e.target.value), 200);
-    });
+     const filterInput = document.getElementById('setFilterInput');
+    if(filterInput){
+      filterInput.addEventListener('input', e => {
+        clearTimeout(filterTimer);
+        filterTimer = setTimeout(() => renderSets(e.target.value), 200);
+      });
+    }
 
-    document.getElementById('expandAllBtn').addEventListener('click', () => {
-      allExpanded = !allExpanded;
-      const btn = document.getElementById('expandAllBtn');
-      const label = btn.querySelector('span');
-      const icon = btn.querySelector('svg');
-      if(allExpanded){
-        label.textContent = 'Tutup semua';
-        icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
-        const rawSets = getSets();
-        const { groups, ungrouped } = groupAndSortSets(rawSets);
-        groups.forEach(g => expandedGroups.add(g.key));
-        if(ungrouped.length > 0) expandedGroups.add('__ungrouped__');
-      } else {
-        label.textContent = 'Buka semua';
-        icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
-        expandedGroups.clear();
-      }
-      persistExpanded();
-      renderSets(document.getElementById('setFilterInput').value);
-    });
+    const expandBtn = document.getElementById('expandAllBtn');
+    if(expandBtn){
+      expandBtn.addEventListener('click', () => {
+        allExpanded = !allExpanded;
+        const btn = document.getElementById('expandAllBtn');
+        const label = btn.querySelector('span');
+        const icon = btn.querySelector('svg');
+        if(allExpanded){
+          label.textContent = 'Tutup semua';
+          icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+          const rawSets = getSets();
+          const { groups, ungrouped } = groupAndSortSets(rawSets);
+          groups.forEach(g => expandedGroups.add(g.key));
+          if(ungrouped.length > 0) expandedGroups.add('__ungrouped__');
+        } else {
+          label.textContent = 'Buka semua';
+          icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
+          expandedGroups.clear();
+        }
+        persistExpanded();
+        renderSets(document.getElementById('setFilterInput').value);
+      });
+    }
 
     function handleDelete(id){
       const set = getSet(id);
