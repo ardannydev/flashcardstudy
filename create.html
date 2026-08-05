@@ -54,6 +54,10 @@
       <div class="ctoolbar">
         <div class="ctoolbar-left">
           <span class="ccount" id="cardCount">0 kartu</span>
+          <button type="button" class="ibtn ibtn-outline" id="pdfToggle" aria-expanded="false" aria-controls="pdfBox">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+            PDF
+          </button>
         </div>
         <div class="ctoolbar-right">
           <button type="button" class="ibtn ibtn-outline" id="importToggle" aria-expanded="false" aria-controls="importBox">
@@ -69,6 +73,26 @@
         <div class="cimport-grid">
           <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
           <button class="cbtn cbtn-primary" onclick="parseBulk()">Proses</button>
+        </div>
+      </div>
+
+      <div class="cimport-box cpdf-box" id="pdfBox">
+        <div class="cpdf-drop" id="pdfDrop">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+          <p class="cpdf-drop-title">Lampirkan file PDF</p>
+          <p class="cpdf-drop-sub">File akan dibaca langsung di dalam website (maks 3 MB).</p>
+          <input type="file" id="pdfFileInput" accept="application/pdf,.pdf" hidden>
+          <button type="button" class="cbtn cbtn-primary" id="pdfPickBtn">Pilih PDF</button>
+        </div>
+        <div class="cpdf-attach" id="pdfAttach" style="display:none">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+          <div class="cpdf-attach-meta">
+            <span class="cpdf-attach-name" id="pdfAttachName"></span>
+            <span class="cpdf-attach-size" id="pdfAttachSize"></span>
+          </div>
+          <button type="button" class="cpdf-remove" id="pdfRemoveBtn" aria-label="Hapus PDF">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -322,6 +346,68 @@ importToggle.addEventListener('click', () => {
   importToggle.setAttribute('aria-expanded', String(open));
 });
 
+/* ---- PDF attachment ---- */
+let _pdfFile = null;
+
+function formatFileSize(bytes){
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderPdfAttach(){
+  const drop = document.getElementById('pdfDrop');
+  const attach = document.getElementById('pdfAttach');
+  if(_pdfFile){
+    drop.style.display = 'none';
+    attach.style.display = 'flex';
+    document.getElementById('pdfAttachName').textContent = _pdfFile.name;
+    document.getElementById('pdfAttachSize').textContent = formatFileSize(_pdfFile.size);
+  } else {
+    drop.style.display = '';
+    attach.style.display = 'none';
+  }
+}
+
+function openPdfPicker(){
+  document.getElementById('pdfFileInput').click();
+}
+
+document.getElementById('pdfToggle').addEventListener('click', () => {
+  const box = document.getElementById('pdfBox');
+  const open = box.classList.toggle('open');
+  document.getElementById('pdfToggle').setAttribute('aria-expanded', String(open));
+});
+document.getElementById('pdfPickBtn').addEventListener('click', openPdfPicker);
+
+document.getElementById('pdfFileInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)){
+    createNotification('Hanya file PDF yang bisa dilampirkan.', 'error');
+    e.target.value = '';
+    return;
+  }
+  if(file.size > 3 * 1024 * 1024){
+    createNotification('File terlalu besar (maks 3 MB).', 'error');
+    e.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    _pdfFile = { name: file.name, size: file.size, data: reader.result.split(',')[1] };
+    renderPdfAttach();
+    createNotification('PDF dilampirkan.', 'success');
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('pdfRemoveBtn').addEventListener('click', () => {
+  _pdfFile = null;
+  document.getElementById('pdfFileInput').value = '';
+  renderPdfAttach();
+});
+
 const HAS_JP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
 const JP_ONLY = /[^\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3005\u3006\u3007\u3031-\u303B\u30FC\u30FB\u3001\u3002\s]/g;
 const PARENS = /\s*[（(][^）)]*[）)]\s*/g;
@@ -393,7 +479,7 @@ async function handleSave(andPractice){
     .filter(r => r.term && r.def);
 
   if(!title){ createNotification('Judul set wajib diisi.', 'error'); return; }
-  if(cleanTerms.length === 0){ createNotification('Tambahkan minimal 1 kartu.', 'error'); return; }
+  if(cleanTerms.length === 0 && !_pdfFile){ createNotification('Tambahkan minimal 1 kartu atau lampirkan file PDF.', 'error'); return; }
 
   const setId = editingId || uid('set');
   const now = Date.now();
@@ -403,6 +489,7 @@ async function handleSave(andPractice){
   }));
 
   const set = { id: setId, title, desc, category, terms: termsWithMeta, updatedAt: now };
+  if(_pdfFile) set.pdf = _pdfFile;
 
   const saveBtn = document.querySelector('.ibtn-primary');
   const origLabel = saveBtn ? saveBtn.textContent : '';
@@ -415,7 +502,11 @@ async function handleSave(andPractice){
     navigateTo(andPractice ? `learn.html?id=${set.id}` : 'sets.html');
   }catch(e){
     _saving = false;
-    createNotification('Gagal menyimpan. Coba lagi.', 'error');
+    if(_pdfFile && (e instanceof DOMException && (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED'))){
+      createNotification('Penyimpanan penuh. PDF terlalu besar untuk perangkat ini.', 'error');
+    } else {
+      createNotification('Gagal menyimpan. Coba lagi.', 'error');
+    }
     if(saveBtn){ saveBtn.disabled = false; saveBtn.textContent = origLabel; }
   }
 }
@@ -434,9 +525,11 @@ async function handleSave(andPractice){
       document.getElementById('desc').value = set.desc || '';
       document.getElementById('catSelect').value = set.category || 'Umum';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
+      if(set.pdf) _pdfFile = set.pdf;
     }
   }
   applyEditingSet();
+  renderPdfAttach();
   renderRows();
   if(rows.length === 0) addRow();
   const initialRows = JSON.stringify(rows);
@@ -449,7 +542,7 @@ async function handleSave(andPractice){
   function hasUnsavedChanges(){
     if(_saving) return false;
     const title = document.getElementById('title').value.trim();
-    return title || rows.some(r => r.term.trim() || r.def.trim());
+    return title || rows.some(r => r.term.trim() || r.def.trim()) || !!_pdfFile;
   }
 
   const leaveBtn = document.getElementById('leaveBtn');

@@ -528,7 +528,7 @@ function setDevUser(v){
 
 
 (function(){
-  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html','admin.html']);
+  const spaPages = new Set(['index.html','sets.html','create.html','learn.html','profile.html','flashcard.html','share.html','login.html','admin.html','pdf.html']);
   let navigationBusy = false;
 
   function isSpaUrl(url){
@@ -613,11 +613,13 @@ function setDevUser(v){
 
   function updateActiveNav(target){
     const currentFile = target.pathname.split('/').pop() || 'index.html';
+    const navMap = { 'pdf.html': 'sets.html', 'share.html': 'sets.html' };
+    const mappedFile = navMap[currentFile] || currentFile;
     document.querySelectorAll('.nh .nh-link').forEach(link => {
       const href = link.getAttribute('href');
       if(!href || href.startsWith('#')) return;
       const linkFile = new URL(href, target.href).pathname.split('/').pop() || 'index.html';
-      link.classList.toggle('active', linkFile === currentFile);
+      link.classList.toggle('active', linkFile === mappedFile);
     });
   }
 
