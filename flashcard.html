@@ -161,11 +161,18 @@
 const setId = qs('id');
 const set = getSet(setId);
 
-if(!set || !set.terms.length){
+if(!set){
   document.getElementById('app').innerHTML =
     '<div class="empty" style="color:#cfd3ec"><h2 style="color:#fff">Set tidak ditemukan</h2><p>Set ini kosong atau sudah dihapus.</p><a class="btn btn-primary" href="index.html" style="display:inline-block;margin-top:12px">Kembali ke beranda</a></div>';
   document.getElementById('slideWrap').style.display = 'none';
   document.getElementById('qbottom').style.display = 'none';
+  return;
+}
+
+// Jika set hanya berisi PDF (tanpa terms), arahkan ke pembaca PDF
+if(set.pdf && (!set.terms || set.terms.length === 0)){
+  sessionStorage.setItem('navInternal','1');
+  navigateTo(`pdf.html?id=${encodeURIComponent(setId)}`);
   return;
 }
 
