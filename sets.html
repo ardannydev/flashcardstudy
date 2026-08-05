@@ -34,12 +34,7 @@
   <main class="icontainer">
     <div class="sets-head">
       <h1 class="sets-title">Set kamu</h1>
-      <p class="sets-desc">Kelola semua flashcard kamu di satu halaman.<br>Mulai belajar atau hapus set yang tidak dibutuhkan.</p>
-    </div>
-
-    <div class="scat-bar" id="categoryBar">
-      <div class="scat-scroll" id="categoryList"></div>
-      <button class="scat-add" id="addCategoryBtn" data-title="Tambah kategori">+</button>
+      <p class="sets-desc">Kelola semua flashcard kamu di satu halaman.<br>Set akan otomatis dikelompokkan dan diurutkan berdasarkan judul.</p>
     </div>
 
     <div class="iset-toolbar">
@@ -48,14 +43,14 @@
         <input type="text" id="setFilterInput" class="iset-filter-input" placeholder="Cari set..." autocomplete="off">
       </div>
       <div class="iset-toolbar-right">
-        <button id="setSortBtn" class="iset-sort-btn">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="14" y2="6"/><line x1="4" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="10" y2="18"/><polyline points="16 18 20 14 20 10"/><line x1="18" y1="10" x2="20" y2="10"/></svg>
-          <span>A-Z</span>
+        <button id="expandAllBtn" class="iset-sort-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          <span>Buka semua</span>
         </button>
       </div>
     </div>
 
-    <div id="setGrid" class="iset-grid"></div>
+    <div id="setGrid" class="iset-grid iset-grid-groups"></div>
     <div id="emptyState" class="iempty" style="display:none;max-width:1080px;margin:0 auto;padding:0 28px 60px;">
       <a href="create.html" class="ibtn ibtn-primary" style="display:inline-block;margin-top:14px;">+ Buat set baru</a>
     </div>
@@ -68,13 +63,9 @@
     if(!requireLogin()) return;
     await syncSetsFromServer();
 
-    let activeCategory = 'Semua';
     let sortAsc = true;
-    let sortMode = 'title';
-
-    function getSetCategory(set){
-      return set.category || 'Umum';
-    }
+    let expandedGroups = new Set(JSON.parse(sessionStorage.getItem('sets_expanded') || '[]'));
+    let allExpanded = false;
 
     function formatFileSize(bytes){
       if(!bytes) return '—';
@@ -103,180 +94,193 @@
       return (String(title || '?').trim().charAt(0) || '?').toUpperCase();
     }
 
-    function renderCategories(){
-      const cats = getCategories();
-      const list = document.getElementById('categoryList');
-      list.innerHTML = '';
-      const all = document.createElement('button');
-      all.className = 'scat-pill' + (activeCategory === 'Semua' ? ' active' : '');
-      all.textContent = 'Semua';
-      all.dataset.cat = 'Semua';
-      all.addEventListener('click', () => { activeCategory = 'Semua'; renderCategories(); renderSets(); });
-      list.appendChild(all);
-      cats.forEach(c => {
-        const btn = document.createElement('button');
-        btn.className = 'scat-pill' + (activeCategory === c ? ' active' : '');
-        btn.textContent = c;
-        btn.dataset.cat = c;
-        btn.addEventListener('click', () => { activeCategory = c; renderCategories(); renderSets(); });
-        const ed = document.createElement('span');
-        ed.className = 'scat-edit';
-        ed.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-        ed.addEventListener('click', e => {
-          e.stopPropagation();
-          renameCategoryPrompt(c);
-        });
-        btn.appendChild(ed);
-        const del = document.createElement('span');
-        del.className = 'scat-del';
-        del.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
-        del.addEventListener('click', async e => {
-          e.stopPropagation();
-          const ok = await showConfirm(`Hapus kategori "${c}"? Set di dalamnya akan pindah ke "Umum".`, {confirmText:'Hapus', cancelText:'Batal'});
-          if(!ok) return;
-          const sets = getSets();
-          sets.forEach(s => { if(getSetCategory(s) === c) s.category = 'Umum'; });
-          saveSets(sets);
-          deleteCategory(c);
-          if(activeCategory === c) activeCategory = 'Semua';
-          renderCategories();
-          renderSets();
-        });
-        btn.appendChild(del);
-        list.appendChild(btn);
-      });
+    function persistExpanded(){
+      sessionStorage.setItem('sets_expanded', JSON.stringify([...expandedGroups]));
     }
 
-    async function renameCategoryPrompt(oldName){
-      const newName = await showPrompt('Ubah nama kategori:', oldName);
-      if(!newName || newName.trim() === oldName) return;
-      renameCategory(oldName, newName.trim());
-      if(activeCategory === oldName) activeCategory = newName.trim();
-      renderCategories();
-      renderSets();
+    function toggleGroup(key, force){
+      if(force === true) expandedGroups.add(key);
+      else if(force === false) expandedGroups.delete(key);
+      else {
+        if(expandedGroups.has(key)) expandedGroups.delete(key);
+        else expandedGroups.add(key);
+      }
+      persistExpanded();
+    }
+
+    function renderSetCard(set, showBadge){
+      const dueCount = getDueCount(set);
+      const isPdf = !!set.pdf;
+      const hasTerms = !!set.terms.length;
+      const total = set.terms.length;
+      const hue = isPdf ? 0 : setHue(set.id);
+      const mast = masteredCount(set);
+      const pct = total ? Math.round(mast / total * 100) : 0;
+      const initial = setInitial(set.title);
+      const previewChips = hasTerms
+        ? set.terms.slice(0, 2).map(term =>
+            `<span class="iterm-chip"><b>${escapeHtml(term.term)}</b> - ${escapeHtml(term.def)}</span>`
+          ).join('') + (total > 2 ? `<span class="iterm-chip iterm-more">+${total - 2} lainnya</span>` : '')
+        : '';
+      const progress = hasTerms ? `
+          <div class="iset-progress">
+            <div class="iset-progress-track"><div class="iset-progress-fill" style="width:${pct}%"></div></div>
+            <span class="iset-progress-num">${mast}/${total} dikuasai</span>
+          </div>` : '';
+      const pdfPreview = isPdf ? `
+          <div class="ipdf-preview">
+            <div class="ipdf-file">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
+              <div class="ipdf-file-meta">
+                <span class="ipdf-file-name">${escapeHtml(set.pdf.name || 'Dokumen.pdf')}</span>
+                <span class="ipdf-file-size">${formatFileSize(set.pdf.size)}</span>
+              </div>
+            </div>
+          </div>` : '';
+      const numBadge = showBadge && set._group && set._group.number !== null
+        ? `<span class="iset-setnum">${set._group.number}</span>`
+        : '';
+      return `
+        <div class="iset-card${isPdf ? ' iset-card-pdf' : ''}" data-id="${escapeHtml(set.id)}" style="--set-h:${hue}">
+          <div class="iset-card-head">
+            <span class="set-number" aria-hidden="true">${isPdf ? 'PDF' : (showBadge && set._group && set._group.number !== null ? set._group.number : initial)}</span>
+            <div class="set-title-area">
+              <h3 class="set-title">${escapeHtml(set.title)}</h3>
+              <div class="set-meta-row">
+                <div class="iset-card-meta">
+                  ${isPdf ? `<span class="iset-count">PDF${hasTerms ? ' + ' + total + ' kartu' : ''}</span>` : `<span class="iset-count">${total} kotoba</span>`}
+                  ${dueCount > 0 ? `<span class="iset-badge">${dueCount} jatuh tempo</span>` : ''}
+                </div>
+                ${set.desc ? `<p class="set-desc">${escapeHtml(set.desc)}</p>` : ''}
+              </div>
+            </div>
+          </div>
+          ${pdfPreview}
+          ${previewChips ? `<div class="iterm-preview">${previewChips}</div>` : ''}
+          ${progress}
+          <div class="iset-card-actions">
+            <div class="iset-card-actions-start">
+              ${isPdf ? `
+                <a class="ibtn ibtn-card-pdf" href="pdf.html?id=${set.id}" draggable="false">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                  Baca PDF
+                </a>
+                ${hasTerms ? `<a class="ibtn ibtn-card-outline" href="learn.html?id=${set.id}" draggable="false">Pelajari</a>` : ''}`
+              : `
+                <a class="ibtn ibtn-card-primary" href="learn.html?id=${set.id}" draggable="false">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  Pelajari
+                </a>
+                <a class="ibtn ibtn-card-outline" href="flashcard.html?id=${set.id}" draggable="false">
+                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  Flashcard
+                </a>`}
+            </div>
+            <div class="iset-card-actions-end">
+              <a class="ibtn ibtn-icon" href="create.html?id=${set.id}" draggable="false" data-title="Edit">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </a>
+              <button class="ibtn ibtn-icon ibtn-icon-danger" type="button" data-delete-id="${escapeHtml(set.id)}" data-title="Hapus">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+              <button class="ibtn ibtn-icon" type="button" disabled data-title="Fitur bagikan sedang dinonaktifkan">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function groupHue(name){
+      let h = 0;
+      const s = String(name || '');
+      for(let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+      return Math.abs(h) % 360;
     }
 
     function renderSets(filter){
-      let sets = getSets().slice();
-      if(activeCategory !== 'Semua') sets = sets.filter(s => getSetCategory(s) === activeCategory);
-      if(filter) sets = sets.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
-      const cmp = (a,b) => {
-        const r = a.title.localeCompare(b.title, undefined, {sensitivity:'base'});
-        return sortAsc ? r : -r;
-      };
-      sets.sort(cmp);
+      let rawSets = getSets().slice();
+      if(filter) rawSets = rawSets.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
+      const { groups, ungrouped } = groupAndSortSets(rawSets);
       const grid = document.getElementById('setGrid');
       const empty = document.getElementById('emptyState');
       grid.innerHTML = '';
-      if(sets.length === 0){
+      if(rawSets.length === 0){
         empty.style.display = 'block';
         return;
       }
       empty.style.display = 'none';
-            const allCats = getCategories();
-      grid.innerHTML = sets.map((set,index) => {
-        const dueCount = getDueCount(set);
-        const currentCat = getSetCategory(set);
-        const isPdf = !!set.pdf;
-        const hasTerms = !!set.terms.length;
-        const total = set.terms.length;
-        const hue = isPdf ? 0 : setHue(set.id);
-        const mast = masteredCount(set);
-        const pct = total ? Math.round(mast / total * 100) : 0;
-        const initial = setInitial(set.title);
-        const previewChips = hasTerms
-          ? set.terms.slice(0, 2).map(term =>
-              `<span class="iterm-chip"><b>${escapeHtml(term.term)}</b> - ${escapeHtml(term.def)}</span>`
-            ).join('') + (total > 2 ? `<span class="iterm-chip iterm-more">+${total - 2} lainnya</span>` : '')
-          : '';
-        const progress = hasTerms ? `
-            <div class="iset-progress">
-              <div class="iset-progress-track"><div class="iset-progress-fill" style="width:${pct}%"></div></div>
-              <span class="iset-progress-num">${mast}/${total} dikuasai</span>
-            </div>` : '';
-        const pdfPreview = isPdf ? `
-            <div class="ipdf-preview">
-              <div class="ipdf-file">
-                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M9 17h6"/></svg>
-                <div class="ipdf-file-meta">
-                  <span class="ipdf-file-name">${escapeHtml(set.pdf.name || 'Dokumen.pdf')}</span>
-                  <span class="ipdf-file-size">${formatFileSize(set.pdf.size)}</span>
-                </div>
-              </div>
-            </div>` : '';
-        return `
-          <div class="iset-card${isPdf ? ' iset-card-pdf' : ''}" data-id="${escapeHtml(set.id)}" style="--set-h:${hue}">
-            <div class="iset-card-head">
-              <span class="set-number" aria-hidden="true">${isPdf ? 'PDF' : initial}</span>
-              <div class="set-title-area">
-                <h3 class="set-title">${escapeHtml(set.title)}</h3>
-                <div class="set-meta-row">
-                  <div class="iset-card-meta">
-                    ${isPdf ? `<span class="iset-count">PDF${hasTerms ? ' + ' + total + ' kartu' : ''}</span>` : `<span class="iset-count">${total} kotoba</span>`}
-                    ${dueCount > 0 ? `<span class="iset-badge">${dueCount} jatuh tempo</span>` : ''}
-                  </div>
-                  <span class="set-cat-badge"><span class="set-cat-dot"></span>${escapeHtml(currentCat)}</span>
-                  ${set.desc ? `<p class="set-desc">${escapeHtml(set.desc)}</p>` : ''}
-                </div>
-              </div>
-            </div>
-            ${pdfPreview}
-            ${previewChips ? `<div class="iterm-preview">${previewChips}</div>` : ''}
-            ${progress}
-            <div class="iset-card-actions">
-              <div class="iset-card-actions-start">
-                ${isPdf ? `
-                  <a class="ibtn ibtn-card-pdf" href="pdf.html?id=${set.id}" draggable="false">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    Baca PDF
-                  </a>
-                  ${hasTerms ? `<a class="ibtn ibtn-card-outline" href="learn.html?id=${set.id}" draggable="false">Pelajari</a>` : ''}`
-                : `
-                  <a class="ibtn ibtn-card-primary" href="learn.html?id=${set.id}" draggable="false">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    Pelajari
-                  </a>
-                  <a class="ibtn ibtn-card-outline" href="flashcard.html?id=${set.id}" draggable="false">
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                    Flashcard
-                  </a>`}
-              </div>
-              <div class="iset-card-actions-end">
-                <div class="iset-catmove">
-                  <button class="iset-catmove-btn" data-title="Pindah kategori">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
-                  </button>
-                  <div class="iset-catmove-drop">
-                    ${allCats.filter(c => c !== currentCat).map(c =>
-                      `<button class="iset-catmove-opt" data-cat="${escapeHtml(c)}">${escapeHtml(c)}</button>`
-                    ).join('')}
-                  </div>
-                </div>
-                <a class="ibtn ibtn-icon" href="create.html?id=${set.id}" draggable="false" data-title="Edit">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                </a>
-                <button class="ibtn ibtn-icon ibtn-icon-danger" type="button" data-delete-id="${escapeHtml(set.id)}" data-title="Hapus">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
-                <button class="ibtn ibtn-icon" type="button" disabled data-title="Fitur bagikan sedang dinonaktifkan">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                </button>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
+      let parts = [];
 
+      groups.forEach((g, gidx) => {
+        const isOpen = expandedGroups.has(g.key);
+        const gh = groupHue(g.name);
+        parts.push(`
+          <div class="grp-card" data-grp-key="${escapeHtml(g.key)}" style="--grp-h:${gh}">
+            <button class="grp-head" type="button" data-grp-toggle="${escapeHtml(g.key)}" aria-expanded="${isOpen}">
+              <div class="grp-head-left">
+                <div class="grp-icon" style="background:linear-gradient(135deg,hsl(var(--grp-h) 82% 58%),hsl(calc(var(--grp-h) + 45) 82% 50%));">
+                  <span>${escapeHtml(setInitial(g.name))}</span>
+                </div>
+                <div class="grp-meta">
+                  <h3 class="grp-title">${escapeHtml(g.name)}</h3>
+                  <div class="grp-sub">
+                    <span class="grp-count">${g.itemCount} set</span>
+                    ${g.rangeDisplay ? `<span class="grp-range">No. ${escapeHtml(String(g.rangeDisplay))}</span>` : ''}
+                  </div>
+                </div>
+              </div>
+              <div class="grp-head-right">
+                <svg class="grp-chev" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </button>
+            <div class="grp-body" style="${isOpen ? '' : 'display:none'}">
+              <div class="grp-sets">
+                ${g.items.map(s => renderSetCard(s, true)).join('')}
+              </div>
+            </div>
+          </div>
+        `);
+      });
+
+      if(ungrouped.length > 0){
+        parts.push(`
+          <div class="grp-card grp-ungrouped" data-grp-key="__ungrouped__">
+            <button class="grp-head" type="button" data-grp-toggle="__ungrouped__" aria-expanded="${expandedGroups.has('__ungrouped__')}">
+              <div class="grp-head-left">
+                <div class="grp-icon grp-icon-other">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div class="grp-meta">
+                  <h3 class="grp-title">Lainnya</h3>
+                  <div class="grp-sub">
+                    <span class="grp-count">${ungrouped.length} set tanpa grup</span>
+                  </div>
+                </div>
+              </div>
+              <div class="grp-head-right">
+                <svg class="grp-chev" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+            </button>
+            <div class="grp-body" style="${expandedGroups.has('__ungrouped__') ? '' : 'display:none'}">
+              <div class="grp-sets">
+                ${ungrouped.map(s => renderSetCard(s, false)).join('')}
+              </div>
+            </div>
+          </div>
+        `);
+      }
+
+      grid.innerHTML = parts.join('');
     }
 
     document.getElementById('setGrid').addEventListener('click', e => {
       const btn = e.target.closest('[data-delete-id]');
-      if(btn) handleDelete(btn.dataset.deleteId);
-      const catOpt = e.target.closest('.iset-catmove-opt');
-      if(catOpt){
-        const card = catOpt.closest('.iset-card');
-        const setId = card.dataset.id;
-        const cat = catOpt.dataset.cat;
-        moveSetToCategory(setId, cat);
+      if(btn){ handleDelete(btn.dataset.deleteId); return; }
+      const tog = e.target.closest('[data-grp-toggle]');
+      if(tog){
+        const key = tog.dataset.grpToggle;
+        toggleGroup(key);
         renderSets(document.getElementById('setFilterInput').value);
       }
     });
@@ -287,20 +291,25 @@
       filterTimer = setTimeout(() => renderSets(e.target.value), 200);
     });
 
-    document.getElementById('setSortBtn').addEventListener('click', () => {
-      sortAsc = !sortAsc;
-      const btn = document.getElementById('setSortBtn');
-      btn.querySelector('span').textContent = sortAsc ? 'A-Z' : 'Z-A';
+    document.getElementById('expandAllBtn').addEventListener('click', () => {
+      allExpanded = !allExpanded;
+      const btn = document.getElementById('expandAllBtn');
+      const label = btn.querySelector('span');
+      const icon = btn.querySelector('svg');
+      if(allExpanded){
+        label.textContent = 'Tutup semua';
+        icon.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+        const rawSets = getSets();
+        const { groups, ungrouped } = groupAndSortSets(rawSets);
+        groups.forEach(g => expandedGroups.add(g.key));
+        if(ungrouped.length > 0) expandedGroups.add('__ungrouped__');
+      } else {
+        label.textContent = 'Buka semua';
+        icon.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
+        expandedGroups.clear();
+      }
+      persistExpanded();
       renderSets(document.getElementById('setFilterInput').value);
-    });
-
-    document.getElementById('addCategoryBtn').addEventListener('click', async () => {
-      const name = await showPrompt('Nama kategori baru:');
-      if(!name || !name.trim()) return;
-      addCategory(name.trim());
-      activeCategory = name.trim();
-      renderCategories();
-      renderSets();
     });
 
     function handleDelete(id){
@@ -320,7 +329,6 @@
         });
     }
 
-    renderCategories();
     renderSets();
   })();
   </script>

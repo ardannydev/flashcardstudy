@@ -38,17 +38,6 @@
 
       <div class="cmeta-row">
         <textarea aria-label="Deskripsi set" class="cfield-box cdesc-box" id="desc" placeholder="Tambahkan deskripsi..." rows="1"></textarea>
-        <div class="cmeta-right">
-          <div class="cmeta-select-wrap">
-            <label class="cmeta-label">Kategori</label>
-            <select id="catSelect" class="cmeta-select">
-              <option value="Umum">Umum</option>
-              <option value="Kotoba">Kotoba</option>
-              <option value="Bunpo">Bunpo</option>
-            </select>
-            <svg class="cmeta-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </div>
-        </div>
       </div>
 
       <div class="ctoolbar">
@@ -461,19 +450,10 @@ function parseBulk(){
 }
 
 // Load categories into select
-function loadCategories(){
-  const sel = document.getElementById('catSelect');
-  if(!sel) return;
-  const cats = getCategories();
-  const current = sel.value;
-  sel.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  sel.value = current;
-}
 
 async function handleSave(andPractice){
   const title = document.getElementById('title').value.trim();
   const desc = document.getElementById('desc').value.trim();
-  const category = document.getElementById('catSelect').value;
   const cleanTerms = rows
     .map(r => ({id: r.id, term: r.term.trim(), def: r.def.trim()}))
     .filter(r => r.term && r.def);
@@ -488,7 +468,7 @@ async function handleSave(andPractice){
     _review: t._review || { reps: 0, ease: 2.5, interval: 0, last: null, due: now }
   }));
 
-  const set = { id: setId, title, desc, category, terms: termsWithMeta, updatedAt: now };
+  const set = { id: setId, title, desc, terms: termsWithMeta, updatedAt: now };
   if(_pdfFile) set.pdf = _pdfFile;
 
   const saveBtn = document.querySelector('.ibtn-primary');
@@ -519,15 +499,12 @@ async function handleSave(andPractice){
 (async function init(){
   if(!requireLogin()) return;
 
-  loadCategories();
-
   function applyEditingSet(){
     if(!editingId) return;
     const set = getSet(editingId);
     if(set){
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
-      document.getElementById('catSelect').value = set.category || 'Umum';
       rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
       if(set.pdf) _pdfFile = set.pdf;
     }
