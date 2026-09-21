@@ -292,6 +292,7 @@ function onTouchStart(e, rid){
   document.body.appendChild(clone);
   touchDrag.clone = clone;
   row.classList.add('dragging');
+  document.addEventListener('touchmove', onTouchMove, {passive:false});
 }
 
 function onTouchMove(e){
@@ -318,6 +319,7 @@ function onTouchMove(e){
 function onTouchEnd(){
   if(!touchDrag.active) return;
   touchDrag.active = false;
+  document.removeEventListener('touchmove', onTouchMove);
   if(touchDrag.clone) touchDrag.clone.remove();
   document.querySelectorAll('.crow').forEach(el => {
     el.classList.remove('dragging');
@@ -334,7 +336,6 @@ function onTouchEnd(){
   touchDrag.currentOverIdx = -1;
 }
 
-document.addEventListener('touchmove', onTouchMove, {passive:false});
 document.addEventListener('touchend', onTouchEnd);
 
 // Auto-resize textarea
