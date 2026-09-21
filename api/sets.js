@@ -35,6 +35,7 @@ module.exports = async (req, res) => {
         id: String(t.id || '').slice(0, 64),
         term: String(t.term || '').slice(0, 1000),
         def: String(t.def || '').slice(0, 1000),
+        reading: t.reading ? String(t.reading).slice(0, 200) : undefined,
         _review: t._review && typeof t._review === 'object' ? {
           reps: Math.min(Number(t._review.reps) || 0, 9999),
           ease: Math.min(Math.max(Number(t._review.ease) || 2.5, 1.3), 5),

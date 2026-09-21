@@ -53,6 +53,10 @@
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             Import
           </button>
+          <button type="button" class="ibtn ibtn-outline" id="kanjiToggle" aria-expanded="false" aria-controls="kanjiBox">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+            Kanji
+          </button>
           <button type="button" class="ibtn ibtn-primary" onclick="handleSave(false)">Simpan</button>
           <button type="button" class="ibtn ibtn-ghost" onclick="handleSave(true)" title="Simpan & lanjut belajar">Simpan & Belajar</button>
         </div>
@@ -62,6 +66,16 @@
         <div class="cimport-grid">
           <textarea id="bulkText" placeholder="こうきょう → publik&#10;しせつ → fasilitas&#10;としょかん → perpustakaan"></textarea>
           <button class="cbtn cbtn-primary" onclick="parseBulk()">Proses</button>
+        </div>
+      </div>
+
+      <div class="cimport-box" id="kanjiBox">
+        <p style="margin:0 0 10px;color:#98a6d1;font-size:12px;line-height:1.6">
+          Format: <b style="color:#00D9FF">Kanji</b> → <b style="color:#8B5CF6">Hiragana</b> → <b style="color:#4de6ac">Arti</b> (tiap baris satu kosakata)
+        </p>
+        <div class="cimport-grid">
+          <textarea id="kanjiText" placeholder="食事 → しょくじ → makan&#10;勉強 → べんきょう → belajar&#10;学校 → がっこう → sekolah"></textarea>
+          <button class="cbtn cbtn-primary" onclick="parseKanjiBulk()">Proses</button>
         </div>
       </div>
 
@@ -105,8 +119,8 @@ let editingId = qs('id');
 let _saving = false;
 let _deletedStack = [];
 
-function addRow(term='', def=''){
-  rows.push({id: uid('row'), term, def});
+function addRow(term='', def='', reading=''){
+  rows.push({id: uid('row'), term, def, reading});
   renderRows();
   setTimeout(() => {
     const el = document.querySelector('.crow:last-child .cfield-term');
@@ -336,6 +350,13 @@ importToggle.addEventListener('click', () => {
   importToggle.setAttribute('aria-expanded', String(open));
 });
 
+const kanjiToggle = document.getElementById('kanjiToggle');
+kanjiToggle.addEventListener('click', () => {
+  const box = document.getElementById('kanjiBox');
+  const open = box.classList.toggle('open');
+  kanjiToggle.setAttribute('aria-expanded', String(open));
+});
+
 /* ---- PDF attachment ---- */
 let _pdfFile = null;
 
@@ -450,13 +471,73 @@ function parseBulk(){
   }
 }
 
+function parseKanjiBulk(){
+  const raw = document.getElementById('kanjiText').value;
+  const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const valid = [];
+  const skipped = [];
+
+  lines.forEach(line => {
+    const separators = [/\t/, /\s*→\s*/, /\s*\|>\s*/, /\s*\|\s*/];
+    let parts = null;
+    for(const sep of separators){
+      const split = line.split(sep).map(s => s.trim()).filter(Boolean);
+      if(split.length >= 3){
+        parts = split.slice(0, 3);
+        break;
+      }
+    }
+    if(!parts){
+      skipped.push(line);
+      return;
+    }
+    const [kanji, hiragana, arti] = parts;
+    if(!kanji || !arti){
+      skipped.push(line);
+      return;
+    }
+    valid.push({
+      id: uid('row'),
+      term: kanji,
+      def: arti,
+      reading: hiragana || ''
+    });
+  });
+
+  if(valid.length === 0){
+    createNotification('Tidak ada data yang berhasil diproses. Format: Kanji → Hiragana → Arti', 'error');
+    return;
+  }
+
+  const maxTerm = 50, maxDef = 150;
+  const accepted = [], tooLong = [];
+  valid.forEach(v => {
+    if(v.term.length > maxTerm || v.def.length > maxDef) tooLong.push(v);
+    else accepted.push(v);
+  });
+
+  rows = rows.filter(r => r.term.trim() || r.def.trim());
+  rows = rows.concat(accepted);
+  document.getElementById('kanjiText').value = '';
+  renderRows();
+
+  const totalSkipped = skipped.length + tooLong.length;
+  if(totalSkipped > 0 && accepted.length > 0){
+    createNotification(`${accepted.length} kanji ditambahkan. ${totalSkipped} baris dilewati.`, 'info');
+  } else if(accepted.length === 0){
+    createNotification('Tidak ada kanji yang berhasil diproses.', 'error');
+  } else {
+    createNotification(`${accepted.length} kanji berhasil ditambahkan.`, 'success');
+  }
+}
+
 // Load categories into select
 
 async function handleSave(andPractice){
   const title = document.getElementById('title').value.trim();
   const desc = document.getElementById('desc').value.trim();
   const cleanTerms = rows
-    .map(r => ({id: r.id, term: r.term.trim(), def: r.def.trim()}))
+    .map(r => ({id: r.id, term: r.term.trim(), def: r.def.trim(), reading: (r.reading || '').trim()}))
     .filter(r => r.term && r.def);
 
   if(!title){ createNotification('Judul set wajib diisi.', 'error'); return; }
@@ -465,7 +546,7 @@ async function handleSave(andPractice){
   const setId = editingId || uid('set');
   const now = Date.now();
   const termsWithMeta = cleanTerms.map(t => ({
-    id: t.id, term: t.term, def: t.def,
+    id: t.id, term: t.term, def: t.def, reading: t.reading || '',
     _review: t._review || { reps: 0, ease: 2.5, interval: 0, last: null, due: now }
   }));
 
@@ -507,7 +588,7 @@ async function handleSave(andPractice){
     if(set){
       document.getElementById('title').value = set.title;
       document.getElementById('desc').value = set.desc || '';
-      rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def}));
+      rows = set.terms.map(t => ({id: t.id || uid('row'), term: t.term, def: t.def, reading: t.reading || ''}));
       if(set.pdf && set.pdf.data) _pdfFile = set.pdf;
       else if(set.pdf) _pdfFile = await loadPdfForSet(editingId);
     }
@@ -557,7 +638,7 @@ async function handleSave(andPractice){
 })();
 
 Object.assign(window, {
-  addRow, removeRow, handleSave, parseBulk,
+  addRow, removeRow, handleSave, parseBulk, parseKanjiBulk,
   onFieldInput, onFieldKeydown, onTouchStart, onMouseDownStart
 });
 })();

@@ -55,7 +55,10 @@
               <button class="qstar" id="starBtnFront" title="Tandai" aria-label="Tandai bintang" aria-pressed="false">★</button>
             </div>
           </div>
-          <div class="qcard-body"><div class="qtext" id="cardTextFront"></div></div>
+          <div class="qcard-body">
+            <div class="qreading" id="cardReading"></div>
+            <div class="qtext" id="cardTextFront"></div>
+          </div>
           <div class="qflipbar">Klik kartu untuk membalik</div>
         </div>
 
@@ -213,6 +216,16 @@ function currentTerm(){
 
 function render(){
   const t = currentTerm();
+  const readingEl = document.getElementById('cardReading');
+  if(readingEl){
+    if(t.reading){
+      readingEl.textContent = t.reading;
+      readingEl.style.display = '';
+    } else {
+      readingEl.textContent = '';
+      readingEl.style.display = 'none';
+    }
+  }
   document.getElementById('cardTextFront').textContent = t.term;
   document.getElementById('cardTextBack').textContent = t.def;
   document.getElementById('counter').textContent = `${idx+1} / ${order.length}`;

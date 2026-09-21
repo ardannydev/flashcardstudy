@@ -193,6 +193,7 @@ function renderQuestion(){
           </button>
         </div>
         <div class="question-term">
+          ${(isTermToDef && current.reading) ? `<span style="display:block;color:#00D9FF;font-size:0.55em;font-weight:500;margin-bottom:6px;opacity:.85">${escapeHtml(current.reading)}</span>` : ''}
           ${escapeHtml(isTermToDef ? current.term : current.def)}
         </div>
         <div class="question-prompt">Pilih jawaban yang tepat</div>
@@ -212,7 +213,8 @@ function renderQuestion(){
   // Speaker button click listener
   document.getElementById('speakBtn').addEventListener('click', (e) => {
     e.preventDefault();
-    speakText(isTermToDef ? current.term : current.def);
+    const textToSpeak = (isTermToDef && current.reading) ? current.reading : (isTermToDef ? current.term : current.def);
+    speakText(textToSpeak);
   });
 
   // Don't know click listener
@@ -291,7 +293,7 @@ function handleAnswer(btn, current, choices){
     }
   });
   const isTermToDef = (qIndex % 2 === 0);
-  announce(isCorrect ? 'Benar' : `Salah. Jawaban yang benar: ${isTermToDef ? current.def : current.term}`);
+  announce(isCorrect ? 'Benar' : `Salah. Jawaban yang benar: ${isTermToDef ? (current.reading ? current.reading + ' — ' + current.def : current.def) : current.term}`);
 
   // Update SM-2 metadata: quality 5 for correct, 2 for wrong
   try{
