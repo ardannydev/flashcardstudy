@@ -376,7 +376,7 @@ async function getSetWithPdf(id){
 }
 function getDueCount(set){
   const now = Date.now();
-  return set.terms.filter(t => {
+  return (set.terms || []).filter(t => {
     if(!t._review) return true;
     return t._review.due <= now;
   }).length;
@@ -398,14 +398,24 @@ async function deleteSet(id){
   const next = getSets().filter(s => s.id !== id);
   return saveSets(next, { immediate: true });
 }
+const GROUP_KEYWORDS = 'BAB|CHAPTER|CH\\.?|BAGIAN|PART|LEVEL|UNIT|MODUL|MODULE|LATIHAN|LESSON|KOYUU|KOTOBANOMORI';
 const GROUP_NUMBER_PATTERNS = [
-  /(.*?)\s*(?:BAB|CHAPTER|CH|BAGIAN|PART|LEVEL|UNIT|MODUL|MODULE|LATIHAN|KOYUU|KOTOBANOMORI)\s*(\d+(?:\.\d+)?)\s*$/i,
   /(.*?)\s*[-_\s]\s*(\d+(?:\.\d+)?)\s*$/i,
   /(.*?)(\d+(?:\.\d+)?)\s*$/
 ];
 function extractGroupInfo(title){
   const clean = String(title || '').trim();
   if(!clean) return { groupKey: null, groupName: 'Lainnya', number: null, display: clean };
+  const kwMatch = clean.match(new RegExp('^\\s*(.*?)\\s*\\b(' + GROUP_KEYWORDS + ')\\b\\s*(?:NO\\.?)?\\s*(\\d+(?:\\.\\d+)?)\\b', 'i'));
+  if(kwMatch){
+    const rawPrefix = (kwMatch[1] || '').trim();
+    const prefix = rawPrefix.replace(/[\s\-_:]+$/g,'').trim();
+    const name = prefix || kwMatch[2].toUpperCase();
+    const num = parseFloat(kwMatch[3]);
+    if(!isNaN(num)){
+      return { groupKey: name.toUpperCase(), groupName: name, number: num, display: clean };
+    }
+  }
   for(const rx of GROUP_NUMBER_PATTERNS){
     const m = clean.match(rx);
     if(m){

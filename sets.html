@@ -37,6 +37,8 @@
       <p class="sets-desc">Kelola semua flashcard kamu di satu halaman.<br>Set akan otomatis dikelompokkan dan diurutkan berdasarkan judul.</p>
     </div>
 
+    <div class="sets-stats" id="setsStats"></div>
+
     <div class="iset-toolbar">
       <div class="iset-filter-wrap">
         <svg class="iset-filter-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -52,9 +54,22 @@
 
     <div id="setGrid" class="iset-grid iset-grid-groups"></div>
     <div id="emptyState" class="iempty" style="display:none;max-width:1080px;margin:0 auto;padding:0 28px 60px;">
-      <a href="create.html" class="ibtn ibtn-primary" style="display:inline-block;margin-top:14px;">+ Buat set baru</a>
     </div>
   </main>
+
+  <div class="share-overlay" id="shareOverlay" role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="share-card">
+      <h3 id="shareTitle">Bagikan set</h3>
+      <p class="share-sub">Salin link di bawah untuk membagikan set ini ke temanmu.</p>
+      <div class="share-link-row">
+        <input type="text" readonly class="share-link-input" id="shareLinkInput" placeholder="Menyiapkan link...">
+        <button type="button" class="share-copy-btn" id="shareCopyBtn" disabled>Salin</button>
+      </div>
+      <div class="share-actions">
+        <button type="button" class="btn btn-ghost" id="shareCloseBtn">Tutup</button>
+      </div>
+    </div>
+  </div>
 
 
   <script src="app.js"></script>
@@ -66,6 +81,7 @@
     let sortAsc = true;
     let expandedGroups = new Set(JSON.parse(sessionStorage.getItem('sets_expanded') || '[]'));
     let allExpanded = false;
+    let firstRender = true;
 
     function formatFileSize(bytes){
       if(!bytes) return '—';
@@ -111,8 +127,8 @@
     function renderSetCard(set, showBadge){
       const dueCount = getDueCount(set);
       const isPdf = !!set.pdf;
-      const hasTerms = !!set.terms.length;
-      const total = set.terms.length;
+      const hasTerms = (set.terms || []).length > 0;
+      const total = (set.terms || []).length;
       const hue = isPdf ? 0 : setHue(set.id);
       const mast = masteredCount(set);
       const pct = total ? Math.round(mast / total * 100) : 0;
@@ -182,7 +198,7 @@
               <button class="ibtn ibtn-icon ibtn-icon-danger" type="button" data-delete-id="${escapeHtml(set.id)}" data-title="Hapus">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
-              <button class="ibtn ibtn-icon" type="button" disabled data-title="Fitur bagikan sedang dinonaktifkan">
+              <button class="ibtn ibtn-icon" type="button" data-share-id="${escapeHtml(set.id)}" data-title="Bagikan">
                 <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               </button>
             </div>
@@ -197,6 +213,20 @@
       return Math.abs(h) % 360;
     }
 
+    function renderEmpty(filter){
+      const empty = document.getElementById('emptyState');
+      const q = (filter || '').trim();
+      const icon = q
+        ? '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+        : '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+      empty.innerHTML = `
+        <div class="iempty-icon">${icon}</div>
+        <h2>${q ? 'Tidak ada hasil' : 'Belum ada set'}</h2>
+        <p>${q ? 'Coba kata kunci lain atau buat set yang kamu cari.' : 'Buat set flashcard pertama kamu untuk mulai belajar.'}</p>
+        <a href="create.html" class="ibtn ibtn-primary">+ Buat set baru</a>`;
+      empty.style.display = 'block';
+    }
+
     function renderSets(filter){
       let rawSets = getSets().slice();
       if(filter) rawSets = rawSets.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()));
@@ -205,7 +235,7 @@
       const empty = document.getElementById('emptyState');
       grid.innerHTML = '';
       if(rawSets.length === 0){
-        empty.style.display = 'block';
+        renderEmpty(filter);
         return;
       }
       empty.style.display = 'none';
@@ -271,11 +301,18 @@
       }
 
       grid.innerHTML = parts.join('');
+      if(firstRender){
+        grid.classList.add('sets-anim');
+        firstRender = false;
+        setTimeout(() => grid.classList.remove('sets-anim'), 700);
+      }
     }
 
     const gridEl = document.getElementById('setGrid');
     if(gridEl){
       gridEl.addEventListener('click', e => {
+        const shareBtn = e.target.closest('[data-share-id]');
+        if(shareBtn){ openShare(shareBtn.dataset.shareId); return; }
         const btn = e.target.closest('[data-delete-id]');
         if(btn){ handleDelete(btn.dataset.deleteId); return; }
         const tog = e.target.closest('[data-grp-toggle]');
@@ -337,6 +374,119 @@
         });
     }
 
+    function computeStats(){
+      const all = getSets();
+      let totalSets = all.length, totalCards = 0, mastered = 0, due = 0;
+      all.forEach(s => {
+        const terms = s.terms || [];
+        totalCards += terms.length;
+        terms.forEach(t => {
+          const r = t._review;
+          if(r && r.reps > 0 && r.interval >= 21) mastered++;
+        });
+        due += getDueCount(s);
+      });
+      return [
+        { label: 'Total Set', value: totalSets, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' },
+        { label: 'Total Kartu', value: totalCards, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' },
+        { label: 'Jatuh Tempo', value: due, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+        { label: 'Dikuasai', value: mastered, icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' }
+      ];
+    }
+
+    function renderStats(){
+      const el = document.getElementById('setsStats');
+      if(!el) return;
+      const stats = computeStats();
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.innerHTML = stats.map((s, i) => `
+        <div class="sets-stat" data-c="${i}" style="--delay:${i * 70}ms">
+          <div class="sets-stat-icon">${s.icon}</div>
+          <div class="sets-stat-info">
+            <span class="sets-stat-num" data-target="${s.value}">0</span>
+            <span class="sets-stat-label">${s.label}</span>
+          </div>
+        </div>`).join('');
+      if(reduce){
+        el.querySelectorAll('.sets-stat-num').forEach(n => n.textContent = n.dataset.target);
+        return;
+      }
+      el.querySelectorAll('.sets-stat-num').forEach(num => {
+        const target = parseInt(num.dataset.target, 10);
+        if(target === 0) return;
+        const dur = 500;
+        const t0 = performance.now();
+        const step = now => {
+          const p = Math.min((now - t0) / dur, 1);
+          num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if(p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }
+
+    function buildShareUrl(setId){
+      return location.origin + '/share.html?id=' + encodeURIComponent(setId);
+    }
+
+    function openShare(setId){
+      const set = getSet(setId);
+      if(!set) return;
+      const overlay = document.getElementById('shareOverlay');
+      const input = document.getElementById('shareLinkInput');
+      const copyBtn = document.getElementById('shareCopyBtn');
+      input.value = '';
+      input.placeholder = 'Menyiapkan link...';
+      copyBtn.disabled = true;
+      copyBtn.textContent = 'Menyiapkan...';
+      overlay.classList.add('visible');
+      (async () => {
+        let url = buildShareUrl(setId);
+        if(!isLocalMode()){
+          try{
+            const res = await apiFetch('/api/share', { method: 'POST', body: JSON.stringify({ setId }) });
+            if(res.ok){
+              const d = await res.json();
+              if(d && d.shareUrl) url = location.origin + d.shareUrl;
+            }
+          }catch(e){}
+        }
+        input.value = url;
+        input.placeholder = '';
+        copyBtn.disabled = false;
+        copyBtn.textContent = 'Salin';
+        input.select();
+      })();
+    }
+
+    function closeShare(){
+      document.getElementById('shareOverlay').classList.remove('visible');
+    }
+
+    function copyShareLink(){
+      const input = document.getElementById('shareLinkInput');
+      const copyBtn = document.getElementById('shareCopyBtn');
+      if(copyBtn.disabled) return;
+      const done = () => {
+        copyBtn.textContent = 'Disalin!';
+        setTimeout(() => { copyBtn.textContent = 'Salin'; }, 1600);
+      };
+      const fallback = () => {
+        input.select();
+        input.setSelectionRange(0, 99999);
+        try{ document.execCommand('copy'); done(); }catch(e){}
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(input.value).then(done).catch(fallback);
+      } else fallback();
+    }
+
+    document.getElementById('shareCopyBtn').addEventListener('click', copyShareLink);
+    document.getElementById('shareCloseBtn').addEventListener('click', closeShare);
+    const shareOverlay = document.getElementById('shareOverlay');
+    shareOverlay.addEventListener('click', e => { if(e.target === shareOverlay) closeShare(); });
+
+    renderStats();
     renderSets();
   })();
   </script>
