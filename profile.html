@@ -37,7 +37,6 @@
       <div class="profile-blob b1"></div>
       <div class="profile-blob b2"></div>
       <div class="profile-blob b3"></div>
-      <div class="profile-blob b4"></div>
     </div>
     <div class="profile-banner"></div>
     <div class="profile-container">
@@ -164,10 +163,20 @@
     }
   });
 
-  document.getElementById('statSets').textContent = sets.length;
-  document.getElementById('statCards').textContent = totalCards;
-  document.getElementById('statMastered').textContent = mastered;
-  document.getElementById('statLearning').textContent = learning;
+  function animateCount(el, target){
+    if(!el) return;
+    if(target === 0 || matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent = target; return; }
+    const dur = 700, t0 = performance.now();
+    (function tick(now){
+      const t = Math.min((now - t0) / dur, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if(t < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  animateCount(document.getElementById('statSets'), sets.length);
+  animateCount(document.getElementById('statCards'), totalCards);
+  animateCount(document.getElementById('statMastered'), mastered);
+  animateCount(document.getElementById('statLearning'), learning);
   
   function renderAvatars(){
     const navBtn = document.getElementById('navProfileBtn');
