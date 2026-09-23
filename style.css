@@ -1810,3 +1810,71 @@ html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease
   .dark-theme .crow-body { gap: 0; }
 }
 
+/* ===== Fix layout presisi: halaman Set & Flashcard (iPhone + laptop) ===== */
+
+/* Set: grup/kartu tidak pernah meluber di layar sempit */
+.dark-theme .grp-sets{grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))}
+
+/* Set: toolbar tetap satu baris di iPhone */
+@media(max-width:560px){
+  .dark-theme .iset-toolbar{flex-wrap:nowrap;gap:8px}
+  .dark-theme .iset-filter-wrap{flex:1;min-width:0;max-width:none}
+  .dark-theme .iset-toolbar-right{flex-shrink:0}
+  .dark-theme .iset-sort-btn{white-space:nowrap}
+  .dark-theme .grp-head{padding:12px 14px}
+  .dark-theme .grp-icon{width:44px;height:44px;border-radius:14px;font-size:17px}
+  .dark-theme .grp-title{font-size:15px}
+  .dark-theme .grp-body{padding:0 14px 14px}
+  .dark-theme .grp-range{font-size:10px;padding:3px 8px}
+}
+
+/* Set: action kartu satu baris presisi (tanpa baris baru) di iPhone */
+@media(max-width:480px){
+  .dark-theme .iset-card-actions{flex-direction:row;flex-wrap:nowrap;align-items:center;gap:8px}
+  .dark-theme .iset-card-actions-start{flex:1;min-width:0;justify-content:flex-start;gap:6px}
+  .dark-theme .iset-card-actions-start .ibtn-card-primary,
+  .dark-theme .iset-card-actions-start .ibtn-card-outline,
+  .dark-theme .iset-card-actions-start .ibtn-card-pdf{flex:1 1 0;min-width:0;padding:8px 8px;justify-content:center}
+  .dark-theme .iset-card-actions-end{flex-shrink:0}
+}
+@media(max-width:370px){
+  .dark-theme .iset-card-actions{flex-direction:row;flex-wrap:nowrap;gap:6px}
+  .dark-theme .iset-card-actions-start .ibtn-card-primary,
+  .dark-theme .iset-card-actions-start .ibtn-card-outline,
+  .dark-theme .iset-card-actions-start .ibtn-card-pdf{font-size:11px;padding:7px 6px}
+  .dark-theme .iset-card-actions-end .ibtn-icon{width:28px;height:28px}
+  .dark-theme .iset-card-actions-end .ibtn-icon svg{width:13px;height:13px}
+}
+@media(max-width:340px){
+  .dark-theme .iset-card-actions-end .ibtn-icon{width:26px;height:26px}
+  .dark-theme .iset-card-actions-end .ibtn-icon svg{width:12px;height:12px}
+  .dark-theme .iset-card-actions-start .ibtn-card-primary,
+  .dark-theme .iset-card-actions-start .ibtn-card-outline,
+  .dark-theme .iset-card-actions-start .ibtn-card-pdf{padding:7px 5px}
+}
+
+/* Flashcard: semua konten termuat, tidak terpotong/meluber/wrap aneh */
+.dark-theme .qtitle-bar{flex-shrink:0}
+.dark-theme .qtitle-bar-text{flex:1;min-width:0;max-width:none;text-align:center;padding:0 100px 0 26px}
+.dark-theme .qcard-body{overflow:auto;overscroll-behavior:contain;scrollbar-width:none;-ms-overflow-style:none;min-height:0}
+.dark-theme .qcard-body::-webkit-scrollbar{display:none}
+.dark-theme .qcard-body .qtext{overflow-wrap:anywhere}
+.dark-theme .qresults{overflow-y:auto;overscroll-behavior:contain}
+.dark-theme .qresults-card{margin:auto}
+
+@media(min-width:901px){
+  .dark-theme .qscene{aspect-ratio:3/2;max-height:52vh}
+  .dark-theme .qcard-body .qtext{font-size:clamp(26px, 3vw, 52px)}
+}
+@media(max-width:767px){
+  .dark-theme .qtitle-bar-text{padding:0 86px 0 8px}
+}
+@media(max-width:480px){
+  .dark-theme .qtitle-bar{padding:14px 12px}
+  .dark-theme .qtitle-bar-text{font-size:clamp(14px, 3.6vw, 17px);padding:0 78px 0 6px}
+}
+@media(max-width:360px){
+  .dark-theme .qtitle-bar{padding:12px 10px}
+  .dark-theme .qtitle-bar-text{padding:0 70px 0 4px}
+}
+
