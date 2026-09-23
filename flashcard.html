@@ -202,6 +202,23 @@ let suppressClick = false;
 const DRAG_THRESHOLD = 80;
 let autoPlayTimer = null;
 
+// cache elemen yang sering dipakai (ringan: 1 lookup, tanpa ulangi getElementById)
+const $el = id => document.getElementById(id);
+const elFlip = $el('flipInner');
+const elFront = $el('cardFront');
+const elReading = $el('cardReading');
+const elFrontText = $el('cardTextFront');
+const elBackText = $el('cardTextBack');
+const elCounter = $el('counter');
+const elProgress = $el('progressFill');
+const elPrev = $el('prevBtn');
+const elNext = $el('nextBtn');
+
+// glow saat drag disatukan lewat rAF, tidak ditulis tiap event pointermove
+let glowRafId = 0;
+let glowColor = null;
+let glowIntensity = -1;
+
 const savedResults = JSON.parse(sessionStorage.getItem('qz_results'));
 if(savedResults && savedResults.total === set.terms.length){
   knowCount = savedResults.knowCount;
@@ -214,24 +231,29 @@ function currentTerm(){
   return set.terms.find(t => t.id === id);
 }
 
+const KANJI_RE = /[\u4e00-\u9fff]/;
 function render(){
   const t = currentTerm();
-  const readingEl = document.getElementById('cardReading');
-  if(readingEl){
-    if(t.reading){
-      readingEl.textContent = t.reading;
-      readingEl.style.display = '';
-    } else {
-      readingEl.textContent = '';
-      readingEl.style.display = 'none';
-    }
+  const isKanji = KANJI_RE.test(t.term);
+
+  // Kanji: cukup tampilkan kanji di depan; bacaan (romaji/hiragana) ikut di belakang bersama arti
+  if(t.reading && !isKanji){
+    elReading.textContent = t.reading;
+    elReading.style.display = '';
+  } else {
+    elReading.textContent = '';
+    elReading.style.display = 'none';
   }
-  document.getElementById('cardTextFront').textContent = t.term;
-  document.getElementById('cardTextBack').textContent = t.def;
-  document.getElementById('counter').textContent = `${idx+1} / ${order.length}`;
-  document.getElementById('progressFill').style.width = `${((idx+1)/order.length)*100}%`;
-  document.getElementById('prevBtn').disabled = idx === 0;
-  document.getElementById('nextBtn').disabled = idx === order.length - 1;
+  elFrontText.textContent = t.term;
+  if(isKanji && t.reading){
+    elBackText.innerHTML = `<span class="qback-reading">${escapeHtml(t.reading)}</span><span class="qback-def">${escapeHtml(t.def)}</span>`;
+  } else {
+    elBackText.textContent = t.def;
+  }
+  elCounter.textContent = `${idx+1} / ${order.length}`;
+  elProgress.style.width = `${((idx+1)/order.length)*100}%`;
+  elPrev.disabled = idx === 0;
+  elNext.disabled = idx === order.length - 1;
 
   // show star filter button (always visible except in track progress mode)
   document.getElementById('starFilterBtn').style.display = !trackProgress ? 'flex' : 'none';
@@ -256,22 +278,18 @@ function render(){
 }
 
 function applyFlipRotation(){
-  document.getElementById('flipInner').style.transform = `rotateX(${flipStep * 180}deg)`;
+  elFlip.style.transform = `rotateX(${flipStep * 180}deg)`;
 }
 function applyTransform(){
-  const front = document.getElementById('cardFront');
   if(trackProgress){
-    front.style.transform = `translateX(${dragX}px) translateY(${dragY}px)`;
+    elFront.style.transform = `translateX(${dragX}px) translateY(${dragY}px)`;
   } else {
-    front.style.transform = `translateX(${dragX}px)`;
+    elFront.style.transform = `translateX(${dragX}px)`;
   }
 }
 function resetFrontTransform(){
-  const front = document.getElementById('cardFront');
-  if(front){
-    front.style.transform = '';
-    front.style.opacity = '';
-  }
+  elFront.style.transform = '';
+  elFront.style.opacity = '';
 }
 function hexToRgba(hex, alpha){
   const r = parseInt(hex.slice(1,3), 16);
@@ -280,6 +298,9 @@ function hexToRgba(hex, alpha){
   return `rgba(${r},${g},${b},${alpha})`;
 }
 function setShellGlow(color, intensity){
+  if(color === glowColor && intensity === glowIntensity) return;
+  glowColor = color;
+  glowIntensity = intensity;
   document.querySelectorAll('.qshell-front, .qshell-back').forEach(el => {
     if(!color){
       el.style.borderColor = 'transparent';
@@ -289,6 +310,24 @@ function setShellGlow(color, intensity){
     const glowSize = Math.round(20 + intensity * 50);
     el.style.borderColor = hexToRgba(color, 0.3 + intensity * 0.7);
     el.style.boxShadow = `0 20px 50px rgba(0,0,0,.35), inset 0 0 ${Math.round(intensity * 30)}px ${hexToRgba(color, intensity * 0.3)}, 0 0 ${glowSize}px ${hexToRgba(color, 0.3 + intensity * 0.5)}`;
+  });
+}
+function scheduleGlow(){
+  if(glowRafId) return;
+  glowRafId = requestAnimationFrame(() => {
+    glowRafId = 0;
+    if(!dragging) return;
+    const dist = Math.sqrt(dragX * dragX + dragY * dragY);
+    const glowMax = Math.min(window.innerWidth, window.innerHeight) / 2.8;
+    const intensity = Math.min(dist / glowMax, 1);
+    let color = null;
+    if(Math.abs(dragX) > Math.abs(dragY)){
+      if(dragX < -15) color = '#ff9a4d';
+      else if(dragX > 15) color = '#4de6ac';
+    } else if(Math.abs(dragY) > 15){
+      color = '#ffffff';
+    }
+    setShellGlow(color, color ? intensity : 0);
   });
 }
 function flip(){
@@ -322,12 +361,10 @@ function bumpBadge(type){
 }
 
 function animateSwipeTransition(exitX, exitY, onMidpoint){
-  const front = document.getElementById('cardFront');
-  const flip = document.getElementById('flipInner');
-  flip.classList.add('swiping');
-  front.style.transition = 'transform .35s ease, opacity .35s ease';
-  front.style.opacity = '0';
-  front.style.transform = `translateX(${exitX}px) translateY(${exitY}px) rotateZ(${exitX/20}deg)`;
+  elFlip.classList.add('swiping');
+  elFront.style.transition = 'transform .35s ease, opacity .35s ease';
+  elFront.style.opacity = '0';
+  elFront.style.transform = `translateX(${exitX}px) translateY(${exitY}px) rotateZ(${exitX/20}deg)`;
 
   setTimeout(() => {
     onMidpoint();
@@ -336,28 +373,27 @@ function animateSwipeTransition(exitX, exitY, onMidpoint){
     dragX = 0;
     dragY = 0;
 
-    front.style.transition = 'none';
-    front.style.transform = `translateX(0px) translateY(0px)`;
-    front.style.opacity = '';
+    elFront.style.transition = 'none';
+    elFront.style.transform = `translateX(0px) translateY(0px)`;
+    elFront.style.opacity = '';
     setShellGlow(null, 0);
     applyFlipRotation();
-    if(document.getElementById('resultsScreen').style.display === 'none') render();
-    void front.offsetWidth;
+    if($el('resultsScreen').style.display === 'none') render();
+    void elFront.offsetWidth;
 
-    front.style.transition = 'transform .35s ease, opacity .35s ease';
-    front.style.opacity = '1';
+    elFront.style.transition = 'transform .35s ease, opacity .35s ease';
+    elFront.style.opacity = '1';
     setTimeout(() => {
-      front.style.transition = '';
-      flip.classList.remove('swiping');
+      elFront.style.transition = '';
+      elFlip.classList.remove('swiping');
     }, 360);
   }, 350);
 }
 
 function animateNavTransition(dir, onMidpoint){
-  const front = document.getElementById('cardFront');
-  front.style.transition = 'transform .25s ease-out, opacity .25s ease-out';
-  front.style.opacity = '0';
-  front.style.transform = `translateX(${dir*600}px)`;
+  elFront.style.transition = 'transform .25s ease-out, opacity .25s ease-out';
+  elFront.style.opacity = '0';
+  elFront.style.transform = `translateX(${dir*600}px)`;
 
   setTimeout(() => {
     onMidpoint();
@@ -366,16 +402,16 @@ function animateNavTransition(dir, onMidpoint){
     dragX = 0;
     dragY = 0;
 
-    front.style.transition = 'none';
-    front.style.transform = `translateX(${-dir*600}px)`;
+    elFront.style.transition = 'none';
+    elFront.style.transform = `translateX(${-dir*600}px)`;
     applyFlipRotation();
-    if(document.getElementById('resultsScreen').style.display === 'none') render();
-    void front.offsetWidth;
+    if($el('resultsScreen').style.display === 'none') render();
+    void elFront.offsetWidth;
 
-    front.style.transition = 'transform .25s ease-out, opacity .25s ease-out';
-    front.style.transform = 'translateX(0px)';
-    front.style.opacity = '1';
-    setTimeout(() => { front.style.transition = ''; }, 260);
+    elFront.style.transition = 'transform .25s ease-out, opacity .25s ease-out';
+    elFront.style.transform = 'translateX(0px)';
+    elFront.style.opacity = '1';
+    setTimeout(() => { elFront.style.transition = ''; }, 260);
   }, 250);
 }
 
@@ -409,13 +445,12 @@ function commitNav(dir){
 }
 
 function snapBack(){
-  const front = document.getElementById('cardFront');
-  front.style.transition = 'transform .3s ease, opacity .3s ease';
+  elFront.style.transition = 'transform .3s ease, opacity .3s ease';
   dragX = 0;
   dragY = 0;
   resetFrontTransform();
   setShellGlow(null, 0);
-  setTimeout(() => { front.style.transition = ''; }, 310);
+  setTimeout(() => { elFront.style.transition = ''; }, 310);
 }
 
 function showResults(){
@@ -521,40 +556,25 @@ function toggleStar(e){
   render();
 }
 
-document.getElementById('flipInner').addEventListener('pointerdown', (e) => {
+elFlip.addEventListener('pointerdown', (e) => {
   dragging = true;
   dragStartX = e.clientX;
   dragStartY = e.clientY;
-  const el = document.getElementById('flipInner');
-  el.classList.add('dragging');
-  el.setPointerCapture(e.pointerId);
+  elFlip.classList.add('dragging');
+  elFlip.setPointerCapture(e.pointerId);
 });
-document.getElementById('flipInner').addEventListener('pointermove', (e) => {
+elFlip.addEventListener('pointermove', (e) => {
   if(!dragging) return;
   dragX = e.clientX - dragStartX;
   dragY = e.clientY - dragStartY;
   if(Math.abs(dragX) > 5 || Math.abs(dragY) > 5) suppressClick = true;
   applyTransform();
-  if(trackProgress){
-    const dist = Math.sqrt(dragX * dragX + dragY * dragY);
-    const glowMax = Math.min(window.innerWidth, window.innerHeight) / 2.8;
-    const intensity = Math.min(dist / glowMax, 1);
-    if(Math.abs(dragX) > Math.abs(dragY)){
-      if(dragX < -15) setShellGlow('#ff9a4d', intensity);
-      else if(dragX > 15) setShellGlow('#4de6ac', intensity);
-      else setShellGlow(null, 0);
-    } else if(Math.abs(dragY) > 15){
-      setShellGlow('#ffffff', intensity);
-    } else {
-      setShellGlow(null, 0);
-    }
-  }
+  if(trackProgress) scheduleGlow();
 });
-document.getElementById('flipInner').addEventListener('pointerup', () => {
+elFlip.addEventListener('pointerup', () => {
   if(!dragging) return;
   dragging = false;
-  const el = document.getElementById('flipInner');
-  el.classList.remove('dragging');
+  elFlip.classList.remove('dragging');
   if(trackProgress){
     if(Math.abs(dragY) > Math.abs(dragX)){
       snapBack();
@@ -568,17 +588,14 @@ document.getElementById('flipInner').addEventListener('pointerup', () => {
     else snapBack();
   }
 });
-document.getElementById('flipInner').addEventListener('click', () => {
+elFlip.addEventListener('click', () => {
   if(suppressClick){ suppressClick = false; return; }
   flip();
 });
 // keyboard support for the flip area (Enter / Space)
-const flipEl = document.getElementById('flipInner');
-if(flipEl){
-  flipEl.addEventListener('keydown', (e) => {
-    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
-  });
-}
+elFlip.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
+});
 
 document.getElementById('prevBtn').addEventListener('click', () => goTo(idx-1));
 document.getElementById('nextBtn').addEventListener('click', () => goTo(idx+1));
