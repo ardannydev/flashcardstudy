@@ -188,23 +188,6 @@ function clearAuth(){
   _setsSynced = false;
   _userProfileCache = null;
 }
-// Helper untuk generate avatar unik per user tanpa request ke layanan eksternal.
-function getUserAvatarUrl(){
-  const username = getCurrentUser() || 'pengguna';
-  let hash = 0;
-  for(let i = 0; i < username.length; i++) hash = ((hash << 5) - hash + username.charCodeAt(i)) | 0;
-  const hue = Math.abs(hash) % 360;
-  const initial = (username.trim().charAt(0) || 'P').toUpperCase();
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="hsl(${hue} 78% 58%)"/><stop offset="1" stop-color="hsl(${(hue + 55) % 360} 78% 52%)"/></linearGradient></defs><rect width="120" height="120" rx="24" fill="url(#g)"/><circle cx="60" cy="47" r="22" fill="#fff" fill-opacity=".9"/><path d="M24 106c4-24 18-36 36-36s32 12 36 36" fill="#fff" fill-opacity=".9"/><text x="60" y="116" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#fff">${initial}</text></svg>`;
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-}
-function renderNavAvatar(){
-  var btn = document.getElementById('navProfileBtn');
-  if(btn && typeof getUserAvatarUrl === 'function'){
-    btn.innerHTML = '<img src="' + getUserAvatarUrl() + '" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">';
-  }
-}
-renderNavAvatar();
 // Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login & membatasi admin ke admin.html.
 function requireLogin(){
   if(!getToken()){
@@ -866,7 +849,6 @@ function logout(){
         if(currentDot && nextDot) nextDot.replaceWith(currentDot);
         document.body.appendChild(currentHeader);
         updateActiveNav(target);
-        renderNavAvatar();
       } else if(nextHeader){
         nextHeader.classList.add('nh-no-anim');
       }

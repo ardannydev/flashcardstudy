@@ -776,14 +776,7 @@ function handleFlashcardKeydown(e){
 }
 document.addEventListener('keydown', handleFlashcardKeydown);
 
-  // Render avatar profil di sidebar
-  function renderFcNavAvatar(){
-    const avatarEl = document.getElementById('fcNavAvatar');
-    if(avatarEl && typeof getUserAvatarUrl === 'function'){
-      avatarEl.innerHTML = `<img src="${getUserAvatarUrl()}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">`;
-    }
-  }
-  renderFcNavAvatar();
+  // Navigasi profil tanpa foto (ringan)
 
   window.__flashcardCleanup = () => {
     document.removeEventListener('keydown', handleFlashcardKeydown);

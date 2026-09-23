@@ -80,12 +80,12 @@ button, a, .choice, .iset-card-actions a, .iset-card-actions button{touch-action
 .dark-theme .header-actions .ibtn{padding:8px 10px !important;font-size:11px !important}}
 @media(max-width:400px){.dark-theme .header-actions .ibtn{padding:7px 9px !important;font-size:11px !important}}
 @media(max-width:360px){.dark-theme .header-actions .ibtn{padding:6px 8px !important;font-size:10px !important}}
-.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:rgba(255, 255, 255, .3);border:1px solid rgba(255, 255, 255, .2);border-radius:18px;margin:16px;box-shadow:0 8px 40px rgba(0, 0, 0, .3);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
+.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255, 255, 255, .28);border:1px solid rgba(255, 255, 255, .2);border-radius:16px;margin:16px;box-shadow:0 6px 24px rgba(0, 0, 0, .25);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
 .nh.nh-no-anim{animation:none}
 .spa-content-enter{animation:spaContentEnter .2s ease-out both}
 @keyframes spaContentEnter{from{opacity:0;transform:translateY(5px)}
 to{opacity:1;transform:translateY(0)}}
-.dark-theme .nh{background:rgba(11, 20, 38, .4);border-color:rgba(0, 217, 255, .3)}
+.dark-theme .nh{background:rgba(11, 20, 38, .55);border-color:rgba(0, 217, 255, .25)}
 .nh::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg, rgba(0, 217, 255, .1), transparent 50%, rgba(139, 92, 246, .1));pointer-events:none;z-index:-1}
 @keyframes nhSlideIn{from{transform:translateY(-100%);opacity:0}
 to{transform:translateY(0);opacity:1}}
@@ -98,7 +98,7 @@ to{transform:translateY(0);opacity:1}}
 .nh-nav-desktop{display:none}
 @media(min-width:768px){.nh-nav-desktop{display:flex;align-items:center}}
 .nh-nav-desktop, .nh-skew-wrap, .nh-skew-wrap a{user-select:none;-webkit-user-select:none}
-.nh-skew-wrap{display:flex;align-items:center;gap:4px;transform:skewX(-12deg);background:rgba(11, 20, 38, .2);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:6px;backdrop-filter:blur(4px);position:relative}
+.nh-skew-wrap{display:flex;align-items:center;gap:4px;transform:skewX(-12deg);background:rgba(11, 20, 38, .2);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:6px;position:relative}
 .nh-nav-dot{position:absolute;bottom:8px;height:5px;width:5px;border-radius:50%;background:#00D9FF;box-shadow:0 0 8px rgba(0, 217, 255, .6);transform:skewX(12deg);pointer-events:none;will-change:left;transition:left .38s cubic-bezier(.22, 1, .36, 1), opacity .22s;z-index:2}
 .nh-link{position:relative;padding:8px 16px;font-size:14px;font-weight:500;color:rgba(255, 255, 255, .5);text-decoration:none;white-space:nowrap;transform:skewX(12deg);border-radius:8px;transition:color .2s;z-index:1}
 .nh-link:hover{color:#fff}
@@ -112,25 +112,24 @@ to{transform:translateY(0);opacity:1}}
 .nh-btn-primary:hover{box-shadow:0 4px 24px rgba(0, 217, 255, .4);transform:translateY(-1px)}
 .nh-btn-ghost{background:transparent;color:rgba(255, 255, 255, .45)}
 .nh-btn-ghost:hover{color:#00D9FF;background:rgba(0, 217, 255, .08)}
-.nh-profile-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border:none;border-radius:10px;background:rgba(0, 217, 255, .08);border:1px solid rgba(0, 217, 255, .2);color:#00D9FF;cursor:pointer;text-decoration:none;transition:all .2s;touch-action:manipulation;overflow:hidden}
-.nh-profile-btn:hover{background:rgba(0, 217, 255, 0.144);box-shadow:0 0 20px rgba(0, 217, 255, .15)}
-.nh-profile-btn:active{transform:scale(.92)}
-.nh-profile-btn img{width:100%;height:100%;object-fit:cover;display:block}
+.nh-profile-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:none;border-radius:9px;background:transparent;color:#8892b5;cursor:pointer;text-decoration:none;transition:color .15s, background .15s, transform .1s;touch-action:manipulation}
+.nh-profile-btn:hover{color:#00D9FF;background:rgba(0, 217, 255, .08)}
+.nh-profile-btn:active{transform:scale(.9)}
 .nh-profile-btn svg{width:18px;height:18px;display:block}
-@media(min-width:768px){.nh-profile-btn{width:40px;height:40px;border-radius:11px}}
-@media(max-width:767px){.nh-profile-btn{width:34px;height:34px;border-radius:9px}}
-@media(max-width:480px){.nh-profile-btn{width:30px;height:30px;border-radius:8px}}
-@media(max-width:375px){.nh-profile-btn{width:26px;height:26px;border-radius:8px}}
+@media(min-width:768px){.nh-profile-btn{width:38px;height:38px;border-radius:11px}}
+@media(max-width:767px){.nh-profile-btn{width:32px;height:32px;border-radius:9px}}
+@media(max-width:480px){.nh-profile-btn{width:28px;height:28px;border-radius:8px}}
+@media(max-width:375px){.nh-profile-btn{width:25px;height:25px;border-radius:8px}}
 /* PROFILE — Liquid Glass (ringan: hindari backdrop-filter ganda & blur animasi) */
 .profile-layout {
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: calc(100vh - 92px);
+  min-height: calc(100vh - var(--nh-h));
   position: relative;
   background: var(--gbg);
 }
-@media(max-width:767px){ .profile-layout { min-height:calc(100vh - 76px); } }
+@media(max-width:767px){ .profile-layout { min-height:calc(100vh - var(--nh-h)); } }
 
 /* 3 blob gradien — animasi transform saja (GPU), blur dikurangi */
 .profile-blobs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
@@ -1809,6 +1808,14 @@ html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease
   .dark-theme .crow { padding: 12px 10px; border-radius: 12px; }
   .dark-theme .crow-body { gap: 0; }
 }
+
+/* ===== Navbar: ringan & tidak menindih konten (iPhone + desktop) ===== */
+:root{ --nh-h: 100px }
+@media(max-width:767px){ :root{ --nh-h: 88px } }
+@media(max-width:480px){ :root{ --nh-h: 82px } }
+@media(max-width:375px){ :root{ --nh-h: 76px } }
+/* Beri ruang di atas konten setinggi navbar melayang */
+body:has(.nh){ padding-top: var(--nh-h) }
 
 /* ===== Fix layout presisi: halaman Set & Flashcard (iPhone + laptop) ===== */
 
