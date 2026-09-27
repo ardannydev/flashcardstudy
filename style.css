@@ -48,7 +48,7 @@ button, a, .choice, .iset-card-actions a, .iset-card-actions button{touch-action
 @keyframes notifIn{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes notifOut{to{opacity:0;transform:translateY(-4px) scale(.96)}}
 .notification.removing{animation:notifOut .18s ease forwards}
-@media(max-width:480px){.notification-host{top:90px}
+@media(max-width:480px){.notification-host{top:calc(var(--nh-h) + 8px)}
 .notification{font-size:12px;padding:8px 16px;white-space:normal;text-align:center}}
 .confirm-overlay{position:fixed;inset:0;background:rgba(5, 8, 20, .8);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:10000;padding:24px;opacity:0;transition:opacity .2s ease}
 .confirm-overlay.visible{opacity:1}
@@ -80,7 +80,7 @@ button, a, .choice, .iset-card-actions a, .iset-card-actions button{touch-action
 .dark-theme .header-actions .ibtn{padding:8px 10px !important;font-size:11px !important}}
 @media(max-width:400px){.dark-theme .header-actions .ibtn{padding:7px 9px !important;font-size:11px !important}}
 @media(max-width:360px){.dark-theme .header-actions .ibtn{padding:6px 8px !important;font-size:10px !important}}
-.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255, 255, 255, .28);border:1px solid rgba(255, 255, 255, .2);border-radius:16px;margin:16px;box-shadow:0 6px 24px rgba(0, 0, 0, .25);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
+.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255, 255, 255, .28);border:1px solid rgba(255, 255, 255, .2);border-radius:0 0 16px 16px;margin:0;box-shadow:0 6px 24px rgba(0, 0, 0, .25);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
 .nh.nh-no-anim{animation:none}
 .spa-content-enter{animation:spaContentEnter .2s ease-out both}
 @keyframes spaContentEnter{from{opacity:0;transform:translateY(5px)}
@@ -416,27 +416,27 @@ to{transform:translateY(0);opacity:1}}
   gap: 8px;
   padding: 10px 20px;
 }
-body.dark-theme:has(.nh){padding-top:76px;display:flex;flex-direction:column;height:100vh;height:100dvh;overflow-y:auto}
-@media(min-width:768px){body.dark-theme:has(.nh){padding-top:92px}}
-@media(min-width:768px){.nh{margin:24px 32px;border-radius:20px}
+body.dark-theme:has(.nh){padding-top:var(--nh-h);display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
+@media(min-width:768px){.nh{margin:0;border-radius:0 0 20px 20px}
 .nh-inner{padding:10px 18px}
 .nh-logo{font-size:22px}
 .nh-skew-wrap{gap:6px;padding:5px}
 .nh-link{padding:9px 22px;font-size:14px}
 .nh-btn{padding:8px 20px;font-size:13px}}
-@media(max-width:767px){.nh{margin:16px;border-radius:16px}
+@media(max-width:767px){.nh{margin:0;border-radius:0 0 16px 16px}
 .nh-inner{padding:8px 14px}
 .nh-logo{font-size:17px}
 .nh-link{padding:6px 14px;font-size:12px;border-radius:7px}
 .nh-btn{font-size:12px;padding:7px 14px;border-radius:9px}
 .nh-actions{gap:6px}}
-@media(max-width:480px){.nh{margin:12px;border-radius:14px}
+@media(max-width:480px){.nh{margin:0;border-radius:0 0 14px 14px}
 .nh-inner{padding:6px 10px}
 .nh-logo{font-size:15px}
 .nh-link{padding:5px 10px;font-size:10px}
 .nh-btn{font-size:10px;padding:5px 10px;border-radius:8px}
-.nh-actions{gap:4px}
-body.dark-theme:has(.nh){padding-top:62px}}
+.nh-actions{gap:4px}}
+@media(max-width:375px){.nh-logo{font-size:14px}
+.nh-link{padding:4px 8px;font-size:10px}}
 .nh.nh-learn .nh-nav-desktop{display:flex}
 @media(max-width:767px){.nh.nh-learn .nh-logo{display:none}
 .nh.nh-learn .nh-profile-btn{display:none}
@@ -1269,7 +1269,7 @@ to{opacity:1;transform:translateY(0)}}
 .auth-field label{font-size:11px}
 .auth-field input{font-size:12px;padding:10px 11px}
 .auth-submit{font-size:12px;padding:10px 12px}}
-@media(max-width:480px){.notification-host{left:16px;right:16px;top:16px;max-width:calc(100vw - 32px)}
+@media(max-width:480px){.notification-host{left:16px;right:16px;top:calc(var(--nh-h) + 8px);max-width:calc(100vw - 32px)}
 .notification{padding:10px 12px;border-radius:8px;gap:10px}
 .notification-text{font-size:12px}
 .confirm-card{padding:20px 16px 16px;border-radius:16px}
@@ -1340,7 +1340,7 @@ to{opacity:1;transform:translateY(0)}}
 .auth-field label{font-size:10px}
 .auth-field input{font-size:11.5px;padding:9px 10px}
 .auth-submit{font-size:11.5px;padding:9px 10px}
-.notification-host{left:8px;right:8px;top:8px}
+.notification-host{left:8px;right:8px;top:calc(var(--nh-h) + 8px)}
 .notification{padding:8px 10px;border-radius:8px;gap:8px}
 .notification-text{font-size:11px}
 .confirm-card{padding:16px 14px 12px;border-radius:14px}
@@ -1479,7 +1479,7 @@ to{opacity:1;transform:translateY(0)}}
 .auth-field label{font-size:9px}
 .auth-field input{font-size:9px;padding:6px 7px;border-radius:10px}
 .auth-submit{font-size:10px;padding:7px 8px}
-.notification-host{left:4px;right:4px;top:4px;max-width:calc(100vw - 8px)}
+.notification-host{left:4px;right:4px;top:calc(var(--nh-h) + 6px);max-width:calc(100vw - 8px)}
 .notification{padding:6px 8px;border-radius:6px;gap:6px}
 .notification-text{font-size:10px}
 .confirm-card{padding:12px 10px 10px;border-radius:10px}
@@ -1487,10 +1487,10 @@ to{opacity:1;transform:translateY(0)}}
 .confirm-card-icon svg{width:16px;height:16px}
 .confirm-message{font-size:11px;margin-bottom:10px}
 .confirm-card .btn{min-width:70px;padding:7px 10px;font-size:10px;border-radius:8px}
-.nh{margin:8px;border-radius:12px}
+.nh{margin:0;border-radius:0 0 12px 12px}
 .nh-inner{padding:6px 8px}
 .nh-logo{font-size:12px}
-body.dark-theme:has(.nh){padding-top:52px}}
+body.dark-theme:has(.nh){padding-top:var(--nh-h)}}
 .report-overlay{position:fixed;inset:0;background:rgba(5, 8, 20, .8);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;padding:24px}
 .report-overlay.visible{opacity:1;pointer-events:all}
 .report-overlay.visible .report-card{transform:scale(1) translateY(0)}
@@ -1809,12 +1809,12 @@ html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease
   .dark-theme .crow-body { gap: 0; }
 }
 
-/* ===== Navbar: ringan & tidak menindih konten (iPhone + desktop) ===== */
-:root{ --nh-h: 100px }
-@media(max-width:767px){ :root{ --nh-h: 88px } }
-@media(max-width:480px){ :root{ --nh-h: 82px } }
-@media(max-width:375px){ :root{ --nh-h: 76px } }
-/* Beri ruang di atas konten setinggi navbar melayang */
+/* ===== Navbar: ringan & menempel di atas, konten bersih di bawahnya (iPhone + desktop) ===== */
+:root{ --nh-h: 62px }
+@media(max-width:767px){ :root{ --nh-h: 48px } }
+@media(max-width:480px){ :root{ --nh-h: 44px } }
+@media(max-width:375px){ :root{ --nh-h: 40px } }
+/* Beri ruang di atas konten setinggi navbar */
 body:has(.nh){ padding-top: var(--nh-h) }
 
 /* ===== Progres sesi: "Lanjut dari kartu ke-N" di kartu set ===== */
