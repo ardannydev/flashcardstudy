@@ -23,6 +23,7 @@
           <div class="nh-skew-wrap">
             <a href="index.html" class="nh-link" draggable="false">Beranda</a>
             <a href="sets.html" class="nh-link" draggable="false">Set</a>
+            <a href="tes.html" class="nh-link" draggable="false">Tes</a>
             <a href="create.html" class="nh-link" draggable="false">Buat</a>
             <span class="nh-nav-dot" id="navDot"></span>
           </div>
@@ -38,6 +39,7 @@
   </header>
 
   <main class="icontainer" id="app">
+    <div class="quiz-banner" id="quizBanner" style="display:none"></div>
     <div class="seg-wrap">
       <div class="seg-left"><span id="segLeftCount">0</span><span class="seg-label">Benar</span></div>
       <div class="seg-line-container" id="segLineContainer"></div>
@@ -54,12 +56,50 @@ if(!requireLogin()) return;
 await syncSetsFromServer();
 
 const setId = qs('id');
-const set = getSet(setId);
+const idsParam = (qs('ids') || '').trim();
+const nParam = parseInt(qs('n'), 10);
+const quizTitle = (qs('t') || 'Tes Kotoba');
 
-if(!set || set.terms.length < 2){
+const quizMode = !!idsParam;
+const pool = [];
+
+if(quizMode){
+  const seen = new Set();
+  const ids = idsParam.split(',').map(s => s.trim()).filter(Boolean);
+  ids.forEach(idk => {
+    const s = getSet(idk);
+    if(!s || !Array.isArray(s.terms)) return;
+    s.terms.forEach(t => {
+      if(seen.has(t.id)) return;
+      seen.add(t.id);
+      pool.push(Object.assign({}, t, { _setId: s.id }));
+    });
+  });
+  if(nParam > 0 && pool.length > nParam){
+    pool.sort((a,b) => (a.id < b.id ? -1 : 1));
+    pool.length = nParam;
+  }
+} else {
+  const s = getSet(setId);
+  if(s && Array.isArray(s.terms)) s.terms.forEach(t => pool.push(t));
+}
+
+if(pool.length < 2){
   document.getElementById('app').innerHTML =
-    '<div class="empty"><h2>Butuh minimal 2 kotoba</h2><p>Tambahkan lebih banyak kotoba ke set ini untuk memakai mode Pelajari.</p><a class="btn btn-primary" href="index.html" style="display:inline-block;margin-top:12px">Kembali ke beranda</a></div>';
+    '<div class="empty"><h2>Butuh minimal 2 kotoba</h2><p>' + (quizMode ? 'Bahan tes tidak mencukupi sesuai pilihanmu.' : 'Tambahkan lebih banyak kotoba ke set ini untuk memakai mode Pelajari.') + '</p><a class="btn btn-primary" href="' + (quizMode ? 'tes.html' : 'index.html') + '" style="display:inline-block;margin-top:12px">' + (quizMode ? 'Atur tes lagi' : 'Kembali ke beranda') + '</a></div>';
   throw new Error('not enough terms');
+}
+
+if(quizMode){
+  const banner = document.getElementById('quizBanner');
+  if(banner){
+    banner.style.display = 'flex';
+    banner.innerHTML =
+      '<span class="quiz-banner-badge">Tes</span>' +
+      '<span class="quiz-banner-title">' + escapeHtml(quizTitle) + '</span>' +
+      '<a class="quiz-banner-link" href="tes.html">Ubah soal</a>';
+  }
+  document.title = quizTitle + ' — FlashCardStudy';
 }
 
 // Pre-load voices for TTS
@@ -93,7 +133,7 @@ function speakText(text) {
   }
 }
 
-const SESSION_KEY = 'qz_learn_session_' + setId;
+const SESSION_KEY = 'qz_learn_session_' + (quizMode ? 'test_' + idsParam : setId);
 let queue = [];
 let qIndex = 0;
 let correctCount = 0;
@@ -101,11 +141,13 @@ let missed = [];
 let answered = false;
 
 function getQuizTerms() {
-  const now = Date.now();
-  set.terms.forEach(t => { try { ensureReviewMeta(t); } catch (e) {} });
+  if(quizMode) return shuffle(pool);
 
-  const due = set.terms.filter(t => t._review && t._review.due <= now);
-  const notDue = set.terms.filter(t => !(t._review && t._review.due <= now));
+  const now = Date.now();
+  pool.forEach(t => { try { ensureReviewMeta(t); } catch (e) {} });
+
+  const due = pool.filter(t => t._review && t._review.due <= now);
+  const notDue = pool.filter(t => !(t._review && t._review.due <= now));
 
   const dueShuffled = shuffle(due);
   const notDueShuffled = shuffle(notDue);
@@ -158,7 +200,7 @@ function retryMissed(missedTerms) {
 }
 
 function makeChoices(correctTerm){
-  const others = set.terms.filter(t => t.id !== correctTerm.id);
+  const others = pool.filter(t => t.id !== correctTerm.id);
   const distractors = shuffle(others).slice(0, Math.min(3, others.length));
   const choices = shuffle([correctTerm, ...distractors]);
   return choices;
@@ -300,7 +342,7 @@ function handleAnswer(btn, current, choices){
 
   // Update SM-2 metadata: quality 5 for correct, 2 for wrong
   try{
-    updateReviewForTerm(set.id, current.id, isCorrect ? 5 : 2);
+    updateReviewForTerm(current._setId || setId, current.id, isCorrect ? 5 : 2);
   }catch(e){ console.warn('SM2 update failed', e); }
 
   const nextBtn = document.getElementById('nextQBtn');
@@ -400,7 +442,7 @@ if(isRefresh && saved && saved.correctCount !== undefined){
   correctCount = saved.correctCount || 0;
   queue = getQuizTerms();
   qIndex = queue.length;
-  missed = (saved.missedIds || []).map(id => set.terms.find(t => t.id === id)).filter(Boolean);
+  missed = (saved.missedIds || []).map(id => pool.find(t => t.id === id)).filter(Boolean);
   renderSummary();
 } else {
   clearSessionState();

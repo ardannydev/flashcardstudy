@@ -850,7 +850,7 @@ function logout(){
 }
 
 (function(){
-  const spaPages = new Set(['index','sets','create','learn','profile','flashcard','share','login','admin','pdf']);
+  const spaPages = new Set(['index','sets','create','learn','tes','profile','flashcard','share','login','admin','pdf']);
   let navigationBusy = false;
 
   function isSpaUrl(url){
