@@ -35,7 +35,7 @@
     </div>
   </header>
 
-  <main class="icontainer">
+  <main class="icontainer ts-main">
     <div class="ts-hero">
       <h1 class="ts-title">Tes Kotoba</h1>
       <p class="ts-sub">Gabungkan bab mana pun, tentukan jumlah soalnya, lalu uji hafalanmu secara acak.</p>
@@ -112,6 +112,11 @@
     return g.minNum === g.maxNum ? String(g.minNum) : (g.minNum + '\u2013' + g.maxNum);
   }
 
+  function groupInitial(name){
+    const t = String(name || '').trim();
+    return t.charAt(0).toUpperCase() || '?';
+  }
+
   function renderGroups(){
     const grid = document.getElementById('babGrid');
     if(!groups.length && !ungrouped.length){
@@ -127,7 +132,7 @@
       el.style.setProperty('--grp-h', hue);
       el.innerHTML =
         '<button type="button" class="ts-bab-head" data-grp="' + escapeHtml(g.key) + '">' +
-          '<span class="ts-bab-icon"><span class="ts-bab-num">' + escapeHtml(groupRange(g) || g.name) + '</span></span>' +
+          '<span class="ts-bab-icon"><span class="ts-bab-num">' + escapeHtml(groupRange(g) || groupInitial(g.name)) + '</span></span>' +
           '<span class="ts-bab-meta">' +
             '<strong>' + escapeHtml(g.name) + '</strong>' +
             '<small>' + g.items.length + ' set · ' + groupKotoba(g.items) + ' kotoba</small>' +
@@ -203,7 +208,7 @@
 
     const babKeys = new Set(allSets.filter(x => selected.has(x.set.id)).map(x => x.groupKey)).size;
     const label = babKeys === 1 ? '1 bab' : babKeys + ' bab gabungan';
-    el.textContent = selected.size + ' set terpilih (' + label + ') · ' + pool + ' kotoba siap diuji.';
+    el.textContent = selected.size + ' set terpilih (' + label + ') · ' + pool + ' kotoba.';
     startBtn.disabled = pool < 2;
 
     if(pool < 2){
@@ -211,7 +216,7 @@
     } else {
       const n = chosenN();
       note.textContent = (n >= pool)
-        ? 'Seluruh ' + pool + ' kotoba akan diuji (urutan acak).'
+        ? 'Semua kotoba terpilih akan diuji (urutan acak).'
         : n + ' soal akan diambil acak dari ' + pool + ' kotoba.';
     }
   }
