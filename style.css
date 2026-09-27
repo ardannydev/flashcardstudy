@@ -80,7 +80,7 @@ button, a, .choice, .iset-card-actions a, .iset-card-actions button{touch-action
 .dark-theme .header-actions .ibtn{padding:8px 10px !important;font-size:11px !important}}
 @media(max-width:400px){.dark-theme .header-actions .ibtn{padding:7px 9px !important;font-size:11px !important}}
 @media(max-width:360px){.dark-theme .header-actions .ibtn{padding:6px 8px !important;font-size:10px !important}}
-.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255, 255, 255, .28);border:1px solid rgba(255, 255, 255, .2);border-radius:0 0 16px 16px;margin:0;box-shadow:0 6px 24px rgba(0, 0, 0, .25);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
+.nh{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(255, 255, 255, .28);border:1px solid rgba(255, 255, 255, .2);border-radius:16px;margin:16px;box-shadow:0 6px 24px rgba(0, 0, 0, .25);transform:translateZ(0);animation:nhSlideIn .5s ease-out}
 .nh.nh-no-anim{animation:none}
 .spa-content-enter{animation:spaContentEnter .2s ease-out both}
 @keyframes spaContentEnter{from{opacity:0;transform:translateY(5px)}
@@ -417,19 +417,19 @@ to{transform:translateY(0);opacity:1}}
   padding: 10px 20px;
 }
 body.dark-theme:has(.nh){padding-top:var(--nh-h);display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
-@media(min-width:768px){.nh{margin:0;border-radius:0 0 20px 20px}
+@media(min-width:768px){.nh{margin:24px 32px;border-radius:20px}
 .nh-inner{padding:10px 18px}
 .nh-logo{font-size:22px}
 .nh-skew-wrap{gap:6px;padding:5px}
 .nh-link{padding:9px 22px;font-size:14px}
 .nh-btn{padding:8px 20px;font-size:13px}}
-@media(max-width:767px){.nh{margin:0;border-radius:0 0 16px 16px}
+@media(max-width:767px){.nh{margin:16px;border-radius:16px}
 .nh-inner{padding:8px 14px}
 .nh-logo{font-size:17px}
 .nh-link{padding:6px 14px;font-size:12px;border-radius:7px}
 .nh-btn{font-size:12px;padding:7px 14px;border-radius:9px}
 .nh-actions{gap:6px}}
-@media(max-width:480px){.nh{margin:0;border-radius:0 0 14px 14px}
+@media(max-width:480px){.nh{margin:12px;border-radius:14px}
 .nh-inner{padding:6px 10px}
 .nh-logo{font-size:15px}
 .nh-link{padding:5px 10px;font-size:10px}
@@ -1487,7 +1487,7 @@ to{opacity:1;transform:translateY(0)}}
 .confirm-card-icon svg{width:16px;height:16px}
 .confirm-message{font-size:11px;margin-bottom:10px}
 .confirm-card .btn{min-width:70px;padding:7px 10px;font-size:10px;border-radius:8px}
-.nh{margin:0;border-radius:0 0 12px 12px}
+.nh{margin:8px;border-radius:12px}
 .nh-inner{padding:6px 8px}
 .nh-logo{font-size:12px}
 body.dark-theme:has(.nh){padding-top:var(--nh-h)}}
@@ -1810,10 +1810,10 @@ html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease
 }
 
 /* ===== Navbar: ringan & menempel di atas, konten bersih di bawahnya (iPhone + desktop) ===== */
-:root{ --nh-h: 62px }
-@media(max-width:767px){ :root{ --nh-h: 48px } }
-@media(max-width:480px){ :root{ --nh-h: 44px } }
-@media(max-width:375px){ :root{ --nh-h: 40px } }
+:root{ --nh-h: 100px }
+@media(max-width:767px){ :root{ --nh-h: 88px } }
+@media(max-width:480px){ :root{ --nh-h: 82px } }
+@media(max-width:375px){ :root{ --nh-h: 76px } }
 /* Beri ruang di atas konten setinggi navbar */
 body:has(.nh){ padding-top: var(--nh-h) }
 
