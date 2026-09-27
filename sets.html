@@ -118,6 +118,12 @@
       sessionStorage.setItem('sets_expanded', JSON.stringify([...expandedGroups]));
     }
 
+    function renderFixed(fn){
+      const y = window.scrollY || document.documentElement.scrollTop || 0;
+      fn();
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+
     function toggleGroup(key, force){
       if(force === true) expandedGroups.add(key);
       else if(force === false) expandedGroups.delete(key);
@@ -327,7 +333,16 @@
         if(tog){
           const key = tog.dataset.grpToggle;
           toggleGroup(key);
-          renderSets(document.getElementById('setFilterInput').value);
+          const open = expandedGroups.has(key);
+          let card = null;
+          gridEl.querySelectorAll('.grp-card').forEach(c => { if(c.dataset.grpKey === key) card = c; });
+          if(card){
+            const head = card.querySelector('.grp-head');
+            const body = card.querySelector('.grp-body');
+            if(head) head.setAttribute('aria-expanded', String(open));
+            if(body) body.style.display = open ? '' : 'none';
+          }
+          return;
         }
       });
     }
@@ -361,7 +376,7 @@
           expandedGroups.clear();
         }
         persistExpanded();
-        renderSets(document.getElementById('setFilterInput').value);
+        renderFixed(() => renderSets(document.getElementById('setFilterInput').value));
       });
     }
 
@@ -373,10 +388,10 @@
           if(!confirmed) return;
           try{
             await deleteSet(id);
-            renderSets(document.getElementById('setFilterInput').value);
+            renderFixed(() => renderSets(document.getElementById('setFilterInput').value));
             createNotification('Set berhasil dihapus.', 'success');
           }catch(e){
-            renderSets(document.getElementById('setFilterInput').value);
+            renderFixed(() => renderSets(document.getElementById('setFilterInput').value));
             createNotification('Set dihapus secara lokal, tapi gagal sinkron ke server.', 'error');
           }
         });
