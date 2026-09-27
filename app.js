@@ -364,6 +364,19 @@ function getDueCount(set){
     return t._review.due <= now;
   }).length;
 }
+// Posisi & progres sesi per set — untuk "lanjut dari kartu ke-N" di halaman set.
+function getSessionPos(setId){
+  try{
+    const p = JSON.parse(localStorage.getItem('qz_pos_' + setId) || 'null');
+    return p && typeof p === 'object' ? p : null;
+  }catch(e){ return null; }
+}
+function setSessionPos(setId, pos){
+  try{ localStorage.setItem('qz_pos_' + setId, JSON.stringify(pos)); }catch(e){}
+}
+function clearSessionPos(setId){
+  try{ localStorage.removeItem('qz_pos_' + setId); }catch(e){}
+}
 async function upsertSet(set){
   const sets = getSets();
   const i = sets.findIndex(s => s.id === set.id);

@@ -1817,6 +1817,43 @@ html:not(.spa-loading) body > .qcontainer{opacity:1;transition:opacity .15s ease
 /* Beri ruang di atas konten setinggi navbar melayang */
 body:has(.nh){ padding-top: var(--nh-h) }
 
+/* ===== Progres sesi: "Lanjut dari kartu ke-N" di kartu set ===== */
+.dark-theme .iset-session{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:#8b9eff;padding:10px 2px 0;border-top:1px dashed rgba(139,158,255,.18);margin-top:4px}
+.dark-theme .iset-session-dot{width:7px;height:7px;border-radius:50%;background:#00D9FF;box-shadow:0 0 8px rgba(0,217,255,.7);flex-shrink:0}
+
+/* ===== Mode perangkat lemah (kentang): matikan efek berat ===== */
+html.low-end *{animation:none!important;transition:none!important}
+html.low-end .nh,
+html.low-end .notification,
+html.low-end .confirm-overlay,
+html.low-end .report-overlay,
+html.low-end .share-overlay,
+html.low-end .dark-theme .fc-sidenav,
+html.low-end .dark-theme .qtitle-bar,
+html.low-end .dark-theme .qbottom-panel,
+html.low-end .dark-theme .qbadge,
+html.low-end .dark-theme .qtoggle,
+html.low-end .dark-theme .qinfo-btn,
+html.low-end .dark-theme .qarrow,
+html.low-end .dark-theme .qplay,
+html.low-end .dark-theme .qshuffle,
+html.low-end .dark-theme .cfixed-head,
+html.low-end .dark-theme .crow,
+html.low-end .dark-theme .cimport-box,
+html.low-end .dark-theme .hm-stat-card,
+html.low-end .dark-theme .hm-prog-item,
+html.low-end .dark-theme .auth-card,
+html.low-end .profile-header-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.low-end .profile-blob,
+html.low-end .hm-glow,
+html.low-end .dark-theme .nh::before,
+html.low-end .dark-theme .cwrap::before,
+html.low-end .dark-theme .qcard-bg-1,
+html.low-end .dark-theme .qcard-bg-2{display:none}
+html.low-end .nh,
+html.low-end .nh-link::before,
+html.low-end .dark-theme .ibtn-card-primary{filter:none}
+
 /* ===== Fix layout presisi: halaman Set & Flashcard (iPhone + laptop) ===== */
 
 /* Set: grup/kartu tidak pernah meluber di layar sempit */

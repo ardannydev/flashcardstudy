@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{if((navigator.deviceMemory&&navigator.deviceMemory<=4&&navigator.hardwareConcurrency<=8)||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('low-end')}catch(e){}</script>
 <meta name="description" content="Pelajari kartu flashcard dengan mode 3D flip dan swipe.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0e0b2e">
@@ -219,11 +220,55 @@ let glowRafId = 0;
 let glowColor = null;
 let glowIntensity = -1;
 
+// buffer progres review (SM-2) — dideklarasikan sebelum showResults() mungkin dipanggil
+let pendingReviews = [];
+let persistTimer = null;
+
 const savedResults = JSON.parse(sessionStorage.getItem('qz_results'));
 if(savedResults && savedResults.total === set.terms.length){
   knowCount = savedResults.knowCount;
   learningCount = savedResults.learningCount;
   showResults();
+}
+
+// Resume: lanjut dari kartu sesi sebelumnya (kalau belum selesai)
+const savedPos = getSessionPos(setId);
+if(savedPos && !savedResults && savedPos.total === order.length && order.length > 0){
+  const pi = order.indexOf(savedPos.id);
+  if(pi > 0){
+    idx = pi;
+    createNotification('Lanjut dari kartu ' + (pi+1) + ' dari ' + order.length, 'info', 2200);
+  }
+}
+
+// Simpan progres review (SM-2) per kartu, lalu sinkronkan sekaligus (ringan, batched).
+function commitReview(action, termId){
+  const set = getSet(setId);
+  const term = set && set.terms.find(t => t.id === termId);
+  if(!term) return;
+  ensureReviewMeta(term);
+  sm2Update(term._review, action === 'know' ? 5 : 2);
+  pendingReviews.push(termId);
+  if(persistTimer) clearTimeout(persistTimer);
+  persistTimer = setTimeout(flushReviews, 600);
+}
+function flushReviews(){
+  if(persistTimer){ clearTimeout(persistTimer); persistTimer = null; }
+  if(!pendingReviews.length) return;
+  pendingReviews = [];
+  const set = getSet(setId);
+  if(set) upsertSet(set).catch(() => {});
+}
+window.addEventListener('beforeunload', flushReviews);
+
+let lastPosKey = '';
+function savePosition(){
+  const cid = currentTerm();
+  if(!cid) return;
+  const key = cid.id + ':' + order.length;
+  if(key === lastPosKey) return;
+  lastPosKey = key;
+  setSessionPos(setId, { id: cid.id, idx, total: order.length, ts: Date.now() });
 }
 
 function currentTerm(){
@@ -275,6 +320,7 @@ function render(){
   document.getElementById('starBtnBack').classList.toggle('active', isStarred);
   document.getElementById('starBtnFront').setAttribute('aria-pressed', isStarred);
   document.getElementById('starBtnBack').setAttribute('aria-pressed', isStarred);
+  savePosition();
 }
 
 function applyFlipRotation(){
@@ -314,6 +360,7 @@ function setShellGlow(color, intensity){
 }
 function scheduleGlow(){
   if(glowRafId) return;
+  if(document.documentElement.classList.contains('low-end')) return;
   glowRafId = requestAnimationFrame(() => {
     glowRafId = 0;
     if(!dragging) return;
@@ -424,6 +471,7 @@ function commitSwipe(action){
   animateSwipeTransition(useX ? exitX : 0, useX ? 0 : exitY, () => {
     history.push({idx, action});
     swipedIds.add(order[idx]);
+    commitReview(action, order[idx]);
     if(action === 'know'){ knowCount++; bumpBadge('know'); }
     else { learningCount++; bumpBadge('learning'); }
     announce(action === 'know' ? 'Ditandai: Tahu' : 'Ditandai: Masih dipelajari');
@@ -493,6 +541,8 @@ function showResults(){
   document.getElementById('starFilterBtn').style.display = 'flex';
   document.querySelector('.qtoggle-wrap').style.display = 'none';
   trackProgress = false;
+  flushReviews();
+  clearSessionPos(setId);
   sessionStorage.setItem('qz_results', JSON.stringify({ knowCount, learningCount, total }));
 }
 
@@ -779,6 +829,7 @@ document.addEventListener('keydown', handleFlashcardKeydown);
   // Navigasi profil tanpa foto (ringan)
 
   window.__flashcardCleanup = () => {
+    flushReviews();
     document.removeEventListener('keydown', handleFlashcardKeydown);
   };
 

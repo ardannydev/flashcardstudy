@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>try{if((navigator.deviceMemory&&navigator.deviceMemory<=4&&navigator.hardwareConcurrency<=8)||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('low-end')}catch(e){}</script>
   <meta name="description" content="Kelola semua set flashcard kamu di satu halaman.">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0B1426">
@@ -144,6 +145,9 @@
             <div class="iset-progress-track"><div class="iset-progress-fill" style="width:${pct}%"></div></div>
             <span class="iset-progress-num">${mast}/${total} dikuasai</span>
           </div>` : '';
+      const sPos = getSessionPos(set.id);
+      const resume = !isPdf && sPos && sPos.total === total && sPos.idx > 0 && (Date.now() - (sPos.ts || 0) < 86400000)
+        ? `<div class="iset-session"><span class="iset-session-dot"></span>Lanjut dari kartu ${sPos.idx+1}/${total}</div>` : '';
       const pdfPreview = isPdf ? `
           <div class="ipdf-preview">
             <div class="ipdf-file">
@@ -175,6 +179,7 @@
           ${pdfPreview}
           ${previewChips ? `<div class="iterm-preview">${previewChips}</div>` : ''}
           ${progress}
+          ${resume}
           <div class="iset-card-actions">
             <div class="iset-card-actions-start">
               ${isPdf ? `
