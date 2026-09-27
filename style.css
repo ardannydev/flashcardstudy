@@ -1922,3 +1922,158 @@ html.low-end .dark-theme .ibtn-card-primary{filter:none}
   .dark-theme .qtitle-bar-text{padding:0 70px 0 4px}
 }
 
+/* ============================================================
+   TEMA GREY GELAP — body.dark-theme.grey-theme
+   Permukaan netral abu-abu, tanpa gradasi ungu/navy.
+   ============================================================ */
+body.dark-theme.grey-theme{background:#14161A;background-image:linear-gradient(170deg,#171A20 0%,#1C2026 55%,#14161A 100%);color:#E8EAF0}
+html:has(body.dark-theme.grey-theme.flashcard-page){background:#14161A}
+body.dark-theme.grey-theme.flashcard-page{background:#14161A;background-image:linear-gradient(170deg,#171A20 0%,#1C2026 55%,#14161A 100%)}
+
+/* Navbar */
+body.dark-theme.grey-theme .nh{background:rgba(24,28,35,.74);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .nh::before{background:linear-gradient(90deg,rgba(140,152,170,.14),transparent 50%,rgba(140,152,170,.14))}
+body.dark-theme.grey-theme .nh-skew-wrap{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .nh-link{color:rgba(232,234,240,.5)}
+body.dark-theme.grey-theme .nh-link:hover{color:#fff}
+body.dark-theme.grey-theme .nh-link.active{color:#00D9FF;background:rgba(0,217,255,.1)}
+body.dark-theme.grey-theme .nh-profile-btn{color:#828A96}
+body.dark-theme.grey-theme .nh-btn-ghost{color:rgba(232,234,240,.5)}
+
+/* Teks sekunder & muted → abu-abu netral */
+body.dark-theme.grey-theme .sets-desc,
+body.dark-theme.grey-theme .section-sub,
+body.dark-theme.grey-theme .iset-card p,
+body.dark-theme.grey-theme .iset-progress-num,
+body.dark-theme.grey-theme .grp-count,
+body.dark-theme.grey-theme .iterm-more,
+body.dark-theme.grey-theme .iset-filter-icon,
+body.dark-theme.grey-theme .grp-chev,
+body.dark-theme.grey-theme .iset-sort-btn,
+body.dark-theme.grey-theme .ibtn-icon,
+body.dark-theme.grey-theme .qresults-btn-ghost,
+body.dark-theme.grey-theme .qtitle-bar-label,
+body.dark-theme.grey-theme .iset-session{color:#828A96}
+body.dark-theme.grey-theme .ibtn-icon:hover{background:rgba(255,255,255,.1);color:#fff}
+body.dark-theme.grey-theme .ibtn-icon[data-title]::after{background:rgba(30,34,42,.94);border-color:rgba(255,255,255,.08)}
+
+/* Filter & tombol toolbar Set */
+body.dark-theme.grey-theme .iset-filter-input,
+body.dark-theme.grey-theme .iset-sort-btn{background:#1C2026;border-color:#2E333D;color:#D9DDE4}
+body.dark-theme.grey-theme .iset-filter-input::placeholder{color:#6F7682}
+body.dark-theme.grey-theme .iset-filter-input:focus{border-color:rgba(0,217,255,.45)}
+body.dark-theme.grey-theme .iset-sort-btn:hover{background:rgba(0,217,255,.06);border-color:rgba(0,217,255,.3);color:#00D9FF}
+body.dark-theme.grey-theme .iterm-chip{background:#262B34;color:#D9DDE4;border-color:#313742}
+body.dark-theme.grey-theme .grp-card{background:rgba(255,255,255,.03)}
+body.dark-theme.grey-theme .grp-icon-other{background:#262B34;border-color:#343A45;color:#9AA3B2}
+
+/* Flashcard: panel, kartu, tombol bawah */
+body.dark-theme.grey-theme .fc-sidenav{background:rgba(24,28,35,.85);border-color:rgba(255,255,255,.09)}
+body.dark-theme.grey-theme .fc-sidenav:not(.expanded) .fc-nav-link::before,
+body.dark-theme.grey-theme .fc-sidenav:not(.expanded) .fc-side-btn::before{background:rgba(30,34,42,.94);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .qtitle-bar,
+body.dark-theme.grey-theme .qbottom-panel{background:rgba(22,26,32,.72);border-color:rgba(255,255,255,.06)}
+body.dark-theme.grey-theme .qcard-shell{background:#232832}
+body.dark-theme.grey-theme .qflipbar{background:#31363F;color:#fff}
+body.dark-theme.grey-theme .qshell-back .qflipbar{background:#C4453C}
+body.dark-theme.grey-theme .qtoggle,
+body.dark-theme.grey-theme .qinfo-btn,
+body.dark-theme.grey-theme .qarrow,
+body.dark-theme.grey-theme .qplay,
+body.dark-theme.grey-theme .qshuffle{background:rgba(20,23,28,.72);border-color:rgba(255,255,255,.08);color:#D6DAE2}
+body.dark-theme.grey-theme .qinfo-btn{color:#828A96}
+body.dark-theme.grey-theme .qbottom [data-title]::after,
+body.dark-theme.grey-theme .qtitle-bar .qtitle-star-filter::after{background:rgba(30,34,42,.94);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .qtitle-bar-text{color:#F2F4F8}
+
+/* Quiz — Belajar (learn) */
+body.dark-theme.grey-theme .question-card{background:#21242C;border-color:#343A45}
+body.dark-theme.grey-theme .choice{background:#272B34;border-color:rgba(255,255,255,.22)}
+body.dark-theme.grey-theme .choice:hover{background:#2E333D;border-color:rgba(255,255,255,.45)}
+body.dark-theme.grey-theme .question-term{color:#fff}
+body.dark-theme.grey-theme .question-prompt,
+body.dark-theme.grey-theme .question-footer,
+body.dark-theme.grey-theme .question-footer .dont-know{color:#8A929E}
+body.dark-theme.grey-theme .summary-stat{background:rgba(255,255,255,.04)}
+
+/* Halaman index (hero & progress) */
+body.dark-theme.grey-theme .hm-glow{background:radial-gradient(ellipse,rgba(140,155,175,.14) 0%,rgba(140,155,175,.05) 40%,transparent 70%)}
+body.dark-theme.grey-theme .hm-desc{color:rgba(235,238,245,.72)}
+body.dark-theme.grey-theme .hm-stat-card{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+body.dark-theme.grey-theme .hm-stat-card::before{background:linear-gradient(135deg,rgba(255,255,255,.045),transparent 60%)}
+body.dark-theme.grey-theme .hm-stat-label{color:rgba(235,238,245,.42)}
+body.dark-theme.grey-theme .hm-prog-item{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07)}
+body.dark-theme.grey-theme .hm-prog-label{color:rgba(235,238,245,.6)}
+body.dark-theme.grey-theme .hm-prog-count{color:rgba(235,238,245,.3)}
+body.dark-theme.grey-theme .hm-section-sub{color:rgba(235,238,245,.45)}
+
+/* Halaman Buat (create) */
+body.dark-theme.grey-theme .cfixed-head{background:rgba(23,27,34,.62);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .cwrap::before{background:radial-gradient(ellipse at top,rgba(160,175,200,.1),transparent 70%);filter:blur(40px)}
+body.dark-theme.grey-theme .cimport-box{background:rgba(23,27,34,.85);border-color:rgba(0,217,255,.15)}
+body.dark-theme.grey-theme .crow{background:#20242B;border-color:rgba(255,255,255,.07)}
+body.dark-theme.grey-theme .crow:hover{background:#242934;border-color:rgba(139,92,246,.35)}
+body.dark-theme.grey-theme .ccount{color:#8A929E;background:rgba(255,255,255,.05)}
+body.dark-theme.grey-theme .crow-num{color:#8A929E}
+body.dark-theme.grey-theme .crow-handle,
+body.dark-theme.grey-theme .crow-del{color:#828A96}
+body.dark-theme.grey-theme .cimport-grid textarea{background:#1A1E24;border-color:#2E333D;color:#fff}
+body.dark-theme.grey-theme .cfield-box{background:rgba(255,255,255,.03);border-bottom-color:rgba(255,255,255,.12)}
+
+/* Halaman Profil */
+body.dark-theme.grey-theme .profile-layout{background:linear-gradient(170deg,#16181D,#111317)}
+body.dark-theme.grey-theme .profile-blob.b1{background:radial-gradient(circle,rgba(160,175,200,.28),transparent 70%)}
+body.dark-theme.grey-theme .profile-blob.b2{background:radial-gradient(circle,rgba(120,130,150,.24),transparent 70%)}
+body.dark-theme.grey-theme .profile-blob.b3{background:radial-gradient(circle,rgba(200,210,225,.16),transparent 70%)}
+body.dark-theme.grey-theme .profile-banner{background:radial-gradient(600px 300px at 12% -30%,rgba(0,217,255,.12),transparent 70%),radial-gradient(560px 300px at 88% -20%,rgba(255,255,255,.05),transparent 70%),linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 50%,transparent 58%),#181B21}
+body.dark-theme.grey-theme .profile-header-card{background:linear-gradient(165deg,rgba(255,255,255,.09),rgba(255,255,255,.03) 55%,rgba(255,255,255,.05));border-color:rgba(255,255,255,.12)}
+body.dark-theme.grey-theme .profile-header-card::before{background:linear-gradient(90deg,#00D9FF,#5A6B8C 55%,transparent)}
+body.dark-theme.grey-theme .profile-avatar{background:rgba(24,28,35,.88)}
+body.dark-theme.grey-theme .profile-joined{color:#8A929E}
+body.dark-theme.grey-theme .p-stat-box{background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border-color:rgba(255,255,255,.09)}
+body.dark-theme.grey-theme .p-stat-num{background:linear-gradient(135deg,#fff,#CFD3DE);-webkit-background-clip:text;background-clip:text}
+body.dark-theme.grey-theme .p-stat-label{color:#828A96}
+
+/* Halaman login */
+body.dark-theme.grey-theme .auth-card{background:rgba(28,32,40,.92);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .auth-field label{color:#A8AEB9}
+body.dark-theme.grey-theme .auth-field input{background:#1C2026;color:#fff}
+body.dark-theme.grey-theme .auth-tab{color:#8A929E}
+body.dark-theme.grey-theme .auth-sub{color:#8A929E}
+
+/* Modal & notifikasi */
+body.dark-theme.grey-theme .notification{background:rgba(32,36,44,.95);border-color:rgba(255,255,255,.1);color:#E8EAF0}
+body.dark-theme.grey-theme .confirm-card{background:linear-gradient(160deg,rgba(38,42,50,.97),rgba(30,34,42,.97));border-color:rgba(255,255,255,.1)}
+body.dark-theme.grey-theme .confirm-cancel{background:rgba(255,255,255,.06);color:#A8AEB9;border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .confirm-message{color:#D9DDE4}
+body.dark-theme.grey-theme .share-card{background:linear-gradient(160deg,rgba(34,38,46,.95),rgba(24,27,33,.96));border-color:rgba(255,255,255,.12)}
+body.dark-theme.grey-theme .share-sub{color:#8A929E}
+body.dark-theme.grey-theme .share-link-input{background:#1C2026;border-color:rgba(255,255,255,.1);color:#E8EAF0}
+body.dark-theme.grey-theme .report-card{background:linear-gradient(160deg,rgba(38,42,50,.95),rgba(28,32,39,.96));border-color:rgba(255,255,255,.12)}
+body.dark-theme.grey-theme .report-select,
+body.dark-theme.grey-theme .report-textarea{background:#1C2026;color:#E8EAF0;border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .report-select option{background:#232832;color:#E8EAF0}
+
+/* Admin */
+body.dark-theme.grey-theme .adm-hero,
+body.dark-theme.grey-theme .adm-stat,
+body.dark-theme.grey-theme .adm-card{background:rgba(24,28,35,.62);border-color:rgba(255,255,255,.09)}
+body.dark-theme.grey-theme .adm-toast{background:rgba(28,32,40,.96);border-color:rgba(255,255,255,.1)}
+body.dark-theme.grey-theme .adm-hero-sub,
+body.dark-theme.grey-theme .adm-stat-label,
+body.dark-theme.grey-theme .adm-sysinfo-label{color:#828A96}
+
+/* ===== Pilih tema di halaman Profil ===== */
+.profile-theme{margin-top:2px}
+.profile-theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:12px 8px 0}
+@media(max-width:520px){.profile-theme-grid{grid-template-columns:1fr;gap:10px}}
+.p-theme-opt{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:18px;cursor:pointer;font-family:inherit;text-align:left;transition:all .2s ease;background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1.5px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.p-theme-opt:hover{transform:translateY(-2px);border-color:rgba(0,217,255,.3)}
+.p-theme-opt.active{border-color:#00D9FF;box-shadow:0 0 0 1px rgba(0,217,255,.25),0 8px 24px rgba(0,217,255,.12)}
+.p-theme-swatch{width:44px;height:44px;border-radius:12px;flex-shrink:0;border:1px solid rgba(255,255,255,.14)}
+.sw-aurora{background:linear-gradient(135deg,#0B1426,#4C1D95)}
+.sw-grey{background:linear-gradient(135deg,#14161A,#3A404B)}
+.p-theme-label{font-weight:700;font-size:14px;color:#fff}
+.p-theme-check{display:none;margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00D9FF,#8B5CF6);color:#fff;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.p-theme-opt.active .p-theme-check{display:flex}
+

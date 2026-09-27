@@ -377,6 +377,21 @@ function setSessionPos(setId, pos){
 function clearSessionPos(setId){
   try{ localStorage.removeItem('qz_pos_' + setId); }catch(e){}
 }
+// Tema tampilan: aurora (default) atau grey gelap — disimpan & diterapkan di semua halaman
+function getSavedTheme(){
+  try{ return localStorage.getItem('fcsTheme') === 'grey' ? 'grey' : 'aurora'; }catch(e){ return 'aurora'; }
+}
+function saveTheme(theme){
+  const t = theme === 'grey' ? 'grey' : 'aurora';
+  try{ localStorage.setItem('fcsTheme', t); }catch(e){}
+  document.body.classList.toggle('grey-theme', t === 'grey');
+  return t;
+}
+function applySavedTheme(){
+  const t = getSavedTheme();
+  document.body.classList.toggle('grey-theme', t === 'grey');
+  return t;
+}
 async function upsertSet(set){
   const sets = getSets();
   const i = sets.findIndex(s => s.id === set.id);
