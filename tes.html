@@ -36,11 +36,6 @@
   </header>
 
   <main class="icontainer ts-main">
-    <div class="ts-hero">
-      <h1 class="ts-title">Tes Kotoba</h1>
-      <p class="ts-sub">Gabungkan bab mana pun, tentukan jumlah soalnya, lalu uji hafalanmu secara acak.</p>
-    </div>
-
     <!-- Tahap 1: pilih bab -->
     <section class="ts-section" aria-labelledby="tsStep1Title">
       <div class="ts-section-head">
@@ -129,6 +124,7 @@
       const picked = g.items.length > 0 && g.items.every(s => selected.has(s.id));
       const el = document.createElement('article');
       el.className = 'ts-bab' + (picked ? ' picked' : '');
+      el.dataset.grpKey = g.key;
       el.style.setProperty('--grp-h', hue);
       el.innerHTML =
         '<button type="button" class="ts-bab-head" data-grp="' + escapeHtml(g.key) + '">' +
@@ -138,7 +134,17 @@
             '<small>' + g.items.length + ' set · ' + groupKotoba(g.items) + ' kotoba</small>' +
           '</span>' +
           '<span class="ts-bab-check"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
-        '</button>';
+        '</button>' +
+        '<div class="ts-bab-list">' +
+          g.items.map(s => {
+            const n = s._group && s._group.number !== null ? s._group.number : s.title;
+            return '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
+              '<span class="ts-bab-item-box"></span>' +
+              '<span class="ts-bab-item-num">' + escapeHtml(n) + '</span>' +
+              '<span class="ts-bab-item-count">' + setCountOf(s) + '</span>' +
+            '</button>';
+          }).join('') +
+        '</div>';
       grid.appendChild(el);
     });
 
@@ -146,6 +152,7 @@
       const picked = ungrouped.every(s => selected.has(s.id));
       const el = document.createElement('article');
       el.className = 'ts-bab ts-bab-ungrouped' + (picked ? ' picked' : '');
+      el.dataset.grpKey = '__ungrouped__';
       el.style.setProperty('--grp-h', 220);
       el.innerHTML =
         '<button type="button" class="ts-bab-head" data-grp="__ungrouped__">' +
@@ -155,7 +162,16 @@
             '<small>' + ungrouped.length + ' set · ' + groupKotoba(ungrouped) + ' kotoba</small>' +
           '</span>' +
           '<span class="ts-bab-check"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
-        '</button>';
+        '</button>' +
+        '<div class="ts-bab-list">' +
+          ungrouped.map(s =>
+            '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
+              '<span class="ts-bab-item-box"></span>' +
+              '<span class="ts-bab-item-num">' + escapeHtml(s.title) + '</span>' +
+              '<span class="ts-bab-item-count">' + setCountOf(s) + '</span>' +
+            '</button>'
+          ).join('') +
+        '</div>';
       grid.appendChild(el);
     }
   }
@@ -165,6 +181,22 @@
       const s = allSets.find(x => x.set.id === id);
       return a + (s ? setCountOf(s.set) : 0);
     }, 0);
+  }
+
+  function groupItemsByKey(key){
+    if(key === '__ungrouped__') return ungrouped;
+    const g = groups.find(x => x.key === key);
+    return g ? g.items : [];
+  }
+
+  function syncCard(card){
+    if(!card) return;
+    const items = groupItemsByKey(card.getAttribute('data-grp-key'));
+    const allPicked = items.length > 0 && items.every(s => selected.has(s.id));
+    card.classList.toggle('picked', allPicked);
+    card.querySelectorAll('.ts-bab-item').forEach(row => {
+      row.classList.toggle('picked', selected.has(row.getAttribute('data-set')));
+    });
   }
 
   function chosenN(){
@@ -252,15 +284,23 @@
 
   // event wiring
   document.getElementById('babGrid').addEventListener('click', (e) => {
+    const item = e.target.closest('.ts-bab-item');
+    if(item){
+      const id = item.getAttribute('data-set');
+      if(selected.has(id)) selected.delete(id); else selected.add(id);
+      syncCard(item.closest('.ts-bab'));
+      updateSummary();
+      return;
+    }
     const head = e.target.closest('.ts-bab-head');
     if(head){
       const grp = head.getAttribute('data-grp');
-      const group = groups.find(g => g.key === grp) || (grp === '__ungrouped__' ? { items: ungrouped } : null);
-      if(!group) return;
-      const setIds = group.items.map(s => s.id);
+      const items = groupItemsByKey(grp);
+      const setIds = items.map(s => s.id);
       const isAll = setIds.length > 0 && setIds.every(id => selected.has(id));
       setIds.forEach(id => { if(isAll) selected.delete(id); else selected.add(id); });
-      renderGroups(); updateSummary();
+      syncCard(head.closest('.ts-bab'));
+      updateSummary();
       return;
     }
   });
