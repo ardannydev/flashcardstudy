@@ -5,21 +5,66 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>try{if((navigator.deviceMemory&&navigator.deviceMemory<=4&&navigator.hardwareConcurrency<=8)||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('low-end')}catch(e){}</script>
-<meta name="description" content="Masuk atau daftar akun FlashCardStudy untuk menyimpan flashcard kamu.">
+<script>try{window.__secInline=1;document.addEventListener('keydown',function(e){var k=e.key||'';if(k==='F12'){e.preventDefault();return;}var u=k.toUpperCase();if(e.ctrlKey&&e.shiftKey&&['I','J','C'].indexOf(u)>-1){e.preventDefault();return;}if(e.ctrlKey&&u==='U'){e.preventDefault();}},true),document.addEventListener('contextmenu',function(e){e.preventDefault();},true)}catch(e){}</script>
+<meta name="description" content="Masuk atau daftar akun FlashCardStudy untuk menyimpan flashcard kamu dengan aman.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0e0b2e">
+<meta name="robots" content="index, follow">
 <title>Masuk — FlashCardStudy</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-theme login-page">
+<body class="dark-theme login-page lg-page">
 <script>try{if(localStorage.getItem('fcsTheme')==='grey')document.body.classList.add('grey-theme')}catch(e){}</script>
 
-  <main class="auth-wrap">
-    <div class="auth-brand">
-      <span class="logo">FlashCardStudy</span>
-    </div>
+  <main class="auth-wrap lg-wrap">
+    <section class="auth-hero" aria-label="Tentang FlashCardStudy">
+      <div class="lg-orb lg-orb1" aria-hidden="true"></div>
+      <div class="lg-orb lg-orb2" aria-hidden="true"></div>
 
-    <div class="auth-card">
+      <div class="auth-brand lg-brand">
+        <span class="logo">FlashCardStudy</span>
+      </div>
+
+      <h1 class="lg-hero-title">Belajar lebih <span class="lg-grad">cepat</span>,<br>ingat lebih <span class="lg-grad">lama</span>.</h1>
+      <p class="lg-hero-sub">Buat flashcard dua sisi, pelajari dengan sistem pengulangan pintar, dan pantau progresmu — semua tersimpan aman di akunmu.</p>
+
+      <ul class="lg-feats">
+        <li>
+          <span class="lg-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+          </span>
+          Sinkronisasi otomatis ke server
+        </li>
+        <li>
+          <span class="lg-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+          </span>
+          Sistem pengulangan berjangka (SRS)
+        </li>
+        <li>
+          <span class="lg-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+          </span>
+          Privasi, enkripsi &amp; kontrol perangkat
+        </li>
+      </ul>
+
+      <div class="lg-art" aria-hidden="true">
+        <div class="lg-mini lg-mini-a">
+          <span class="lg-mini-tag">Kartu</span>
+          <div class="lg-mini-q">scrypt</div>
+          <div class="lg-mini-a">Hash password aman</div>
+        </div>
+        <div class="lg-mini lg-mini-b">
+          <span class="lg-mini-tag">SRS</span>
+          <div class="lg-mini-q">interval</div>
+          <div class="lg-mini-a">1 · 6 · 21 hari</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="auth-card lg-card">
+      <div class="lg-card-glow" aria-hidden="true"></div>
       <div class="auth-tabs">
         <button type="button" class="auth-tab active" id="tabLogin">Masuk</button>
         <button type="button" class="auth-tab" id="tabRegister">Daftar</button>
@@ -29,36 +74,74 @@
 
       <!-- Form Masuk -->
       <form id="loginForm">
-        <h1 class="auth-title">Masuk ke akun kamu</h1>
-        <p class="auth-sub">Semua set flashcard kamu tersimpan aman di akunmu.</p>
+        <h1 class="auth-title">Selamat datang kembali 👋</h1>
+        <p class="auth-sub">Masuk untuk melanjutkan belajarmu.</p>
         <div class="auth-field">
           <label for="loginUsername">Username</label>
-          <input id="loginUsername" autocomplete="username" placeholder="Masukkan username" required>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input id="loginUsername" autocomplete="username" placeholder="Masukkan username" required>
+          </div>
         </div>
         <div class="auth-field">
           <label for="loginPassword">Password</label>
-          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+            <button type="button" class="auth-eye" aria-label="Tampilkan password" data-pw="loginPassword">
+              <svg class="eye-open" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="eye-closed" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
         </div>
         <button type="submit" class="auth-submit" id="loginBtn">Masuk</button>
       </form>
 
       <!-- Form Daftar -->
       <form id="registerForm" style="display:none">
-        <h1 class="auth-title">Buat akun baru</h1>
-        <p class="auth-sub">Data akan otomatis tersimpan ke akunmu di server.</p>
+        <h1 class="auth-title">Buat akun baru ✨</h1>
+        <p class="auth-sub">Data set flashcardmu akan otomatis tersimpan ke akunmu di server.</p>
         <div class="auth-field">
           <label for="regUsername">Username</label>
-          <input id="regUsername" autocomplete="username" placeholder="Minimal 3 karakter" required>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input id="regUsername" autocomplete="username" placeholder="Minimal 3 karakter" required>
+          </div>
         </div>
         <div class="auth-field">
           <label for="regPassword">Password</label>
-          <input id="regPassword" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter" required>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input id="regPassword" type="password" autocomplete="new-password" placeholder="Minimal 6 karakter" required>
+            <button type="button" class="auth-eye" aria-label="Tampilkan password" data-pw="regPassword">
+              <svg class="eye-open" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="eye-closed" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
         </div>
         <div class="auth-field">
           <label for="regPassword2">Ulangi Password</label>
-          <input id="regPassword2" type="password" autocomplete="new-password" placeholder="Ulangi password" required>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <input id="regPassword2" type="password" autocomplete="new-password" placeholder="Ulangi password" required>
+            <button type="button" class="auth-eye" aria-label="Tampilkan password" data-pw="regPassword2">
+              <svg class="eye-open" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <svg class="eye-closed" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            </button>
+          </div>
         </div>
         <button type="submit" class="auth-submit" id="registerBtn">Daftar</button>
+        <p class="auth-note">Dengan mendaftar, kamu menyetujui kami menyimpan datamu di server dengan aman.</p>
       </form>
 
     </div>
@@ -98,6 +181,22 @@ function showError(msg){
   authError.classList.add('show');
 }
 
+// Toggle visibilitas password
+document.querySelectorAll('.auth-eye').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.getAttribute('data-pw'));
+    if(!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.querySelector('.eye-open').style.display = show ? 'none' : '';
+    btn.querySelector('.eye-closed').style.display = show ? '' : 'none';
+  });
+});
+
+function authBody(extra){
+  return Object.assign({ device: getDeviceProfile() }, extra || {});
+}
+
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = document.getElementById('loginBtn');
@@ -118,10 +217,10 @@ loginForm.addEventListener('submit', async (e) => {
     // On Vercel — try server login; if user doesn't exist, auto-register
     btn.disabled = true; btn.textContent = 'Memproses...';
     try{
-      var r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+      var r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(authBody({username,password})) });
       var d;
       if(!r.ok){
-        r = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username,password}) });
+        r = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(authBody({username,password})) });
         if(!r.ok){ showError('Gagal daftar. Coba langsung di Vercel.'); btn.disabled=false; btn.textContent='Masuk'; return; }
       }
       d = await r.json();
@@ -145,7 +244,7 @@ loginForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/login', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify(authBody({ username, password }))
     });
     const data = await res.json();
     if(!res.ok){ showError(data.error || 'Gagal masuk.'); return; }
@@ -182,7 +281,7 @@ registerForm.addEventListener('submit', async (e) => {
     const res = await fetch('/api/register', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify(authBody({ username, password }))
     });
     const data = await res.json();
     if(!res.ok){ showError(data.error || 'Gagal mendaftar.'); return; }

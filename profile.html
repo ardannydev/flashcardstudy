@@ -5,7 +5,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>try{if((navigator.deviceMemory&&navigator.deviceMemory<=4&&navigator.hardwareConcurrency<=8)||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('low-end')}catch(e){}</script>
-<meta name="description" content="Profil akun FlashCardStudy.">
+<meta name="description" content="Profil dan pengaturan akun FlashCardStudy.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1426">
 <title>Profil — FlashCardStudy</title>
@@ -43,71 +43,106 @@
     </div>
     <div class="profile-banner"></div>
     <div class="profile-container">
-      <div class="profile-header-card">
-        <div class="profile-avatar-ring">
-          <div class="profile-avatar" id="profileAvatar">
-            <svg viewBox="0 0 24 24" width="60" height="60" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-        </div>
-        <div class="profile-user-info">
-          <h1 class="profile-name"><span id="profileNameText">—</span> <span id="devBadge" class="dev-badge" style="display:none">DEV</span></h1>
-          <p class="profile-joined" id="profileJoined">Terdaftar: —</p>
-        </div>
-        <div class="profile-actions-top">
-          <a href="admin" class="btn btn-outline" id="adminLink" style="display:none">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            Admin
-          </a>
-          <button class="btn btn-outline profile-logout" onclick="logout()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            Keluar
-          </button>
-        </div>
-      </div>
-      
-      <div class="profile-dashboard">
-        <div class="profile-section-title">Statistik Belajar</div>
-        <div class="profile-stats-grid">
-          <div class="p-stat-box p-stat-sets">
-            <div class="p-stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-            </div>
-            <div class="p-stat-info">
-              <span class="p-stat-num" id="statSets">0</span>
-              <span class="p-stat-label">Total Set</span>
-            </div>
-          </div>
-          <div class="p-stat-box p-stat-cards">
-            <div class="p-stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-            </div>
-            <div class="p-stat-info">
-              <span class="p-stat-num" id="statCards">0</span>
-              <span class="p-stat-label">Total Kartu</span>
-            </div>
-          </div>
-          <div class="p-stat-box p-stat-mastered">
-            <div class="p-stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-            </div>
-            <div class="p-stat-info">
-              <span class="p-stat-num" id="statMastered">0</span>
-              <span class="p-stat-label">Kartu Dikuasai</span>
-            </div>
-          </div>
-          <div class="p-stat-box p-stat-learning">
-            <div class="p-stat-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            </div>
-            <div class="p-stat-info">
-              <span class="p-stat-num" id="statLearning">0</span>
-              <span class="p-stat-label">Sedang Dipelajari</span>
-            </div>
-          </div>
-        </div>
+      <nav class="profile-nav" aria-label="Pengaturan akun">
+        <button type="button" class="profile-nav-item active" data-page="akun" onclick="openPage('akun')">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Akun
+        </button>
+        <button type="button" class="profile-nav-item" data-page="statistik" onclick="openPage('statistik')">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+          Statistik
+        </button>
+        <button type="button" class="profile-nav-item" data-page="tema" onclick="openPage('tema')">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+          Tampilan
+        </button>
+        <button type="button" class="profile-nav-item" data-page="perangkat" onclick="openPage('perangkat')">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          Perangkat
+        </button>
+        <button type="button" class="profile-nav-item" data-page="bantuan" onclick="openPage('bantuan')">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Bantuan
+        </button>
+      </nav>
 
-        <div class="profile-theme">
+      <div class="profile-pages">
+        <!-- Akun -->
+        <section class="profile-page" id="page-akun">
+          <div class="profile-section-title">Akun Saya</div>
+          <div class="profile-header-card p-account-card">
+            <div class="profile-avatar-ring">
+              <div class="profile-avatar" id="profileAvatar">
+                <svg viewBox="0 0 24 24" width="60" height="60" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+            <div class="profile-user-info">
+              <h1 class="profile-name"><span id="profileNameText">—</span> <span id="devBadge" class="dev-badge" style="display:none">DEV</span></h1>
+              <p class="profile-joined" id="profileJoined">Terdaftar: —</p>
+              <p class="profile-username" id="profileUserLabel">@—</p>
+            </div>
+            <div class="profile-actions-top">
+              <a href="admin" class="btn btn-outline" id="adminLink" style="display:none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Admin
+              </a>
+              <button type="button" class="btn btn-outline profile-logout" onclick="logout()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Keluar
+              </button>
+            </div>
+          </div>
+          <p class="p-account-desc">Data kamu dienkripsi dan hanya bisa diakses dari perangkat yang kamu izinkan.</p>
+        </section>
+
+        <!-- Statistik -->
+        <section class="profile-page" id="page-statistik" style="display:none">
+          <div class="profile-section-title">Statistik Belajar</div>
+          <p class="p-account-desc">Ringkasan progres belajarmu dari semua set.</p>
+          <div class="profile-stats-grid">
+            <div class="p-stat-box p-stat-sets">
+              <div class="p-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              </div>
+              <div class="p-stat-info">
+                <span class="p-stat-num" id="statSets">0</span>
+                <span class="p-stat-label">Total Set</span>
+              </div>
+            </div>
+            <div class="p-stat-box p-stat-cards">
+              <div class="p-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+              </div>
+              <div class="p-stat-info">
+                <span class="p-stat-num" id="statCards">0</span>
+                <span class="p-stat-label">Total Kartu</span>
+              </div>
+            </div>
+            <div class="p-stat-box p-stat-mastered">
+              <div class="p-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+              </div>
+              <div class="p-stat-info">
+                <span class="p-stat-num" id="statMastered">0</span>
+                <span class="p-stat-label">Kartu Dikuasai</span>
+              </div>
+            </div>
+            <div class="p-stat-box p-stat-learning">
+              <div class="p-stat-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+              </div>
+              <div class="p-stat-info">
+                <span class="p-stat-num" id="statLearning">0</span>
+                <span class="p-stat-label">Sedang Dipelajari</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tema -->
+        <section class="profile-page" id="page-tema" style="display:none">
           <div class="profile-section-title">Tampilan Tema</div>
+          <p class="p-account-desc">Pilih tema yang nyaman untuk seluruh aplikasi. Pengaturan tersimpan otomatis.</p>
           <div class="profile-theme-grid">
             <button type="button" class="p-theme-opt" data-theme="aurora" onclick="selectTheme('aurora')">
               <span class="p-theme-swatch sw-aurora"></span>
@@ -120,14 +155,43 @@
               <span class="p-theme-check">✓</span>
             </button>
           </div>
-        </div>
+        </section>
 
-        <div class="profile-more-actions">
-          <button class="btn btn-ghost" id="reportBtn" onclick="openReportForm()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Laporkan Masalah
+        <!-- Perangkat -->
+        <section class="profile-page" id="page-perangkat" style="display:none">
+          <div class="profile-section-title">Perangkat yang Masuk</div>
+          <p class="p-account-desc">Daftar perangkat yang pernah masuk ke akunmu. Keluarkan perangkat asing jika terasa mencurigakan.</p>
+          <div class="p-devices" id="deviceList"></div>
+          <button type="button" class="btn btn-outline" id="logoutOthersBtn" onclick="logoutAllOtherDevices()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            Keluar dari semua perangkat lain
           </button>
-        </div>
+        </section>
+
+        <!-- Bantuan -->
+        <section class="profile-page" id="page-bantuan" style="display:none">
+          <div class="profile-section-title">Bantuan &amp; Laporan</div>
+          <p class="p-account-desc">Temui kendala atau punya saran? Ceritakan ke kami.</p>
+          <button type="button" class="p-help-btn" onclick="openReportForm()">
+            <span class="p-help-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </span>
+            <span class="p-help-info">
+              <strong>Laporkan Masalah / Saran</strong>
+              <small>Bug, error, atau ide fitur baru untuk FlashCardStudy</small>
+            </span>
+          </button>
+          <button type="button" class="p-help-btn" onclick="openReportForm(2)">
+            <span class="p-help-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.17 3.17 0 0014 18.8V19a2 2 0 11-4 0v-.2c0-.841.335-1.648.932-2.243l.548-.547z"></path></svg>
+            </span>
+            <span class="p-help-info">
+              <strong>Saran Fitur</strong>
+              <small>Kirim ide &amp; masukan langsung ke pengembang</small>
+            </span>
+          </button>
+          <p class="p-account-desc p-help-foot">FlashCardStudy v1.0 · Data diproses dengan enkripsi dan proteksi perangkat.</p>
+        </section>
       </div>
     </div>
   </main>
@@ -156,6 +220,7 @@
 
   const username = getCurrentUser() || 'Pengguna';
   document.getElementById('profileNameText').textContent = username;
+  document.getElementById('profileUserLabel').textContent = '@' + username;
   const devBadge = document.getElementById('devBadge');
   if(isDevUser() && devBadge) devBadge.style.display = 'inline';
 
@@ -220,6 +285,7 @@ function submitReport(){
   closeReportForm();
   createNotification('Laporan berhasil dikirim. Terima kasih!', 'success');
 }
+
 function initThemePicker(){
   const t = getSavedTheme();
   document.querySelectorAll('.p-theme-opt').forEach(b => {
@@ -233,7 +299,103 @@ function selectTheme(theme){
   });
   createNotification('Tema "' + (t === 'grey' ? 'Grey Gelap' : 'Aurora Gelap') + '" disimpan.', 'success');
 }
-initThemePicker();
+
+/* ===== Navigasi sub-halaman pengaturan ===== */
+function openPage(name){
+  document.querySelectorAll('.profile-nav-item').forEach(i => {
+    i.classList.toggle('active', i.getAttribute('data-page') === name);
+  });
+  document.querySelectorAll('.profile-page').forEach(p => {
+    p.style.display = (p.id === 'page-' + name) ? '' : 'none';
+  });
+  if(name === 'perangkat') renderDevices();
+  if(name === 'tema') initThemePicker();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ===== Daftar perangkat login ===== */
+function deviceIcon(type){
+  if(type === 'mobile'){
+    return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>';
+  }
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
+}
+
+async function renderDevices(){
+  const holder = document.getElementById('deviceList');
+  if(!holder) return;
+  holder.innerHTML = '<div class="p-devices-loading">Memuat perangkat...</div>';
+
+  const data = await getUserProfile({ force: true });
+  if(!data || !data.devices){
+    holder.innerHTML = '<p class="p-devices-empty">Akun demo lokal tidak memakai daftar perangkat. Masuk melalui server untuk fitur ini.</p>';
+    const btn = document.getElementById('logoutOthersBtn');
+    if(btn) btn.style.display = 'none';
+    return;
+  }
+
+  const devices = (data.devices || []).slice().sort((a, b) => (b.current ? 1 : 0) - (a.current ? 1 : 0));
+  if(!devices.length){
+    holder.innerHTML = '<p class="p-devices-empty">Belum ada perangkat tercatat.</p>';
+    return;
+  }
+
+  holder.innerHTML = devices.map(d => {
+    const safeLabel = escapeHtml(d.label);
+    return (
+      '<div class="p-device' + (d.current ? ' current' : '') + '">' +
+        '<span class="p-device-icon">' + deviceIcon(d.type) + '</span>' +
+        '<div class="p-device-info">' +
+          '<div class="p-device-head">' +
+            '<span class="p-device-name">' + safeLabel + '</span>' +
+            (d.current ? '<span class="p-device-cur">Perangkat ini</span>' : '') +
+          '</div>' +
+          '<div class="p-device-meta">' + escapeHtml(getDeviceTypeLabel(d.type)) + ' · ' + escapeHtml(d.browser) + ' · ' + escapeHtml(d.os) + '</div>' +
+          '<div class="p-device-meta">Masuk ' + formatDeviceTime(d.createdAt) + ' · Aktif ' + formatDeviceTime(d.lastSeen) + (d.ip ? ' · IP ' + escapeHtml(d.ip) : '') + '</div>' +
+        '</div>' +
+        (d.current ? '' : '<button type="button" class="btn btn-ghost p-device-logout" data-id="' + d.deviceId + '" data-label="' + safeLabel + '">Keluar</button>') +
+      '</div>'
+    );
+  }).join('');
+
+  holder.querySelectorAll('.p-device-logout').forEach(btn => {
+    btn.addEventListener('click', () => logoutDevice(btn.dataset.id, btn.dataset.label));
+  });
+}
+
+async function logoutDevice(deviceId, label){
+  const ok = await showConfirm('Keluarkan perangkat "' + label + '" dari akun ini?', { confirmText: 'Ya, keluarkan' });
+  if(!ok) return;
+  try{
+    const res = await apiFetch('/api/user', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'logout-device', deviceId })
+    });
+    if(!res.ok) throw new Error('Gagal');
+    createNotification('Perangkat "' + label + '" telah dikeluarkan.', 'success');
+  }catch(e){
+    createNotification('Gagal mengeluarkan perangkat.', 'error');
+  }
+  renderDevices();
+}
+
+async function logoutAllOtherDevices(){
+  const ok = await showConfirm('Keluar dari semua perangkat lain? Perangkat saat ini tetap aktif.', { confirmText: 'Ya, keluarkan semua' });
+  if(!ok) return;
+  try{
+    const res = await apiFetch('/api/user', {
+      method: 'POST',
+      body: JSON.stringify({ action: 'logout-others' })
+    });
+    if(!res.ok) throw new Error('Gagal');
+    createNotification('Semua perangkat lain berhasil dikeluarkan.', 'success');
+  }catch(e){
+    createNotification('Gagal mengeluarkan perangkat.', 'error');
+  }
+  renderDevices();
+}
+
+openPage('akun');
 </script>
 </body>
 </html>

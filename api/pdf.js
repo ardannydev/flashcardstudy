@@ -1,5 +1,5 @@
 const { kv } = require('@vercel/kv');
-const { verifyToken } = require('./_lib/auth');
+const { requireAuth } = require('./_lib/auth');
 
 const MAX_BYTES = 3 * 1024 * 1024;
 const CHUNK_SIZE = 700000;
@@ -52,9 +52,8 @@ async function removePdf(username, setId){
 }
 
 module.exports = async (req, res) => {
-  const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  const username = verifyToken(token);
+  const auth = await requireAuth(req);
+  const username = auth ? auth.user : null;
   if(!username){
     res.status(401).json({ error: 'Unauthorized' });
     return;

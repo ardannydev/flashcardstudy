@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { getSessions } = require('./sessions');
 
 const SECRET = process.env.AUTH_SECRET;
 if(!SECRET) console.warn('AUTH_SECRET not set — using fallback. Set AUTH_SECRET in production!');
@@ -17,13 +18,13 @@ function verifyPassword(password, salt, hash){
   return crypto.timingSafeEqual(a, b);
 }
 
-function createToken(username){
-  const payload = Buffer.from(JSON.stringify({ u: username, t: Date.now(), exp: Date.now() + 30*24*60*60*1000 })).toString('base64url');
+function createToken(username, deviceId){
+  const payload = Buffer.from(JSON.stringify({ u: username, t: Date.now(), exp: Date.now() + 30*24*60*60*1000, d: deviceId || '' })).toString('base64url');
   const sig = crypto.createHmac('sha256', SECRET).update(payload).digest('base64url');
   return `${payload}.${sig}`;
 }
 
-function verifyToken(token){
+function parseTokenPayload(token){
   if(!token) return null;
   const parts = token.split('.');
   if(parts.length !== 2) return null;
@@ -35,8 +36,42 @@ function verifyToken(token){
   try{
     const data = JSON.parse(Buffer.from(payload, 'base64url').toString());
     if(data.exp && Date.now() > data.exp) return null;
-    return data.u;
+    return data;
   }catch(e){ return null; }
 }
 
-module.exports = { hashPassword, verifyPassword, createToken, verifyToken };
+function verifyToken(token){
+  const data = parseTokenPayload(token);
+  return data ? data.u : null;
+}
+
+/* Mengembalikan { u, d, t, exp } — dipakai saat butuh device id pembuat token. */
+function verifyTokenFull(token){
+  const data = parseTokenPayload(token);
+  return data ? { u: data.u, d: data.d || null, t: data.t, exp: data.exp } : null;
+}
+
+function parseAuthToken(req){
+  const authHeader = (req && req.headers && req.headers.authorization) || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  return verifyTokenFull(token);
+}
+
+/* Verifikasi token DAN pastikan sesi perangkat milik token tidak dicabut (logout perangkat). */
+async function requireAuth(req){
+  const info = parseAuthToken(req);
+  if(!info || !info.u) return null;
+  if(info.d){
+    try{
+      const list = await getSessions(info.u);
+      const sess = (list || []).find(s => s.deviceId === info.d);
+      if(!sess || sess.revoked) return null;
+    }catch(e){
+      /* gagal baca sesi → tolak demi keamanan */
+      return null;
+    }
+  }
+  return { user: info.u, device: info.d };
+}
+
+module.exports = { hashPassword, verifyPassword, createToken, verifyToken, verifyTokenFull, parseAuthToken, requireAuth };

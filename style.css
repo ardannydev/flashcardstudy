@@ -2077,3 +2077,113 @@ body.dark-theme.grey-theme .adm-sysinfo-label{color:#828A96}
 .p-theme-check{display:none;margin-left:auto;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#00D9FF,#8B5CF6);color:#fff;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
 .p-theme-opt.active .p-theme-check{display:flex}
 
+/* =============================================================
+   HALAMAN LOGIN — DESAIN BARU (dua kolom + panel brand)
+   ============================================================= */
+.dark-theme.login-page.lg-page{display:block;overflow-x:hidden}
+.dark-theme .auth-wrap.lg-wrap{width:100%;max-width:1240px;min-height:100vh;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(360px,500px);gap:clamp(24px,5vw,72px);align-items:center;padding:48px clamp(20px,5vw,64px)}
+.dark-theme .auth-hero{position:relative;overflow:hidden;width:100%;max-width:620px;justify-self:end;padding:clamp(16px,3vw,40px) 0}
+.dark-theme .auth-hero .auth-brand.lg-brand{margin-bottom:26px;justify-content:flex-start}
+.dark-theme .lg-hero-title{font-size:clamp(30px,4.2vw,52px);line-height:1.12;font-weight:800;color:#fff;margin:0 0 18px;letter-spacing:-1.5px}
+.lg-grad{background:linear-gradient(120deg,#00D9FF,#8B5CF6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.dark-theme .lg-hero-sub{color:#98a6d1;font-size:clamp(13px,1.3vw,16px);line-height:1.75;max-width:520px;margin:0 0 26px}
+.dark-theme .lg-feats{list-style:none;margin:0 0 30px;padding:0;display:flex;flex-direction:column;gap:14px}
+.dark-theme .lg-feats li{display:flex;align-items:center;gap:12px;color:#b3bee8;font-size:14px;font-weight:600}
+.lg-ficon{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(0,217,255,.1);color:#00D9FF;border:1px solid rgba(0,217,255,.22)}
+.lg-art{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px}
+.lg-mini{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 20px;min-width:172px;position:relative;overflow:hidden}
+.lg-mini::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(255,255,255,.06),transparent 45%,rgba(0,217,255,.06));pointer-events:none}
+.lg-mini-tag{position:absolute;top:10px;right:12px;font-size:10px;letter-spacing:.5px;font-weight:800;color:#00D9FF;background:rgba(0,217,255,.1);padding:3px 8px;border-radius:999px;border:1px solid rgba(0,217,255,.22)}
+.lg-mini-q{font-size:20px;font-weight:800;color:#fff;margin-top:16px}
+.lg-mini-a{font-size:12.5px;color:#98a6d1;margin-top:5px}
+.lg-orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;opacity:.55}
+.lg-orb1{width:340px;height:340px;top:-100px;right:-50px;background:radial-gradient(circle,rgba(0,217,255,.3),transparent 70%)}
+.lg-orb2{width:300px;height:300px;bottom:-90px;left:-70px;background:radial-gradient(circle,rgba(139,92,246,.32),transparent 70%)}
+
+.dark-theme .auth-card.lg-card{position:relative;overflow:hidden;padding:34px 32px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:28px;box-shadow:0 40px 120px rgba(0,0,0,.35);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.lg-card-glow{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:340px;height:170px;background:radial-gradient(ellipse,rgba(0,217,255,.18),transparent 70%);filter:blur(24px);pointer-events:none}
+.dark-theme .auth-input-wrap{position:relative;display:flex;align-items:center}
+.dark-theme .auth-input-wrap input{width:100%;padding:14px 46px 14px 44px;border:1px solid transparent;border-radius:16px;background:rgba(255,255,255,.06);color:#fff;outline:none;font-size:14px;transition:border .15s ease, box-shadow .15s ease, background .15s ease}
+.dark-theme .auth-input-wrap input:focus{border-color:rgba(0,217,255,.5);box-shadow:0 0 0 3px rgba(0,217,255,.12);background:rgba(255,255,255,.08)}
+.dark-theme .auth-input-wrap input::placeholder{color:rgba(255,255,255,.4)}
+.auth-input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#8291b8;pointer-events:none;display:flex}
+.dark-theme .auth-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border:none;background:transparent;color:#8291b8;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:color .15s ease, background .15s ease}
+.dark-theme .auth-eye:hover{color:#fff;background:rgba(255,255,255,.08)}
+.dark-theme .auth-note{font-size:11.5px;color:#8291b8;text-align:center;margin:16px 0 0;line-height:1.6}
+@media(max-width:960px){
+  .dark-theme .auth-wrap.lg-wrap{grid-template-columns:1fr;min-height:auto;padding:32px 20px;gap:0}
+  .dark-theme .auth-hero{display:none}
+  .dark-theme .auth-card.lg-card{max-width:440px;margin:0 auto;width:100%}
+}
+@media(max-width:520px){.dark-theme .auth-card.lg-card{padding:24px 18px}}
+@media(max-width:400px){
+  .dark-theme .auth-input-wrap input{padding:11px 40px 11px 13px;font-size:13px}
+}
+
+/* =============================================================
+   KEAMANAN — overlay saat DevTools / inspeksi terdeteksi
+   ============================================================= */
+.sec-overlay{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(6,8,14,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:20px}
+.sec-overlay.visible{display:flex}
+.sec-card{max-width:360px;width:100%;text-align:center;padding:36px 28px;border-radius:24px;border:1px solid rgba(239,68,68,.4);background:linear-gradient(170deg,rgba(52,30,34,.95),rgba(22,16,19,.97));box-shadow:0 24px 70px rgba(0,0,0,.55)}
+.sec-icon{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.45);color:#ef4444;box-shadow:0 0 40px rgba(239,68,68,.25)}
+.sec-card h3{margin:0 0 10px;font-size:18px;font-weight:800;color:#fff}
+.sec-card p{margin:0 0 22px;font-size:13px;line-height:1.7;color:#b9aeb6}
+.sec-card button{background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;border:none;border-radius:12px;padding:12px 30px;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px}
+.sec-card button:hover{filter:brightness(1.1)}
+
+/* =============================================================
+   PROFIL — navigasi sub-halaman pengaturan & daftar perangkat
+   ============================================================= */
+.dark-theme .profile-nav{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px}
+.dark-theme .profile-nav-item{display:flex;align-items:center;gap:10px;padding:11px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.04);color:#98a6d1;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s ease}
+.dark-theme .profile-nav-item:hover{color:#fff;border-color:rgba(0,217,255,.3);background:rgba(255,255,255,.06)}
+.dark-theme .profile-nav-item.active{background:linear-gradient(135deg,rgba(0,217,255,.16),rgba(139,92,246,.16));border-color:rgba(0,217,255,.45);color:#fff;box-shadow:0 4px 18px rgba(0,217,255,.12)}
+.profile-page{animation:pageFade .25s ease}
+@keyframes pageFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.dark-theme .p-account-card{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dark-theme .p-account-desc{color:#98a6d1;font-size:13px;line-height:1.7;margin:14px 0 0}
+.dark-theme .profile-username{color:#8291b8;font-size:13px;font-weight:600;margin:2px 0 0}
+.dark-theme .p-devices{display:flex;flex-direction:column;gap:12px;margin:14px 0 18px}
+.dark-theme .p-device{display:flex;align-items:center;gap:16px;padding:16px 18px;border-radius:18px;background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);transition:border .2s ease, transform .2s ease}
+.dark-theme .p-device:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.16)}
+.dark-theme .p-device.current{border-color:rgba(0,217,255,.4);box-shadow:0 4px 24px rgba(0,217,255,.1)}
+.p-device-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(0,217,255,.1);color:#00D9FF;border:1px solid rgba(0,217,255,.2)}
+.p-device-info{flex:1;min-width:0}
+.p-device-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.p-device-name{color:#fff;font-weight:700;font-size:15px}
+.p-device-cur{font-size:10.5px;font-weight:800;letter-spacing:.4px;color:#00D9FF;background:rgba(0,217,255,.12);border:1px solid rgba(0,217,255,.3);padding:3px 9px;border-radius:999px}
+.p-device-meta{color:#8291b8;font-size:12px;margin-top:2px;line-height:1.5}
+.p-device-logout{flex-shrink:0}
+.dark-theme .p-devices-loading,.dark-theme .p-devices-empty{color:#8291b8;font-size:13px;padding:16px 4px;margin:0}
+.p-help-btn{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 20px;border-radius:18px;border:1px solid rgba(255,255,255,.09);background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));cursor:pointer;font-family:inherit;color:#fff;margin-top:12px;transition:all .2s ease}
+.p-help-btn:hover{border-color:rgba(0,217,255,.35);transform:translateY(-2px)}
+.p-help-icon{width:44px;height:44px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.28)}
+.p-help-info strong{display:block;font-size:14px}
+.p-help-info small{color:#8291b8;font-size:12px;margin-top:2px;display:block}
+.p-help-foot{margin-top:26px;font-size:12px}
+@media(max-width:560px){
+  .dark-theme .p-device{flex-wrap:wrap}
+  .dark-theme .p-device-logout{width:100%}
+}
+
+/* Tema Grey — tambahan untuk komponen baru */
+body.dark-theme.grey-theme .lg-hero-sub,
+body.dark-theme.grey-theme .lg-mini-a,
+body.dark-theme.grey-theme .lg-feats li{color:#A8AEB9}
+body.dark-theme.grey-theme .auth-card.lg-card{background:rgba(28,32,40,.92);border-color:rgba(255,255,255,.08)}
+body.dark-theme.grey-theme .auth-input-wrap input{background:#1C2026}
+body.dark-theme.grey-theme .auth-input-icon,
+body.dark-theme.grey-theme .auth-eye,
+body.dark-theme.grey-theme .auth-note{color:#828A96}
+body.dark-theme.grey-theme .profile-nav-item{background:rgba(255,255,255,.03);color:#A8AEB9}
+body.dark-theme.grey-theme .profile-nav-item.active{background:rgba(0,217,255,.1);color:#fff}
+body.dark-theme.grey-theme .p-device{background:rgba(255,255,255,.03)}
+body.dark-theme.grey-theme .p-device-meta,
+body.dark-theme.grey-theme .p-account-desc,
+body.dark-theme.grey-theme .profile-username,
+body.dark-theme.grey-theme .p-devices-loading,
+body.dark-theme.grey-theme .p-devices-empty,
+body.dark-theme.grey-theme .p-help-info small{color:#828A96}
+body.dark-theme.grey-theme .p-help-icon{background:rgba(160,175,200,.12);color:#C6CDD9;border-color:rgba(160,175,200,.28)}
+

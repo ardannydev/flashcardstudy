@@ -188,36 +188,75 @@ function clearAuth(){
   _setsSynced = false;
   _userProfileCache = null;
 }
-// Panggil di awal tiap halaman yang butuh login. Mengarahkan ke login.html jika belum login & membatasi admin ke admin.html.
-function requireLogin(){
-  if(!getToken()){
-    if(isLocalMode()){
-      setAuth('local_dev_token', 'dev');
-      setDevUser(true);
-    } else {
-      navigateTo('login.html', { replace: true });
-      return false;
+
+/* ===== Profil perangkat (untuk daftar perangkat login & pengamanan sesi) ===== */
+function getDeviceProfile(){
+  try{
+    try{
+      const stored = JSON.parse(localStorage.getItem('qz_device'));
+      if(stored && stored.id) return stored;
+    }catch(e){}
+    const ua = navigator.userAgent || '';
+    const platform = (navigator.userAgentData && navigator.userAgentData.platform) || '';
+    let os = platform || 'Unknown';
+    if(/Windows/.test(os)) os = 'Windows';
+    else if(/Mac/.test(os) && !/iPhone|iPad/.test(ua)) os = 'macOS';
+    else if(/Android/.test(os) || /Android/i.test(ua)) os = 'Android';
+    else if(/iPhone|iPad|iPod/.test(os) || /iPhone|iPad|iPod/.test(ua)) os = 'iOS';
+    else if(/Linux/.test(os)) os = 'Linux';
+    if(os === 'Unknown'){
+      if(/Windows/.test(ua)) os = 'Windows';
+      else if(/Android/.test(ua)) os = 'Android';
+      else if(/iPhone|iPad|iPod/.test(ua)) os = 'iOS';
+      else if(/Mac OS X/.test(ua)) os = 'macOS';
+      else if(/Linux/.test(ua)) os = 'Linux';
     }
+    let browser = 'Browser';
+    if(/Edg\//.test(ua)) browser = 'Edge';
+    else if(/OPR\/|Opera/.test(ua)) browser = 'Opera';
+    else if(/CriOS/.test(ua)) browser = 'Chrome';
+    else if(/FxiOS/.test(ua)) browser = 'Firefox';
+    else if(/SamsungBrowser/.test(ua)) browser = 'Samsung Internet';
+    else if(/Chrome/.test(ua)) browser = 'Chrome';
+    else if(/Firefox/.test(ua)) browser = 'Firefox';
+    else if(/Safari/.test(ua)) browser = 'Safari';
+    const type = /Mobi|Android|iPhone|iPad/.test(ua) ? 'mobile' : 'desktop';
+    const id = 'd_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+    const obj = { id, browser, os, type, created: Date.now() };
+    try{ localStorage.setItem('qz_device', JSON.stringify(obj)); }catch(e){}
+    return obj;
+  }catch(e){
+    return { id: 'd_' + Date.now().toString(36), browser: 'Browser', os: 'Unknown', type: 'desktop', created: Date.now() };
   }
-  
-  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-  const isAdmin = isDevUser();
-
-  if(isAdmin && page !== 'admin.html'){
-    navigateTo('admin.html', { replace: true });
-    return false;
-  }
-  if(!isAdmin && page === 'admin.html'){
-    navigateTo('index.html', { replace: true });
-    return false;
-  }
-
-  return true;
 }
-function logout(){
-  setDevUser(false);
-  clearAuth();
-  navigateTo('login.html', { replace: true });
+function getDeviceId(){
+  try{ return String((getDeviceProfile() || {}).id || ''); }
+  catch(e){ return ''; }
+}
+function getDeviceTypeLabel(type){
+  return type === 'mobile' ? 'Ponsel' : 'Komputer';
+}
+function formatDeviceTime(ts){
+  if(!ts) return 'tidak diketahui';
+  const diff = Date.now() - ts;
+  if(diff < 60 * 1000) return 'baru saja';
+  if(diff < 60 * 60 * 1000) return Math.floor(diff / 60000) + ' menit lalu';
+  if(diff < 24 * 60 * 60 * 1000) return Math.floor(diff / 3600000) + ' jam lalu';
+  if(diff < 7 * 24 * 60 * 60 * 1000) return Math.floor(diff / 86400000) + ' hari lalu';
+  return new Date(ts).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+function revokeCurrentDevice(fireAndForget){
+  try{
+    const deviceId = getDeviceId();
+    if(!deviceId || isLocalMode() || isDevUser()) return Promise.resolve();
+    if(fireAndForget){
+      apiFetch('/api/user', { method: 'POST', body: JSON.stringify({ action: 'logout-device', deviceId }) }).catch(() => {});
+      return Promise.resolve();
+    }
+    return apiFetch('/api/user', { method: 'POST', body: JSON.stringify({ action: 'logout-device', deviceId }) });
+  }catch(e){
+    return Promise.resolve();
+  }
 }
 
 async function apiFetch(path, options={}){
@@ -804,6 +843,7 @@ function requireLogin(){
   return true;
 }
 function logout(){
+  revokeCurrentDevice(true);
   setDevUser(false);
   clearAuth();
   navigateTo('login', { replace: true });
@@ -856,6 +896,7 @@ function logout(){
       document.title = nextDocument.title;
       document.body.className = nextBody.className;
       document.body.style.cssText = nextBody.getAttribute('style') || '';
+      applySavedTheme();
       window.dispatchEvent(new Event('beforeunload'));
 
       nextDocument.querySelectorAll('style').forEach(st => {
@@ -1011,4 +1052,99 @@ function logout(){
       isDragging = false;
     });
   })();
+})();
+
+/* ============================================================
+   KEAMANAN — blokir inspeksi & pantau DevTools
+   ============================================================ */
+(function(){
+  if(window.__fcsec) return;
+  window.__fcsec = true;
+
+  const page = getPageName(location.pathname);
+  const isLogin = page === 'login';
+  let snoozeUntil = 0;
+
+  function blockKey(e){
+    const upper = String(e.key || '').toUpperCase();
+    if(e.key === 'F12'){ e.preventDefault(); return; }
+    if((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','J','C'].indexOf(upper) > -1){ e.preventDefault(); return; }
+    if((e.ctrlKey || e.metaKey) && upper === 'U'){ e.preventDefault(); return; }
+    if((e.ctrlKey || e.metaKey) && e.shiftKey && upper === 'S'){ e.preventDefault(); return; }
+  }
+  document.addEventListener('keydown', blockKey, true);
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); }, true);
+
+  function devToolsOpen(){
+    try{
+      const w = window.outerWidth - window.innerWidth;
+      const h = window.outerHeight - window.innerHeight;
+      return w > 160 || h > 160;
+    }catch(e){ return false; }
+  }
+
+  function loseFocusOverlays(){
+    if(devToolsOpen() && Date.now() > snoozeUntil) showLock();
+  }
+
+  function showLock(){
+    let ov = document.getElementById('secOverlay');
+    if(!ov){
+      ov = document.createElement('div');
+      ov.id = 'secOverlay';
+      ov.className = 'sec-overlay';
+      const msg = isLogin
+        ? 'Halaman login diawasi. Penjelajahan lewat DevTools diblokir demi keamanan akunmu.'
+        : 'Sesuatu mencoba menginspeksi halaman ini. Jika ini kamu, tutup DevTools agar lanjut.';
+      ov.innerHTML =
+        '<div class="sec-card">' +
+        '<div class="sec-icon"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M10.29 11.71L12 13.41l1.71-1.7a1 1 0 00-1.42-1.42L12 10.59l-1.71 1.7a1 1 0 00-1.42 1.42z"></path></svg></div>' +
+        '<h3>⚠️ Akses Inspeksi Terdeteksi</h3>' +
+        '<p>' + msg + '</p>' +
+        '<button type="button" id="secOk">Tutup</button>' +
+        '</div>';
+      document.body.appendChild(ov);
+      ov.querySelector('#secOk').addEventListener('click', function(){
+        ov.classList.remove('visible');
+        snoozeUntil = Date.now() + 4000;
+      });
+    }
+    ov.classList.add('visible');
+  }
+
+  if(isLogin){
+    /* Kosongkan kolom password begitu DevTools terbuka */
+    setInterval(function(){
+      if(!devToolsOpen()) return;
+      if(Date.now() < snoozeUntil) return;
+      document.querySelectorAll('input[type="password"]').forEach(function(i){ i.value = ''; });
+      showLock();
+    }, 1400);
+
+    /* Banner peringatan di konsol */
+    try{
+      const originals = {};
+      ['log','info','warn','error','debug'].forEach(function(m){
+        if(typeof console[m] !== 'function') return;
+        originals[m] = console[m].bind(console);
+        console[m] = function(){
+          try{
+            if(!window.__fcsConsoleWarned){
+              window.__fcsConsoleWarned = true;
+              originals.log('%c⚠️ FlashCardStudy — konsol diawasi.', 'color:#00D9FF;font-weight:800;font-size:13px');
+              originals.log('%cJangan coba mengubah atau memanipulasi sistem lewat konsol.', 'color:#ef4444;font-weight:700;font-size:12px');
+            }
+          }catch(e){}
+          originals[m].apply(console, arguments);
+        };
+      });
+    }catch(e){}
+  } else {
+    /* Halaman lain: tampilkan peringatan hanya sekali ketika DevTools dibuka */
+    setInterval(function(){
+      if(devToolsOpen() && Date.now() > snoozeUntil) showLock();
+    }, 2000);
+  }
+
+  window.addEventListener('blur', loseFocusOverlays);
 })();

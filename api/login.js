@@ -1,5 +1,6 @@
 const { kv } = require('@vercel/kv');
 const { verifyPassword, createToken } = require('./_lib/auth');
+const { upsertSession } = require('./_lib/sessions');
 const { rateLimit, getClientIp } = require('./_lib/ratelimit');
 
 module.exports = async (req, res) => {
@@ -21,7 +22,7 @@ module.exports = async (req, res) => {
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch (e) { body = {}; }
   }
-  const { username, password } = body || {};
+  const { username, password, device } = body || {};
 
   if (!username || !password) {
     res.status(400).json({ error: 'Username dan password wajib diisi.' });
@@ -52,6 +53,24 @@ module.exports = async (req, res) => {
   if (attempts.length > 50) attempts.splice(0, attempts.length - 50);
   await kv.set(auditKey, attempts);
 
-  const token = createToken(cleanUsername);
-  res.status(200).json({ token, username: cleanUsername });
+  /* --- Catat perangkat yang dipakai login --- */
+  const dev = (device && typeof device === 'object') ? device : {};
+  const deviceId = String(dev.id || 'd_web').slice(0, 64);
+  const browser = String(dev.browser || 'Browser').slice(0, 40);
+  const os = String(dev.os || 'Unknown').slice(0, 40);
+  const type = dev.type === 'mobile' ? 'mobile' : 'desktop';
+  await upsertSession(cleanUsername, {
+    deviceId,
+    label: (String(dev.label || browser + ' · ' + os)).slice(0, 80),
+    browser,
+    os,
+    type,
+    ip,
+    createdAt: Date.now(),
+    lastSeen: Date.now(),
+    revoked: false
+  });
+
+  const token = createToken(cleanUsername, deviceId);
+  res.status(200).json({ token, username: cleanUsername, deviceId });
 };
