@@ -2292,4 +2292,13 @@ body.dark-theme.grey-theme .quiz-banner{background:rgba(160,175,200,.08);border-
 body.dark-theme.grey-theme .quiz-banner-title{color:#F2F4F8}
 body.dark-theme.grey-theme .quiz-banner-link{color:#8A94A6;background:rgba(160,175,200,.1)}
 body.dark-theme.grey-theme .quiz-banner-badge{background:#5A6575;color:#F2F4F8}
+body.dark-theme.grey-theme .ts-bab-icon{background:linear-gradient(135deg,#5A6575,#3F4755);box-shadow:0 8px 24px rgba(0,0,0,.28)}
+body.dark-theme.grey-theme .ts-bab-ungrouped .ts-bab-icon{background:#262B34;border-color:#343A45;color:#9AA3B2;box-shadow:none}
+body.dark-theme.grey-theme .ts-bab::before{background:linear-gradient(90deg,rgba(160,175,200,.45),rgba(120,130,150,.35))}
+body.dark-theme.grey-theme .ts-bab.picked{border-color:rgba(180,190,205,.4);box-shadow:0 0 0 1px rgba(180,190,205,.18),0 10px 36px rgba(0,0,0,.24)}
+body.dark-theme.grey-theme .ts-bab.picked .ts-bab-check{background:#5A6575;border-color:#5A6575}
+body.dark-theme.grey-theme .ts-set-tag.picked{background:rgba(160,175,200,.12);border-color:#6B7280;color:#fff}
+body.dark-theme.grey-theme .ts-set-tag.picked .ts-set-tag-check{background:#5A6575;border-color:#5A6575}
+body.dark-theme.grey-theme .ts-set-tag.picked .ts-set-tag-count{color:rgba(255,255,255,.65)}
+body.dark-theme.grey-theme .ts-chip.active{background:#4B5563;border-color:#4B5563}
 
