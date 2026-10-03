@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>try{if((navigator.deviceMemory&&navigator.deviceMemory<=4&&navigator.hardwareConcurrency<=8)||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('low-end')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="Tes Kotoba — buat tes gabungan dari bab mana pun dan tentukan jumlah soal di FlashCardStudy.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B1426">
@@ -13,83 +12,83 @@
 </head>
 <body class="dark-theme">
 <script>try{if(localStorage.getItem('fcsTheme')==='grey')document.body.classList.add('grey-theme')}catch(e){}</script>
-  <header class="nh nh-nav-always">
-    <div class="nh-inner">
-      <div class="nh-bar">
-        <a href="index.html" class="nh-logo">FlashCardStudy</a>
-        <nav class="nh-nav-desktop">
-          <div class="nh-skew-wrap">
-            <a href="index.html" class="nh-link" draggable="false">Beranda</a>
-            <a href="sets.html" class="nh-link" draggable="false">Set</a>
-            <a href="tes.html" class="nh-link active" draggable="false">Tes</a>
-            <a href="create.html" class="nh-link" draggable="false">Buat</a>
-            <span class="nh-nav-dot" id="navDot"></span>
-          </div>
-        </nav>
-        <div class="nh-actions">
-          <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" id="navProfileBtn">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </a>
+<header class="nh nh-nav-always">
+  <div class="nh-inner">
+    <div class="nh-bar">
+      <a href="index.html" class="nh-logo">FlashCardStudy</a>
+      <nav class="nh-nav-desktop">
+        <div class="nh-skew-wrap">
+          <a href="index.html" class="nh-link" draggable="false">Beranda</a>
+          <a href="sets.html" class="nh-link" draggable="false">Set</a>
+          <a href="tes.html" class="nh-link active" draggable="false">Tes</a>
+          <a href="create.html" class="nh-link" draggable="false">Buat</a>
+          <span class="nh-nav-dot" id="navDot"></span>
         </div>
+      </nav>
+      <div class="nh-actions">
+        <a href="profile.html" class="nh-profile-btn" draggable="false" aria-label="Profil" id="navProfileBtn">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main class="icontainer ts-main">
-    <!-- Tahap 1: pilih bab -->
-    <section class="ts-section" aria-labelledby="tsStep1Title">
-      <div class="ts-section-head">
-        <h2 class="ts-section-title" id="tsStep1Title">1 · Pilih Bab</h2>
-        <div class="ts-quick">
-          <button type="button" class="ts-chip ts-chip-quick" onclick="selectAllBabs()">Pilih semua bab</button>
-          <button type="button" class="ts-chip ts-chip-quick" onclick="clearAll()">Bersihkan</button>
-        </div>
+<main class="icontainer ts-main">
+  <!-- Tahap 1: pilih bab -->
+  <section class="ts-section" aria-labelledby="tsStep1Title">
+    <header class="ts-section-head">
+      <h2 class="ts-section-title" id="tsStep1Title">Pilih Bab</h2>
+      <div class="ts-quick">
+        <button type="button" class="ts-chip ts-chip-quick" onclick="selectAllBabs()">Pilih semua</button>
+        <button type="button" class="ts-chip ts-chip-quick" onclick="clearAll()">Bersihkan</button>
       </div>
-      <div class="ts-bab-grid" id="babGrid"></div>
-    </section>
+    </header>
 
-    <!-- Tahap 2: jumlah soal -->
-    <section class="ts-section" aria-labelledby="tsStep2Title">
-      <div class="ts-section-head">
-        <h2 class="ts-section-title" id="tsStep2Title">2 · Jumlah Soal</h2>
-      </div>
-      <div class="ts-count-row">
-        <div class="ts-count-chips" id="countChips"></div>
-        <label class="ts-count-custom">
-          <span class="ts-count-custom-label">Kustom</span>
-          <input type="number" id="countInput" min="2" max="9999" inputmode="numeric" placeholder="cth: 50">
-        </label>
-      </div>
-      <p class="ts-count-note" id="countNote"></p>
-    </section>
+    <div class="ts-bab-grid" id="babGrid"></div>
+  </section>
 
-    <!-- Ringkasan & mulai -->
-    <div class="ts-actions">
-      <div class="ts-summary" id="tsSummary">Belum ada bab dipilih.</div>
-      <button type="button" class="btn btn-primary ts-start" id="startBtn" onclick="startTest()" disabled>
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"></path></svg>
-        Mulai Tes
-      </button>
+  <!-- Tahap 2: jumlah soal -->
+  <section class="ts-section" aria-labelledby="tsStep2Title">
+    <header class="ts-section-head">
+      <h2 class="ts-section-title" id="tsStep2Title">Jumlah Soal</h2>
+    </header>
+    <div class="ts-count-row">
+      <div class="ts-count-chips" id="countChips"></div>
+      <label class="ts-count-custom">
+        <span class="ts-count-custom-label">Kustom</span>
+        <input type="number" id="countInput" min="2" max="9999" inputmode="numeric" placeholder="cth: 50">
+      </label>
     </div>
-  </main>
+    <p class="ts-count-note" id="countNote"></p>
+  </section>
 
-  <script src="app.js"></script>
+  <!-- Ringkasan & mulai -->
+  <div class="ts-actions">
+    <div class="ts-summary" id="tsSummary">Belum ada bab dipilih.</div>
+    <button type="button" class="btn btn-primary ts-start" id="startBtn" onclick="startTest()" disabled>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"></path></svg>
+      Mulai Tes
+    </button>
+  </div>
+</main>
+
+<script src="app.js"></script>
 <script>
 (async function(){
   if(!requireLogin()) return;
   await syncSetsFromServer();
 
   const { groups, ungrouped } = groupAndSortSets(getSets());
-  const selected = new Set();            // id set yang dipilih
-  const allSets = [];                    // { set, groupName, groupKey }
-  let chosenCount = 'all';               // 'all' | angka soal
+  const selected = new Set();
+  const allSets = [];
+  let chosenCount = 'all';
 
   function collect(sets, groupName, groupKey){
     (sets || []).forEach(set => allSets.push({ set, groupName, groupKey }));
   }
 
   function setCountOf(set){ return (set.terms || []).length; }
-
   function groupKotoba(items){ return items.reduce((a, s) => a + setCountOf(s), 0); }
 
   function groupHue(name){
@@ -112,6 +111,10 @@
     return t.charAt(0).toUpperCase() || '?';
   }
 
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, m => ({'&':'&','<':'<','>':'>','"':'"',"'":'''})[m]);
+  }
+
   function renderGroups(){
     const grid = document.getElementById('babGrid');
     if(!groups.length && !ungrouped.length){
@@ -121,57 +124,71 @@
 
     groups.forEach(g => {
       const hue = groupHue(g.name);
-      const picked = g.items.length > 0 && g.items.every(s => selected.has(s.id));
+      const allPicked = g.items.length > 0 && g.items.every(s => selected.has(s.id));
       const el = document.createElement('article');
-      el.className = 'ts-bab' + (picked ? ' picked' : '');
+      el.className = 'ts-bab' + (allPicked ? ' picked' : '');
       el.dataset.grpKey = g.key;
       el.style.setProperty('--grp-h', hue);
       el.innerHTML =
-        '<button type="button" class="ts-bab-head" data-grp="' + escapeHtml(g.key) + '">' +
-          '<span class="ts-bab-icon"><span class="ts-bab-num">' + escapeHtml(groupRange(g) || groupInitial(g.name)) + '</span></span>' +
-          '<span class="ts-bab-meta">' +
-            '<strong>' + escapeHtml(g.name) + '</strong>' +
-            '<small>' + g.items.length + ' set · ' + groupKotoba(g.items) + ' kotoba</small>' +
+        '<button type="button" class="ts-bab-row" data-grp="' + escapeHtml(g.key) + '">' +
+          '<span class="ts-bab-indicator" aria-hidden="true">' +
+            '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
           '</span>' +
-          '<span class="ts-bab-check"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
+          '<span class="ts-bab-icon"><span class="ts-bab-num">' + escapeHtml(groupRange(g) || groupInitial(g.name)) + '</span></span>' +
+          '<div class="ts-bab-info">' +
+            '<strong>' + escapeHtml(g.name) + '</strong>' +
+            '<span class="ts-bab-meta">' + g.items.length + ' set · ' + groupKotoba(g.items) + ' kotoba</span>' +
+          '</div>' +
         '</button>' +
-        '<div class="ts-bab-list">' +
+        '<ul class="ts-bab-items" role="list" hidden>' +
           g.items.map(s => {
             const n = s._group && s._group.number !== null ? s._group.number : s.title;
-            return '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
-              '<span class="ts-bab-item-box"></span>' +
-              '<span class="ts-bab-item-num">' + escapeHtml(n) + '</span>' +
-              '<span class="ts-bab-item-count">' + setCountOf(s) + '</span>' +
-            '</button>';
+            return '<li>' +
+              '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
+                '<span class="ts-bab-item-check" aria-hidden="true"></span>' +
+                '<span class="ts-bab-item-label">' +
+                  '<span class="ts-bab-item-num">' + escapeHtml(n) + '</span>' +
+                  '<span class="ts-bab-item-title">' + escapeHtml(s.title) + '</span>' +
+                '</span>' +
+                '<span class="ts-bab-item-count">' + setCountOf(s) + ' kartu</span>' +
+              '</button>' +
+            '</li>';
           }).join('') +
-        '</div>';
+        '</ul>';
       grid.appendChild(el);
     });
 
     if(ungrouped.length){
-      const picked = ungrouped.every(s => selected.has(s.id));
+      const allPicked = ungrouped.every(s => selected.has(s.id));
       const el = document.createElement('article');
-      el.className = 'ts-bab ts-bab-ungrouped' + (picked ? ' picked' : '');
+      el.className = 'ts-bab ts-bab-ungrouped' + (allPicked ? ' picked' : '');
       el.dataset.grpKey = '__ungrouped__';
       el.style.setProperty('--grp-h', 220);
       el.innerHTML =
-        '<button type="button" class="ts-bab-head" data-grp="__ungrouped__">' +
-          '<span class="ts-bab-icon"><span class="ts-bab-num">&#10047;</span></span>' +
-          '<span class="ts-bab-meta">' +
-            '<strong>Lainnya / Tanpa Bab</strong>' +
-            '<small>' + ungrouped.length + ' set · ' + groupKotoba(ungrouped) + ' kotoba</small>' +
+        '<button type="button" class="ts-bab-row" data-grp="__ungrouped__">' +
+          '<span class="ts-bab-indicator" aria-hidden="true">' +
+            '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
           '</span>' +
-          '<span class="ts-bab-check"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' +
+          '<span class="ts-bab-icon"><span class="ts-bab-num">★</span></span>' +
+          '<div class="ts-bab-info">' +
+            '<strong>Lainnya / Tanpa Bab</strong>' +
+            '<span class="ts-bab-meta">' + ungrouped.length + ' set · ' + groupKotoba(ungrouped) + ' kotoba</span>' +
+          '</div>' +
         '</button>' +
-        '<div class="ts-bab-list">' +
+        '<ul class="ts-bab-items" role="list" hidden>' +
           ungrouped.map(s =>
-            '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
-              '<span class="ts-bab-item-box"></span>' +
-              '<span class="ts-bab-item-num">' + escapeHtml(s.title) + '</span>' +
-              '<span class="ts-bab-item-count">' + setCountOf(s) + '</span>' +
-            '</button>'
+            '<li>' +
+              '<button type="button" class="ts-bab-item' + (selected.has(s.id) ? ' picked' : '') + '" data-set="' + escapeHtml(s.id) + '">' +
+                '<span class="ts-bab-item-check" aria-hidden="true"></span>' +
+                '<span class="ts-bab-item-label">' +
+                  '<span class="ts-bab-item-num"></span>' +
+                  '<span class="ts-bab-item-title">' + escapeHtml(s.title) + '</span>' +
+                '</span>' +
+                '<span class="ts-bab-item-count">' + setCountOf(s) + ' kartu</span>' +
+              '</button>' +
+            '</li>'
           ).join('') +
-        '</div>';
+        '</ul>';
       grid.appendChild(el);
     }
   }
@@ -274,7 +291,7 @@
     navigateTo('learn?ids=' + encodeURIComponent(ids.join(',')) + '&n=' + Math.min(n, pool) + '&t=' + encodeURIComponent(label));
   };
 
-  // inisialisasi data
+  // init
   groups.forEach(g => collect(g.items, g.name, g.key));
   collect(ungrouped, 'Lainnya / Tanpa Bab', '__ungrouped__');
 
@@ -282,8 +299,9 @@
   renderCountChips();
   updateSummary();
 
-  // event wiring
-  document.getElementById('babGrid').addEventListener('click', (e) => {
+  // event delegation
+  const grid = document.getElementById('babGrid');
+  grid.addEventListener('click', (e) => {
     const item = e.target.closest('.ts-bab-item');
     if(item){
       const id = item.getAttribute('data-set');
@@ -292,15 +310,26 @@
       updateSummary();
       return;
     }
-    const head = e.target.closest('.ts-bab-head');
-    if(head){
-      const grp = head.getAttribute('data-grp');
+    const row = e.target.closest('.ts-bab-row');
+    if(row){
+      const grp = row.getAttribute('data-grp');
       const items = groupItemsByKey(grp);
       const setIds = items.map(s => s.id);
       const isAll = setIds.length > 0 && setIds.every(id => selected.has(id));
       setIds.forEach(id => { if(isAll) selected.delete(id); else selected.add(id); });
-      syncCard(head.closest('.ts-bab'));
+      syncCard(row.closest('.ts-bab'));
       updateSummary();
+      return;
+    }
+    const toggle = e.target.closest('.ts-bab-indicator');
+    if(toggle){
+      const card = toggle.closest('.ts-bab');
+      const items = card.querySelector('.ts-bab-items');
+      if(items){
+        const isHidden = items.hidden;
+        items.hidden = !isHidden;
+        card.classList.toggle('expanded', !isHidden);
+      }
       return;
     }
   });
